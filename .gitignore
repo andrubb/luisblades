@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+.env.*
+
+# Local Claude Code tooling
+.claude/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

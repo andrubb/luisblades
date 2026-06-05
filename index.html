@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0d" />
+<title>LuisBlades — Fragrance Atelier</title>
+<meta name="description" content="LuisBlades Fragrance — colección curada de perfumes Designer, Niche y Árabes en San José, Costa Rica. Carved by the blade. Finished by the scent." />
+
+<!-- ============================ FONTS ============================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;0,6..96,700;0,6..96,800;0,6..96,900;1,6..96,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===================================================================
+   LUISBLADES FRAGRANCE — single-file premium catalog
+   Theme A (Dark Luxury) = default  ·  Theme B (Clean Modern) = .theme-light
+   =================================================================== */
+
+/* ----------------------------- TOKENS ----------------------------- */
+:root{
+  /* Version A — Dark Luxury (default) */
+  --bg:#0b0b0d;
+  --bg-2:#111114;
+  --surface:#15151a;
+  --surface-2:#1c1c23;
+  --surface-3:#23232b;
+  --border:rgba(201,164,91,.18);
+  --hair:rgba(255,255,255,.08);
+  --text:#f3efe6;
+  --muted:#9a948a;
+  --faint:#6b665e;
+  --accent:#c9a45b;
+  --accent-2:#e7cf94;
+  --accent-ink:#0b0b0d;
+  --danger:#d8674f;
+  --good:#7bbf8e;
+  --shadow:0 34px 90px -28px rgba(0,0,0,.75);
+  --shadow-sm:0 14px 40px -18px rgba(0,0,0,.7);
+  --glow:rgba(201,164,91,.22);
+  --card-grad:linear-gradient(180deg,#16161b 0%, #101015 100%);
+  --media-grad:radial-gradient(120% 120% at 50% 10%, #25252e 0%, #141419 55%, #0d0d11 100%);
+
+  /* shared scale */
+  --font-display:'Bodoni Moda', 'Times New Roman', serif;
+  --font-body:'Outfit', system-ui, sans-serif;
+  --maxw:1240px;
+  --r:16px;
+  --r-sm:10px;
+  --r-pill:999px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-2:cubic-bezier(.65,.05,.36,1);
+  --t:.45s var(--ease);
+  --sp:clamp(64px,8vw,128px);
+}
+
+/* Version B — Clean Modern */
+body.theme-light{
+  --bg:#f3eee2;
+  --bg-2:#efe7d8;
+  --surface:#fbf7ee;
+  --surface-2:#ffffff;
+  --surface-3:#f6efe1;
+  --border:rgba(34,29,24,.14);
+  --hair:rgba(34,29,24,.10);
+  --text:#211d18;
+  --muted:#6f675b;
+  --faint:#a59c8c;
+  --accent:#b85c34;
+  --accent-2:#9c4a26;
+  --accent-ink:#fbf7ee;
+  --danger:#c0492f;
+  --good:#3f8a5b;
+  --shadow:0 30px 70px -30px rgba(70,45,20,.30);
+  --shadow-sm:0 14px 34px -18px rgba(70,45,20,.22);
+  --glow:rgba(184,92,52,.18);
+  --card-grad:linear-gradient(180deg,#fffdf8 0%, #f7f1e6 100%);
+  --media-grad:radial-gradient(120% 120% at 50% 12%, #ece3d2 0%, #e4d9c4 60%, #d9ccb2 100%);
+}
+
+/* ----------------------------- RESET ------------------------------ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background .6s var(--ease), color .6s var(--ease);
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--accent-ink)}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;line-height:1.04;letter-spacing:-.01em}
+.eyebrow{font-family:var(--font-body);font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.muted{color:var(--muted)}
+
+/* grain + scrollbar */
+body::after{
+  content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg-2)}
+::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:10px;border:2px solid var(--bg-2)}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,48px)}
+.section{padding:var(--sp) 0;position:relative}
+
+/* shared buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.6em;font-weight:600;font-size:.9rem;
+  letter-spacing:.02em;padding:.92em 1.6em;border-radius:var(--r-pill);transition:all .35s var(--ease);
+  white-space:nowrap;position:relative;overflow:hidden}
+.btn svg{width:1.05em;height:1.05em}
+.btn-solid{background:var(--accent);color:var(--accent-ink)}
+.btn-solid:hover{background:var(--accent-2);transform:translateY(-2px);box-shadow:0 14px 30px -10px var(--glow)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-wa{background:#25d366;color:#06351a}
+.btn-wa:hover{background:#2bee74;transform:translateY(-2px);color:#06351a}
+.btn-block{width:100%}
+.btn-lg{padding:1.05em 2.1em;font-size:.98rem}
+
+/* section heads */
+.shead{display:flex;flex-direction:column;gap:14px;margin-bottom:clamp(34px,5vw,60px);max-width:720px}
+.shead h2{font-size:clamp(2.1rem,5.5vw,3.7rem);font-weight:600}
+.shead h2 em{font-style:italic;color:var(--accent)}
+.shead p{color:var(--muted);font-size:1.05rem;max-width:60ch}
+.divider{width:54px;height:1px;background:linear-gradient(90deg,var(--accent),transparent)}
+
+/* ============================ NAVBAR ============================ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;transition:all .4s var(--ease)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+  gap:24px;padding:22px clamp(20px,5vw,48px);transition:all .4s var(--ease)}
+.nav.scrolled{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  background:color-mix(in srgb, var(--bg) 72%, transparent);border-bottom:1px solid var(--hair)}
+.nav.scrolled .nav-inner{padding-top:13px;padding-bottom:13px}
+
+/* logo + blade mark */
+.logo{display:flex;align-items:center;gap:11px;font-family:var(--font-display);font-size:1.42rem;font-weight:600;letter-spacing:.01em}
+.logo .luis{color:var(--text)}
+.logo .blades{color:var(--accent);position:relative}
+.logo .blades::after{content:"";position:absolute;left:-3px;right:-3px;top:54%;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:skewY(-8deg);opacity:.85}
+.blade-ico{width:22px;height:22px;color:var(--accent);flex:none;transform:rotate(-2deg)}
+
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-links a{font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500;
+  position:relative;padding:4px 0;transition:color .3s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--accent);transition:width .35s var(--ease)}
+.nav-links a:hover{color:var(--text)}
+.nav-links a:hover::after{width:100%}
+
+.nav-tools{display:flex;align-items:center;gap:14px}
+.lang-toggle{display:flex;border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden}
+.lang-toggle button{padding:6px 13px;font-size:.72rem;font-weight:600;letter-spacing:.1em;color:var(--muted);transition:all .3s}
+.lang-toggle button.on{background:var(--accent);color:var(--accent-ink)}
+
+.icon-btn{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);color:var(--text);transition:all .3s;position:relative}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.icon-btn svg{width:19px;height:19px}
+.theme-btn{font-size:.7rem;letter-spacing:.14em;font-weight:600;text-transform:uppercase;gap:8px;width:auto;padding:0 16px;border-radius:var(--r-pill)}
+.theme-dot{width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--accent);flex:none}
+.cart-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 4px;border-radius:10px;
+  background:var(--accent);color:var(--accent-ink);font-size:.66rem;font-weight:700;display:flex;align-items:center;
+  justify-content:center;transform:scale(0);transition:transform .35s var(--ease)}
+.cart-count.show{transform:scale(1)}
+.hamburger{display:none}
+
+/* ============================== HERO ============================== */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg .glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6}
+.hero-bg .g1{width:60vw;height:60vw;top:-18vw;right:-12vw;background:radial-gradient(circle,var(--glow),transparent 68%)}
+.hero-bg .g2{width:48vw;height:48vw;bottom:-20vw;left:-14vw;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 26%,transparent),transparent 70%);opacity:.4}
+.hero-vign{position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,transparent 40%, var(--bg) 100%)}
+.particles{position:absolute;inset:0;overflow:hidden}
+.particles span{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;background:var(--accent);
+  opacity:0;animation:rise linear infinite}
+@keyframes rise{0%{transform:translateY(0) scale(1);opacity:0}10%{opacity:.5}90%{opacity:.35}100%{transform:translateY(-104vh) scale(.4);opacity:0}}
+
+.hero-content{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;width:100%;padding:0 clamp(20px,5vw,48px)}
+.hero-eyebrow{margin-bottom:26px;opacity:0}
+.hero h1{font-size:clamp(1.6rem,8.4vw,7.4rem);font-weight:600;line-height:.97;letter-spacing:-.02em}
+.hero h1 .ln{display:block;overflow:hidden}
+.hero h1 .ln span{display:block;transform:translateY(110%);white-space:nowrap}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero-sub{margin-top:30px;font-size:clamp(1rem,2vw,1.22rem);color:var(--muted);max-width:46ch;opacity:0}
+.hero-cta{margin-top:42px;display:flex;gap:16px;flex-wrap:wrap;opacity:0}
+.scroll-ind{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;
+  align-items:center;gap:10px;color:var(--muted);opacity:0}
+.scroll-ind .mouse{width:24px;height:38px;border:1.5px solid var(--border);border-radius:14px;position:relative}
+.scroll-ind .mouse::after{content:"";position:absolute;top:7px;left:50%;width:3px;height:7px;border-radius:2px;
+  background:var(--accent);transform:translateX(-50%);animation:scrolld 1.8s var(--ease) infinite}
+.scroll-ind small{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase}
+@keyframes scrolld{0%{opacity:0;top:7px}40%{opacity:1}80%{opacity:0;top:18px}100%{opacity:0}}
+
+/* marquee strip */
+.marquee{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:18px 0;overflow:hidden;background:var(--bg-2)}
+.marquee-track{display:flex;gap:60px;white-space:nowrap;width:max-content;animation:marq 38s linear infinite}
+.marquee-track span{font-family:var(--font-display);font-style:italic;font-size:1.25rem;color:var(--muted);display:flex;align-items:center;gap:60px}
+.marquee-track span::after{content:"✦";color:var(--accent);font-style:normal;font-size:.8rem}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ============================ CATALOG ============================ */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:42px}
+.pill{padding:.66em 1.4em;border-radius:var(--r-pill);border:1px solid var(--border);color:var(--muted);
+  font-size:.82rem;font-weight:600;letter-spacing:.04em;transition:all .35s var(--ease);position:relative;overflow:hidden}
+.pill span{position:relative;z-index:2}
+.pill::before{content:"";position:absolute;inset:0;background:var(--accent);transform:translateY(101%);transition:transform .4s var(--ease);z-index:1}
+.pill:hover{color:var(--text);border-color:var(--accent)}
+.pill.on{color:var(--accent-ink);border-color:var(--accent)}
+.pill.on::before{transform:translateY(0)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,30px)}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+
+.card{background:var(--card-grad);border:1px solid var(--hair);border-radius:var(--r);overflow:hidden;
+  display:flex;flex-direction:column;transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease);
+  transform-style:preserve-3d;will-change:transform;position:relative}
+.card:hover{border-color:var(--border);box-shadow:var(--shadow)}
+.card.out{opacity:.62}
+.card-media{position:relative;aspect-ratio:1/1.16;background:var(--media-grad);overflow:hidden}
+.card-media img{width:100%;height:100%;object-fit:contain;padding:24px 22px 30px;transition:transform .7s var(--ease),opacity .6s var(--ease);opacity:0;transform:translateZ(40px)}
+.card-media img.loaded{opacity:1}
+.card:hover .card-media img{transform:translateZ(55px) scale(1.05)}
+.badge{position:absolute;z-index:3;font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 11px;border-radius:var(--r-pill);backdrop-filter:blur(6px)}
+.badge-cat{top:14px;left:14px;color:var(--accent-ink);background:var(--accent)}
+.cat-Niche{background:#b9b3a6;color:#1a1a1a}
+.cat-Arabic{background:#caa35e}
+.badge-stock{top:14px;right:14px;background:color-mix(in srgb,var(--bg) 60%,transparent);color:var(--text);border:1px solid var(--hair)}
+.badge-stock i{font-style:normal;color:var(--accent)}
+.badge-out{top:14px;right:14px;background:var(--danger);color:#fff}
+
+.quickview{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:18px 16px 16px;
+  background:linear-gradient(0deg, color-mix(in srgb,var(--bg) 92%,transparent) 10%, transparent);
+  transform:translateY(102%);transition:transform .5s var(--ease)}
+.card:hover .quickview{transform:translateY(0)}
+.qv-label{font-size:.6rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.qv-notes{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qv-notes span{font-size:.68rem;padding:4px 9px;border-radius:var(--r-pill);background:color-mix(in srgb,var(--surface) 80%,transparent);
+  border:1px solid var(--hair);color:var(--text)}
+
+.card-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card-brand{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card-name{font-size:1.32rem;font-weight:600;line-height:1.1;margin:2px 0 4px}
+.card-foot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:auto;padding-top:8px}
+.card-price{font-family:var(--font-display);font-size:1.32rem;font-weight:600;color:var(--accent)}
+.card-fam{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.card-actions{display:flex;gap:9px;margin-top:16px}
+.card-actions .btn{padding:.74em 1em;font-size:.8rem;flex:1}
+
+.catalog-empty{text-align:center;color:var(--muted);padding:60px 0;font-style:italic;font-family:var(--font-display);font-size:1.3rem}
+.skeleton{aspect-ratio:1/1.5;border-radius:var(--r);background:linear-gradient(100deg,var(--surface) 30%,var(--surface-2) 50%,var(--surface) 70%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* ============================ ENCARGOS ============================ */
+.encargos{background:var(--bg-2);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
+.encargos-inner{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(34px,6vw,80px);align-items:center}
+.concierge-card{position:relative;border:1px solid var(--border);border-radius:var(--r);padding:clamp(28px,4vw,46px);
+  background:linear-gradient(160deg, var(--surface) 0%, var(--bg-2) 100%);overflow:hidden}
+.concierge-card::before{content:"✦";position:absolute;top:-10px;right:18px;font-size:9rem;color:var(--accent);opacity:.05;font-family:var(--font-display)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600}
+.field input,.field textarea,.field select{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:13px 15px;color:var(--text);font-size:.95rem;transition:border-color .3s,box-shadow .3s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.field textarea{resize:vertical;min-height:88px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.concierge-list{list-style:none;display:flex;flex-direction:column;gap:18px;margin-top:10px}
+.concierge-list li{display:flex;gap:14px;align-items:flex-start}
+.concierge-list .n{font-family:var(--font-display);font-style:italic;color:var(--accent);font-size:1.5rem;line-height:1;flex:none;width:30px}
+.concierge-list strong{display:block;font-weight:600;font-size:1.02rem}
+.concierge-list p{color:var(--muted);font-size:.92rem;margin-top:2px}
+
+/* ============================ BARBERSHOP ============================ */
+.barber-inner{display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(34px,6vw,80px);align-items:center}
+.barber-media{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:4/5;border:1px solid var(--border);background:var(--media-grad)}
+.barber-media img{width:100%;height:100%;object-fit:cover;filter:grayscale(.25) contrast(1.04)}
+.barber-media .tag{position:absolute;bottom:18px;left:18px;background:color-mix(in srgb,var(--bg) 72%,transparent);
+  backdrop-filter:blur(8px);border:1px solid var(--hair);padding:10px 16px;border-radius:var(--r-pill);
+  font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.barber-media .tag b{color:var(--accent)}
+.price-chip{display:inline-flex;align-items:baseline;gap:8px;margin:8px 0 22px;padding:10px 18px;border-radius:var(--r-pill);
+  border:1px solid var(--border);background:var(--surface)}
+.price-chip .amt{font-family:var(--font-display);font-size:1.6rem;color:var(--accent);font-weight:600}
+.price-chip small{color:var(--muted);font-size:.78rem}
+.barber-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+
+/* ============================ FOOTER ============================ */
+footer{background:var(--bg-2);border-top:1px solid var(--hair);padding-top:clamp(54px,7vw,86px)}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px;padding-bottom:54px}
+.foot-brand p{color:var(--muted);margin-top:18px;max-width:34ch;font-size:.95rem}
+.foot-socials{display:flex;gap:12px;margin-top:22px}
+.foot-col h4{font-family:var(--font-body);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:18px}
+.foot-col a{display:block;color:var(--text);font-size:.92rem;margin-bottom:12px;transition:color .3s,padding .3s}
+.foot-col a:hover{color:var(--accent);padding-left:5px}
+.foot-bottom{border-top:1px solid var(--hair);padding:24px 0;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.foot-bottom small{color:var(--faint);font-size:.8rem;letter-spacing:.04em}
+.foot-bottom small b{color:var(--accent);cursor:pointer}
+
+/* ============================ CART DRAWER ============================ */
+.overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+.overlay.show{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);z-index:320;background:var(--surface);
+  border-left:1px solid var(--border);transform:translateX(102%);transition:transform .5s var(--ease);display:flex;flex-direction:column}
+.drawer.show{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:24px 26px;border-bottom:1px solid var(--hair)}
+.drawer-head h3{font-size:1.5rem}
+.drawer-head .n{color:var(--muted);font-size:.85rem}
+.drawer-body{flex:1;overflow-y:auto;padding:8px 26px}
+.cart-empty{text-align:center;color:var(--muted);padding:70px 10px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.cart-empty svg{width:46px;height:46px;color:var(--faint)}
+.cart-item{display:grid;grid-template-columns:74px 1fr auto;gap:14px;padding:18px 0;border-bottom:1px solid var(--hair)}
+.cart-item .ci-img{width:74px;height:84px;border-radius:var(--r-sm);background:var(--media-grad);overflow:hidden}
+.cart-item .ci-img img{width:100%;height:100%;object-fit:contain;padding:8px}
+.cart-item .ci-brand{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.cart-item .ci-name{font-family:var(--font-display);font-size:1.05rem;font-weight:600;line-height:1.15}
+.cart-item .ci-vol{font-size:.74rem;color:var(--faint)}
+.cart-item .ci-price{color:var(--accent);font-weight:600;font-size:.92rem;margin-top:4px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:var(--r-pill);overflow:hidden;margin-top:8px}
+.qty button{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .3s}
+.qty button:hover{background:var(--surface-3);color:var(--accent)}
+.qty span{min-width:26px;text-align:center;font-size:.85rem;font-weight:600}
+.ci-remove{color:var(--faint);font-size:.72rem;letter-spacing:.04em;margin-top:8px;text-align:right;transition:color .3s}
+.ci-remove:hover{color:var(--danger)}
+.drawer-foot{padding:22px 26px;border-top:1px solid var(--border);background:var(--bg-2)}
+.subtotal{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.subtotal .lbl{color:var(--muted);font-size:.82rem;letter-spacing:.14em;text-transform:uppercase}
+.subtotal .val{font-family:var(--font-display);font-size:1.8rem;color:var(--accent);font-weight:600}
+.drawer-foot .note{color:var(--faint);font-size:.76rem;margin:6px 0 16px}
+
+/* ============================ MODAL ============================ */
+.modal{position:fixed;inset:0;z-index:340;display:flex;align-items:center;justify-content:center;padding:24px;
+  opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s}
+.modal.show{opacity:1;visibility:visible}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:min(1000px,100%);
+  max-height:92vh;overflow:hidden;display:grid;grid-template-columns:1fr 1.1fr;transform:scale(.94) translateY(14px);
+  transition:transform .5s var(--ease);box-shadow:var(--shadow)}
+.modal.show .modal-card{transform:scale(1) translateY(0)}
+.modal-media{background:var(--media-grad);position:relative;display:flex;align-items:center;justify-content:center;padding:30px}
+.modal-media img{width:100%;height:100%;max-height:560px;object-fit:contain}
+.modal-media .badge-cat{top:18px;left:18px}
+.modal-body{padding:clamp(24px,3vw,38px);overflow-y:auto;max-height:92vh}
+.modal-close{position:absolute;top:16px;right:16px;z-index:5;width:40px;height:40px;border-radius:50%;
+  background:color-mix(in srgb,var(--bg) 60%,transparent);border:1px solid var(--hair);display:flex;align-items:center;justify-content:center;transition:all .3s}
+.modal-close:hover{background:var(--accent);color:var(--accent-ink);transform:rotate(90deg)}
+.modal-brand{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.modal-title{font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:600;margin:6px 0 4px}
+.modal-fam{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;color:var(--accent);letter-spacing:.08em;margin-bottom:18px}
+.modal-desc{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:24px}
+.block-label{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.block-label::before{content:"";width:18px;height:1px;background:var(--accent)}
+.notes-group{margin-bottom:18px}
+.notes-group .nt-tier{font-size:.7rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;margin-top:14px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pills span{font-size:.8rem;padding:6px 13px;border-radius:var(--r-pill);background:var(--surface-2);border:1px solid var(--border);color:var(--text)}
+.tag-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.tag{font-size:.74rem;padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--hair);color:var(--muted)}
+.tag.on{border-color:var(--accent);color:var(--accent);background:var(--glow)}
+
+.meter-wrap{margin:22px 0}
+.meter{height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden;position:relative}
+.meter i{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:5px;transition:width 1s var(--ease)}
+.meter-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.meter-labels b{color:var(--accent)}
+.ratings{display:flex;gap:30px;margin:22px 0}
+.rating .rl{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.dots{display:flex;gap:6px}
+.dots i{width:11px;height:11px;border-radius:50%;background:var(--surface-3);border:1px solid var(--border)}
+.dots i.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 8px -1px var(--glow)}
+
+.opts{display:flex;gap:10px;margin:18px 0}
+.opt{padding:10px 18px;border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;text-align:center;transition:all .3s;min-width:96px}
+.opt small{display:block;font-size:.66rem;color:var(--muted);letter-spacing:.1em}
+.opt b{font-size:.95rem}
+.opt.on{border-color:var(--accent);background:var(--glow)}
+.opt.on b{color:var(--accent)}
+.modal-buy{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding-top:22px;border-top:1px solid var(--hair)}
+.modal-price{font-family:var(--font-display);font-size:2rem;color:var(--accent);font-weight:600;margin-right:auto}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap}
+.modal-actions .btn{flex:1 1 auto!important;min-width:0;padding:.9em 1.25em;font-size:.9rem;white-space:normal;line-height:1.2}
+
+/* ============================ FLOATING ============================ */
+.float-wa{position:fixed;right:22px;bottom:22px;z-index:180;width:58px;height:58px;border-radius:50%;background:#25d366;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 14px 34px -8px rgba(37,211,102,.55);transition:transform .35s var(--ease)}
+.float-wa:hover{transform:scale(1.08) translateY(-2px)}
+.float-wa svg{width:30px;height:30px;color:#fff}
+.float-wa::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #25d366;animation:ripple 2.2s ease-out infinite}
+@keyframes ripple{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+.to-top{position:fixed;right:24px;bottom:90px;z-index:180;width:46px;height:46px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transform:translateY(12px);transition:all .4s var(--ease)}
+.to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.to-top:hover{border-color:var(--accent);color:var(--accent)}
+
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);z-index:400;background:var(--surface-2);
+  border:1px solid var(--accent);border-radius:var(--r-pill);padding:13px 24px;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow);opacity:0;visibility:hidden;transition:all .4s var(--ease);font-size:.9rem;font-weight:500}
+.toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.toast svg{width:18px;height:18px;color:var(--accent)}
+
+/* ============================ ADMIN ============================ */
+.admin{position:fixed;inset:0;z-index:500;background:#0d0f12;color:#e8eaed;display:none}
+.admin.show{display:flex}
+.admin *{box-sizing:border-box}
+.admin-login{margin:auto;width:min(380px,92vw);background:#16191e;border:1px solid #2a2f37;border-radius:16px;padding:36px;text-align:center}
+.admin-login .blade-ico{margin:0 auto 14px;width:34px;height:34px;color:#c9a45b}
+.admin-login h2{font-family:var(--font-display);color:#fff;font-size:1.7rem;margin-bottom:6px}
+.admin-login p{color:#8b929c;font-size:.86rem;margin-bottom:22px}
+.admin-login input{width:100%;background:#0d0f12;border:1px solid #2a2f37;border-radius:10px;padding:13px;color:#fff;margin-bottom:14px;text-align:center;letter-spacing:.1em}
+.admin-login input:focus{outline:none;border-color:#c9a45b}
+.admin-login button{width:100%;background:#c9a45b;color:#0d0f12;font-weight:700;padding:13px;border-radius:10px;letter-spacing:.04em}
+.admin-login .err{color:#e06a4f;font-size:.8rem;margin-top:10px;min-height:18px}
+.admin-login .hint{color:#5d646e;font-size:.74rem;margin-top:16px}
+
+.admin-shell{display:grid;grid-template-columns:248px 1fr;width:100%;height:100%}
+.admin-side{background:#11141a;border-right:1px solid #23272f;padding:26px 18px;display:flex;flex-direction:column}
+.admin-side .brand{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-size:1.25rem;color:#fff;margin-bottom:34px;padding:0 8px}
+.admin-side .brand b{color:#c9a45b}
+.admin-nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:10px;
+  color:#9aa1ab;font-size:.92rem;font-weight:500;margin-bottom:4px;transition:all .25s}
+.admin-nav button svg{width:18px;height:18px}
+.admin-nav button:hover{background:#1a1e25;color:#fff}
+.admin-nav button.on{background:#c9a45b;color:#0d0f12;font-weight:600}
+.admin-side .out{margin-top:auto;color:#7a818b;font-size:.84rem;padding:12px 14px;display:flex;align-items:center;gap:10px;border-radius:10px;transition:all .25s}
+.admin-side .out:hover{background:#1a1e25;color:#e06a4f}
+.admin-main{overflow-y:auto;padding:30px clamp(20px,3vw,40px)}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;gap:16px;flex-wrap:wrap}
+.admin-topbar h1{font-family:var(--font-display);color:#fff;font-size:1.9rem}
+.admin-topbar p{color:#8b929c;font-size:.86rem}
+.a-btn{background:#c9a45b;color:#0d0f12;font-weight:600;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;font-size:.88rem;transition:all .25s}
+.a-btn:hover{background:#dcb96f}
+.a-btn.ghost{background:transparent;border:1px solid #2a2f37;color:#cfd4da}
+.a-btn.ghost:hover{border-color:#c9a45b;color:#c9a45b}
+.a-btn.danger{background:transparent;border:1px solid #3a2420;color:#e06a4f}
+.a-btn.danger:hover{background:#e06a4f;color:#fff}
+
+.a-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.a-stat{background:#16191e;border:1px solid #23272f;border-radius:12px;padding:18px}
+.a-stat .v{font-family:var(--font-display);font-size:1.9rem;color:#c9a45b}
+.a-stat .l{color:#8b929c;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase}
+.a-table{width:100%;border-collapse:collapse;background:#16191e;border:1px solid #23272f;border-radius:12px;overflow:hidden}
+.a-table th{text-align:left;padding:13px 16px;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#8b929c;background:#1a1e25;font-weight:600}
+.a-table td{padding:11px 16px;border-top:1px solid #23272f;font-size:.88rem;vertical-align:middle}
+.a-table tr:hover td{background:#1a1e25}
+.a-thumb{width:42px;height:50px;border-radius:7px;object-fit:contain;background:#0d0f12;padding:4px}
+.a-cat{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:20px;background:#2a2f37;color:#cfd4da}
+.a-row-actions{display:flex;gap:6px;justify-content:flex-end}
+.a-icon{width:32px;height:32px;border-radius:8px;border:1px solid #2a2f37;color:#cfd4da;display:flex;align-items:center;justify-content:center;transition:all .25s}
+.a-icon:hover{border-color:#c9a45b;color:#c9a45b}
+.a-icon svg{width:15px;height:15px}
+.toggle{width:44px;height:24px;border-radius:14px;background:#2a2f37;position:relative;cursor:pointer;transition:background .3s;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#6c7280;transition:all .3s}
+.toggle.on{background:#2f6b43}
+.toggle.on::after{left:23px;background:#7bbf8e}
+
+/* admin form */
+.a-form{background:#16191e;border:1px solid #23272f;border-radius:14px;padding:26px;max-width:880px}
+.a-form h3{font-family:var(--font-display);color:#fff;font-size:1.4rem;margin-bottom:20px}
+.a-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.a-field{margin-bottom:4px}
+.a-field.full{grid-column:1/-1}
+.a-field label{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#8b929c;margin-bottom:6px;font-weight:600}
+.a-field input,.a-field textarea,.a-field select{width:100%;background:#0d0f12;border:1px solid #2a2f37;border-radius:9px;padding:11px 13px;color:#fff;font-size:.9rem}
+.a-field input:focus,.a-field textarea:focus,.a-field select:focus{outline:none;border-color:#c9a45b}
+.a-field textarea{resize:vertical;min-height:70px}
+.a-field .hint{color:#5d646e;font-size:.7rem;margin-top:4px}
+.a-imgrow{display:flex;gap:14px;align-items:center}
+.a-imgprev{width:60px;height:72px;border-radius:8px;background:#0d0f12;border:1px solid #2a2f37;object-fit:contain;padding:5px;flex:none}
+.a-file{font-size:.78rem;color:#9aa1ab}
+.a-form-actions{display:flex;gap:10px;margin-top:22px;padding-top:20px;border-top:1px solid #23272f}
+.a-empty{color:#8b929c;text-align:center;padding:40px}
+.a-note{background:#1a1e25;border:1px solid #2a2f37;border-radius:10px;padding:14px 16px;color:#9aa1ab;font-size:.82rem;margin-bottom:20px;display:flex;gap:10px}
+.a-note svg{width:18px;height:18px;color:#c9a45b;flex:none}
+
+/* ============================ MOBILE ============================ */
+@media(max-width:880px){
+  .nav-links,.theme-btn .lbl{display:none}
+  .hamburger{display:flex}
+  .encargos-inner,.barber-inner{grid-template-columns:1fr}
+  .barber-media{aspect-ratio:16/10;max-height:360px}
+  .modal-card{grid-template-columns:1fr;max-height:94vh;overflow-y:auto}
+  .modal-media{aspect-ratio:1/1;max-height:46vh}
+  .foot-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .foot-grid{grid-template-columns:1fr}
+  .ratings{gap:20px}
+  .field-row{grid-template-columns:1fr}
+  .a-shell,.admin-shell{grid-template-columns:1fr}
+  .admin-side{flex-direction:row;align-items:center;overflow-x:auto;padding:12px}
+  .admin-side .brand{margin-bottom:0}
+  .admin-nav{display:flex;gap:6px}
+  .admin-side .out{margin:0}
+  .a-stats{grid-template-columns:1fr 1fr}
+  .a-grid{grid-template-columns:1fr}
+}
+
+/* mobile slide menu */
+.mmenu{position:fixed;inset:0;z-index:260;background:var(--bg);transform:translateX(102%);transition:transform .5s var(--ease);
+  display:flex;flex-direction:column;padding:90px 32px 32px;gap:6px}
+.mmenu.show{transform:translateX(0)}
+.mmenu a{font-family:var(--font-display);font-size:2rem;padding:14px 0;border-bottom:1px solid var(--hair);color:var(--text);transition:color .3s}
+.mmenu a:hover{color:var(--accent)}
+.mmenu .mclose{position:absolute;top:24px;right:24px}
+.mmenu .mfoot{margin-top:auto;display:flex;gap:14px;align-items:center}
+</style>
+</head>
+
+<body class="theme-dark">
+
+<!-- ============================ NAVBAR ============================ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#top" class="logo" aria-label="LuisBlades">
+      <svg class="blade-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="m14 6 4 4"/><path d="M3 17l4 4"/></svg>
+      <span><span class="luis">Luis</span><span class="blades">Blades</span></span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#catalog" data-i18n="nav_collection">Colección</a>
+      <a href="#encargos" data-i18n="nav_orders">Encargos</a>
+      <a href="#barber" data-i18n="nav_barber">Barbería</a>
+      <a href="#footer" data-i18n="nav_contact">Contacto</a>
+    </div>
+
+    <div class="nav-tools">
+      <div class="lang-toggle" role="group" aria-label="language">
+        <button data-lang="es" class="on">ES</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <button class="icon-btn theme-btn" id="themeBtn" title="Cambiar tema">
+        <span class="theme-dot"></span><span class="lbl" id="themeLbl">Noir</span>
+      </button>
+      <button class="icon-btn" id="cartBtn" aria-label="cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="icon-btn hamburger" id="menuBtn" aria-label="menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- mobile menu -->
+<div class="mmenu" id="mmenu">
+  <button class="icon-btn mclose" id="mclose" aria-label="close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <a href="#catalog" data-i18n="nav_collection">Colección</a>
+  <a href="#encargos" data-i18n="nav_orders">Encargos</a>
+  <a href="#barber" data-i18n="nav_barber">Barbería</a>
+  <a href="#footer" data-i18n="nav_contact">Contacto</a>
+  <div class="mfoot">
+    <div class="lang-toggle">
+      <button data-lang="es" class="on">ES</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</div>
+
+<span id="top"></span>
+
+<!-- ============================== HERO ============================== -->
+<header class="hero">
+  <div class="hero-bg">
+    <div class="glow g1"></div>
+    <div class="glow g2"></div>
+    <div class="particles" id="particles"></div>
+    <div class="hero-vign"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Atelier de Fragancias · San José, Costa Rica</div>
+    <h1>
+      <span class="ln"><span data-i18n="hero_l1">Carved by the blade.</span></span>
+      <span class="ln"><span data-i18n="hero_l2">Finished by the</span></span>
+      <span class="ln"><span><em data-i18n="hero_l3">scent.</em></span></span>
+    </h1>
+    <p class="hero-sub" data-i18n="hero_sub">Una colección curada de fragancias Designer, Niche y Árabes — elegida con el mismo ojo que define cada corte. No es una tienda. Es una firma.</p>
+    <div class="hero-cta">
+      <a href="#catalog" class="btn btn-solid btn-lg" data-i18n="hero_cta">Explorar la Colección
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#encargos" class="btn btn-ghost btn-lg" data-i18n="hero_cta2">Pedido especial</a>
+    </div>
+  </div>
+
+  <a href="#catalog" class="scroll-ind">
+    <small data-i18n="scroll">Desliza</small>
+    <span class="mouse"></span>
+  </a>
+</header>
+
+<!-- marquee -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Dior · Chanel · Tom Ford · Amouage · Xerjoff · Parfums de Marly · Lattafa · Creed · Kilian · Initio · Byredo · Le Labo</span>
+    <span>Dior · Chanel · Tom Ford · Amouage · Xerjoff · Parfums de Marly · Lattafa · Creed · Kilian · Initio · Byredo · Le Labo</span>
+  </div>
+</div>
+
+<!-- ============================ CATALOG ============================ -->
+<main>
+<section class="section" id="catalog">
+  <div class="wrap">
+    <div class="shead reveal">
+      <div class="divider"></div>
+      <div class="eyebrow" data-i18n="cat_eyebrow">La Colección</div>
+      <h2 data-i18n="cat_title">Firmas <em>seleccionadas</em></h2>
+      <p data-i18n="cat_sub">Treinta fragancias divididas en tres mundos: Designer, Niche y Árabe. Cada una elegida por carácter, proyección y memoria.</p>
+    </div>
+
+    <div class="filter-bar reveal" id="filterBar">
+      <button class="pill on" data-filter="all"><span data-i18n="f_all">Todas</span></button>
+      <button class="pill" data-filter="Designer"><span data-i18n="f_designer">Designer</span></button>
+      <button class="pill" data-filter="Niche"><span data-i18n="f_niche">Niche</span></button>
+      <button class="pill" data-filter="Arabic"><span data-i18n="f_arabic">Árabe</span></button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ============================ ENCARGOS ============================ -->
+<section class="section encargos" id="encargos">
+  <div class="wrap">
+    <div class="encargos-inner">
+      <div class="reveal">
+        <div class="divider"></div>
+        <div class="eyebrow" style="margin:14px 0" data-i18n="enc_eyebrow">Servicio Concierge</div>
+        <h2 class="shead" style="font-size:clamp(2rem,5vw,3.4rem);margin-bottom:18px" data-i18n="enc_title">¿No encuentras lo que buscas?</h2>
+        <p class="muted" style="margin-bottom:22px;max-width:46ch" data-i18n="enc_sub">Luis consigue fragancias internacionales bajo pedido — Creed, Roja Parfums, árabes raros y ediciones agotadas. Dinos qué buscas y lo localizamos por ti.</p>
+        <ul class="concierge-list">
+          <li><span class="n">01</span><div><strong data-i18n="enc_s1t">Dinos qué buscas</strong><p data-i18n="enc_s1p">Nombre, casa o simplemente una descripción del aroma.</p></div></li>
+          <li><span class="n">02</span><div><strong data-i18n="enc_s2t">Localizamos y cotizamos</strong><p data-i18n="enc_s2p">Verificamos autenticidad y te enviamos precio y tiempo de entrega.</p></div></li>
+          <li><span class="n">03</span><div><strong data-i18n="enc_s3t">Llega a tus manos</strong><p data-i18n="enc_s3p">Entrega en San José o coordinación de envío a todo el país.</p></div></li>
+        </ul>
+      </div>
+
+      <div class="concierge-card reveal">
+        <h3 style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:6px" data-i18n="enc_form_title">Solicitud de encargo</h3>
+        <p class="muted" style="font-size:.86rem;margin-bottom:22px" data-i18n="enc_form_sub">Respuesta directa por WhatsApp.</p>
+        <form id="encForm">
+          <div class="field-row">
+            <div class="field"><label data-i18n="enc_name">Nombre</label><input type="text" name="name" required></div>
+            <div class="field"><label data-i18n="enc_phone">WhatsApp</label><input type="tel" name="phone" required placeholder="8888 8888"></div>
+          </div>
+          <div class="field"><label data-i18n="enc_frag">Fragancia o descripción</label><input type="text" name="frag" required data-i18n-ph="enc_frag_ph" placeholder="Ej: Creed Aventus, o algo amaderado y elegante"></div>
+          <div class="field"><label data-i18n="enc_budget">Presupuesto</label>
+            <select name="budget">
+              <option data-i18n="enc_b1">Hasta ₡60.000</option>
+              <option data-i18n="enc_b2">₡60.000 – ₡120.000</option>
+              <option data-i18n="enc_b3">₡120.000 – ₡250.000</option>
+              <option data-i18n="enc_b4">Sin límite — busco lo mejor</option>
+            </select>
+          </div>
+          <div class="field"><label data-i18n="enc_notes">Notas adicionales</label><textarea name="extra" data-i18n-ph="enc_notes_ph" placeholder="Opcional"></textarea></div>
+          <button type="submit" class="btn btn-wa btn-block btn-lg">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.748-.607z"/></svg>
+            <span data-i18n="enc_submit">Enviar solicitud</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BARBERSHOP ============================ -->
+<section class="section" id="barber">
+  <div class="wrap">
+    <div class="barber-inner">
+      <div class="barber-media reveal">
+        <img id="barberImg" alt="Gents Barbershop" />
+        <div class="tag"><b>Gents</b> Barbershop · San José</div>
+      </div>
+      <div class="reveal">
+        <div class="divider"></div>
+        <div class="eyebrow" style="margin:14px 0" data-i18n="bar_eyebrow">El mismo estándar</div>
+        <h2 class="shead" style="font-size:clamp(2rem,5vw,3.4rem);margin-bottom:18px" data-i18n="bar_title">El mismo ojo detrás de tu corte.</h2>
+        <p class="muted" style="margin-bottom:8px;max-width:48ch" data-i18n="bar_p1">Donde perfecciono mi oficio cada día. Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión.</p>
+        <div class="price-chip"><span class="amt">₡17.000</span><small data-i18n="bar_chip">por corte · estándar premium</small></div>
+        <p class="muted" style="margin-bottom:24px;max-width:48ch" data-i18n="bar_p2">El mismo ojo detrás de esta selección.</p>
+        <div class="barber-actions">
+          <a class="btn btn-solid" href="https://instagram.com/gentsbarbershop" target="_blank" rel="noopener" data-i18n="bar_book">Reservar un corte</a>
+          <a class="btn btn-ghost" href="https://instagram.com/gentsbarbershop" target="_blank" rel="noopener">@gentsbarbershop</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer id="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#top" class="logo">
+          <svg class="blade-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="m14 6 4 4"/><path d="M3 17l4 4"/></svg>
+          <span><span class="luis">Luis</span><span class="blades">Blades</span></span>
+        </a>
+        <p data-i18n="foot_desc">Fragancias curadas para quienes son recordados. Designer, Niche y Árabe — seleccionadas en San José, Costa Rica.</p>
+        <div class="foot-socials">
+          <a class="icon-btn" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="Instagram LuisBlades">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a class="icon-btn" href="https://instagram.com/gentsbarbershop" target="_blank" rel="noopener" aria-label="Instagram Gents">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="m14 6 4 4"/></svg>
+          </a>
+          <a class="icon-btn" id="footWa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.748-.607z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4 data-i18n="foot_explore">Explora</h4>
+        <a href="#catalog" data-i18n="nav_collection">Colección</a>
+        <a href="#encargos" data-i18n="nav_orders">Encargos</a>
+        <a href="#barber" data-i18n="nav_barber">Barbería</a>
+      </div>
+      <div class="foot-col">
+        <h4 data-i18n="foot_cats">Categorías</h4>
+        <a href="#catalog" data-cat="Designer">Designer</a>
+        <a href="#catalog" data-cat="Niche">Niche</a>
+        <a href="#catalog" data-cat="Arabic" data-i18n="f_arabic">Árabe</a>
+      </div>
+      <div class="foot-col">
+        <h4 data-i18n="foot_contact">Contacto</h4>
+        <a id="footWa2" href="#" target="_blank" rel="noopener">WhatsApp +506 7216 4901</a>
+        <a href="https://instagram.com/luisblades_" target="_blank" rel="noopener">@luisblades_</a>
+        <a href="https://instagram.com/gentsbarbershop" target="_blank" rel="noopener">@gentsbarbershop</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <small>© <span id="yr"></span> LuisBlades Fragrance · <span data-i18n="foot_made">Hecho en Costa Rica</span> · <b id="adminTrigger" title="admin">Powered by LuisBlades</b></small>
+      <div class="lang-toggle">
+        <button data-lang="es" class="on">ES</button>
+        <button data-lang="en">EN</button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================ CART DRAWER ============================ -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" aria-label="cart">
+  <div class="drawer-head">
+    <div>
+      <h3 data-i18n="cart_title">Tu Selección</h3>
+      <div class="n"><span id="cartN">0</span> <span data-i18n="cart_items">artículos</span></div>
+    </div>
+    <button class="icon-btn" id="cartClose" aria-label="close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot" id="cartFoot" style="display:none">
+    <div class="subtotal"><span class="lbl" data-i18n="cart_subtotal">Subtotal</span><span class="val" id="cartTotal">₡0</span></div>
+    <p class="note" data-i18n="cart_note">Coordina entrega o recogida al finalizar por WhatsApp.</p>
+    <button class="btn btn-wa btn-block btn-lg" id="checkoutBtn">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.748-.607z"/></svg>
+      <span data-i18n="cart_checkout">Finalizar por WhatsApp</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ============================ PRODUCT MODAL ============================ -->
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<!-- ============================ FLOATING ============================ -->
+<a class="float-wa" id="floatWa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.748-.607z"/></svg>
+</a>
+<button class="to-top" id="toTop" aria-label="back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg"></span></div>
+
+<!-- ============================ ADMIN ============================ -->
+<div class="admin" id="admin"></div>
+
+<!-- ============================ SCRIPTS ============================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+/* ===================================================================
+   LUISBLADES — application logic
+   =================================================================== */
+
+/* ---------- Supabase (placeholder anon key — Andrew replaces) ------ */
+const SUPABASE_URL = 'https://qpqlacqwdkcpavaixpyj.supabase.co';
+const SUPABASE_ANON_KEY = 'REPLACE_WITH_YOUR_SUPABASE_ANON_KEY';
+let supabaseClient = null;
+try {
+  if (window.supabase && SUPABASE_ANON_KEY.indexOf('REPLACE') === -1) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) { console.warn('Supabase init skipped:', e); }
+
+/* ----------------------------- STATE ------------------------------ */
+const STATE = {
+  lang: localStorage.getItem('lb_lang') || 'es',
+  theme: localStorage.getItem('lb_theme') || 'dark',
+  filter: 'all',
+  products: [],
+  cart: JSON.parse(localStorage.getItem('lb_cart') || '[]'),
+  whatsapp: localStorage.getItem('lb_whatsapp') || '50672164901',
+  modalProduct: null,
+  modalVol: 100,
+  modalQty: 1,
+  adminTab: 'products',
+  editingId: null
+};
+
+/* ------------------------- TRANSLATIONS --------------------------- */
+const STRINGS = {
+  es: {
+    nav_collection:'Colección', nav_orders:'Encargos', nav_barber:'Barbería', nav_contact:'Contacto',
+    hero_eyebrow:'Atelier de Fragancias · San José, Costa Rica',
+    hero_l1:'Carved by the blade.', hero_l2:'Finished by the', hero_l3:'scent.',
+    hero_sub:'Una colección curada de fragancias Designer, Niche y Árabes — elegida con el mismo ojo que define cada corte. No es una tienda. Es una firma.',
+    hero_cta:'Explorar la Colección', hero_cta2:'Pedido especial', scroll:'Desliza',
+    cat_eyebrow:'La Colección', cat_title:'Firmas <em>seleccionadas</em>',
+    cat_sub:'Treinta fragancias divididas en tres mundos: Designer, Niche y Árabe. Cada una elegida por carácter, proyección y memoria.',
+    f_all:'Todas', f_designer:'Designer', f_niche:'Niche', f_arabic:'Árabe',
+    limited:'Stock limitado', soldout:'Agotado', keyNotes:'Notas clave',
+    addToCart:'Añadir', viewDetails:'Ver detalle', added:'Añadido a tu selección',
+    cat_empty:'No hay fragancias en esta categoría.',
+    enc_eyebrow:'Servicio Concierge', enc_title:'¿No encuentras lo que buscas?',
+    enc_sub:'Luis consigue fragancias internacionales bajo pedido — Creed, Roja Parfums, árabes raros y ediciones agotadas. Dinos qué buscas y lo localizamos por ti.',
+    enc_s1t:'Dinos qué buscas', enc_s1p:'Nombre, casa o simplemente una descripción del aroma.',
+    enc_s2t:'Localizamos y cotizamos', enc_s2p:'Verificamos autenticidad y te enviamos precio y tiempo de entrega.',
+    enc_s3t:'Llega a tus manos', enc_s3p:'Entrega en San José o coordinación de envío a todo el país.',
+    enc_form_title:'Solicitud de encargo', enc_form_sub:'Respuesta directa por WhatsApp.',
+    enc_name:'Nombre', enc_phone:'WhatsApp', enc_frag:'Fragancia o descripción',
+    enc_frag_ph:'Ej: Creed Aventus, o algo amaderado y elegante', enc_budget:'Presupuesto',
+    enc_b1:'Hasta ₡60.000', enc_b2:'₡60.000 – ₡120.000', enc_b3:'₡120.000 – ₡250.000', enc_b4:'Sin límite — busco lo mejor',
+    enc_notes:'Notas adicionales', enc_notes_ph:'Opcional', enc_submit:'Enviar solicitud',
+    bar_eyebrow:'El mismo estándar', bar_title:'El mismo ojo detrás de tu corte.',
+    bar_p1:'Donde perfecciono mi oficio cada día. Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión.',
+    bar_chip:'por corte · estándar premium',
+    bar_p2:'El mismo ojo detrás de esta selección.',
+    bar_book:'Reservar un corte',
+    foot_desc:'Fragancias curadas para quienes son recordados. Designer, Niche y Árabe — seleccionadas en San José, Costa Rica.',
+    foot_explore:'Explora', foot_cats:'Categorías', foot_contact:'Contacto', foot_made:'Hecho en Costa Rica',
+    cart_title:'Tu Selección', cart_items:'artículos', cart_subtotal:'Subtotal',
+    cart_note:'Coordina entrega o recogida al finalizar por WhatsApp.', cart_checkout:'Finalizar por WhatsApp',
+    cart_empty:'Tu selección está vacía.', cart_browse:'Explorar colección', cart_remove:'Quitar',
+    m_notes:'Pirámide olfativa', m_top:'Salida', m_heart:'Corazón', m_base:'Fondo',
+    m_family:'Familia olfativa', m_intensity:'Intensidad', m_occasion:'Ocasión', m_season:'Estación',
+    m_long:'Duración', m_sillage:'Proyección', m_vol:'Presentación', m_qty:'Cantidad',
+    m_add:'Añadir a la selección', m_inquiry:'Consultar por WhatsApp',
+    int1:'Ligera', int2:'Moderada', int3:'Intensa', int4:'Pesada',
+    Designer:'Designer', Niche:'Niche', Arabic:'Árabe',
+    Oriental:'Oriental', Woody:'Amaderada', Fresh:'Fresca', Floral:'Floral', Gourmand:'Gourmand',
+    Day:'Día', Night:'Noche', Office:'Oficina', Formal:'Formal', Casual:'Casual', Date:'Cita',
+    Spring:'Primavera', Summer:'Verano', Fall:'Otoño', Winter:'Invierno',
+    wa_greet:'¡Hola Luis! 👋 Me interesa esta selección de LuisBlades:',
+    wa_total:'Total:', wa_delivery:'¿Coordinamos entrega o recogida? 🙌',
+    wa_inq:'¡Hola Luis! Quiero consultar por esta fragancia:',
+    enc_wa:'¡Hola Luis! 👋 Quiero hacer un *encargo especial*:',
+    toast_enc:'Solicitud lista — abriendo WhatsApp',
+    theme_dark:'Noir', theme_light:'Ivory'
+  },
+  en: {
+    nav_collection:'Collection', nav_orders:'Special Orders', nav_barber:'Barbershop', nav_contact:'Contact',
+    hero_eyebrow:'Fragrance Atelier · San José, Costa Rica',
+    hero_l1:'Carved by the blade.', hero_l2:'Finished by the', hero_l3:'scent.',
+    hero_sub:'A curated collection of Designer, Niche and Arabic fragrances — chosen with the same eye that defines every cut. Not a store. A signature.',
+    hero_cta:'Explore the Collection', hero_cta2:'Special order', scroll:'Scroll',
+    cat_eyebrow:'The Collection', cat_title:'Curated <em>signatures</em>',
+    cat_sub:'Thirty fragrances across three worlds: Designer, Niche and Arabic. Each chosen for character, projection and memory.',
+    f_all:'All', f_designer:'Designer', f_niche:'Niche', f_arabic:'Arabic',
+    limited:'Limited stock', soldout:'Sold out', keyNotes:'Key notes',
+    addToCart:'Add', viewDetails:'View details', added:'Added to your selection',
+    cat_empty:'No fragrances in this category.',
+    enc_eyebrow:'Concierge Service', enc_title:'Can’t find what you’re looking for?',
+    enc_sub:'Luis sources international fragrances on request — Creed, Roja Parfums, rare Arabics and sold-out editions. Tell us what you want and we’ll find it.',
+    enc_s1t:'Tell us what you want', enc_s1p:'A name, a house, or simply a description of the scent.',
+    enc_s2t:'We locate & quote', enc_s2p:'We verify authenticity and send you price and delivery time.',
+    enc_s3t:'Delivered to you', enc_s3p:'Hand delivery in San José or nationwide shipping.',
+    enc_form_title:'Special order request', enc_form_sub:'Direct reply via WhatsApp.',
+    enc_name:'Name', enc_phone:'WhatsApp', enc_frag:'Fragrance or description',
+    enc_frag_ph:'e.g. Creed Aventus, or something woody and elegant', enc_budget:'Budget',
+    enc_b1:'Up to ₡60.000', enc_b2:'₡60.000 – ₡120.000', enc_b3:'₡120.000 – ₡250.000', enc_b4:'No limit — find me the best',
+    enc_notes:'Additional notes', enc_notes_ph:'Optional', enc_submit:'Send request',
+    bar_eyebrow:'The same standard', bar_title:'The same eye behind your cut.',
+    bar_p1:'Where I sharpen my craft every day. Gents Barbershop, San José — where precision is the standard and every client leaves looking their best.',
+    bar_chip:'per cut · premium standard',
+    bar_p2:'The same eye that curates this collection.',
+    bar_book:'Book a cut',
+    foot_desc:'Fragrances curated for those who are remembered. Designer, Niche and Arabic — selected in San José, Costa Rica.',
+    foot_explore:'Explore', foot_cats:'Categories', foot_contact:'Contact', foot_made:'Made in Costa Rica',
+    cart_title:'Your Selection', cart_items:'items', cart_subtotal:'Subtotal',
+    cart_note:'Arrange delivery or pickup at checkout via WhatsApp.', cart_checkout:'Checkout via WhatsApp',
+    cart_empty:'Your selection is empty.', cart_browse:'Browse collection', cart_remove:'Remove',
+    m_notes:'Olfactory pyramid', m_top:'Top', m_heart:'Heart', m_base:'Base',
+    m_family:'Fragrance family', m_intensity:'Intensity', m_occasion:'Occasion', m_season:'Season',
+    m_long:'Longevity', m_sillage:'Sillage', m_vol:'Size', m_qty:'Quantity',
+    m_add:'Add to selection', m_inquiry:'Inquire via WhatsApp',
+    int1:'Light', int2:'Moderate', int3:'Intense', int4:'Heavy',
+    Designer:'Designer', Niche:'Niche', Arabic:'Arabic',
+    Oriental:'Oriental', Woody:'Woody', Fresh:'Fresh', Floral:'Floral', Gourmand:'Gourmand',
+    Day:'Day', Night:'Night', Office:'Office', Formal:'Formal', Casual:'Casual', Date:'Date',
+    Spring:'Spring', Summer:'Summer', Fall:'Fall', Winter:'Winter',
+    wa_greet:'Hi Luis! 👋 I’m interested in this LuisBlades selection:',
+    wa_total:'Total:', wa_delivery:'Can we arrange delivery or pickup? 🙌',
+    wa_inq:'Hi Luis! I’d like to inquire about this fragrance:',
+    enc_wa:'Hi Luis! 👋 I’d like to place a *special order*:',
+    toast_enc:'Request ready — opening WhatsApp',
+    theme_dark:'Noir', theme_light:'Ivory'
+  }
+};
+
+/* note name ES translation (canonical key = EN) */
+const NOTE_ES = {
+  'Bergamot':'Bergamota','Lemon':'Limón','Grapefruit':'Toronja','Mint':'Menta','Pink Pepper':'Pimienta Rosa',
+  'Black Pepper':'Pimienta Negra','Pepper':'Pimienta','Cardamom':'Cardamomo','Cinnamon':'Canela','Nutmeg':'Nuez Moscada',
+  'Lavender':'Lavanda','Geranium':'Geranio','Sage':'Salvia','Clary Sage':'Salvia Sclarea','Rosemary':'Romero',
+  'Jasmine':'Jazmín','Rose':'Rosa','Violet':'Violeta','Iris':'Iris','Orris':'Raíz de Iris','Ylang-Ylang':'Ylang-Ylang',
+  'Neroli':'Neroli','Orange Blossom':'Flor de Azahar','Gardenia':'Gardenia','Peony':'Peonía','Tuberose':'Nardo',
+  'Vanilla':'Vainilla','Tonka Bean':'Haba Tonka','Amber':'Ámbar','Amberwood':'Madera de Ámbar','Ambroxan':'Ambroxan',
+  'Ambrette':'Ambreta','Ambergris':'Ámbar Gris','Sandalwood':'Sándalo','Cedar':'Cedro','Cedarwood':'Cedro',
+  'Patchouli':'Pachulí','Vetiver':'Vetiver','Oakmoss':'Musgo de Roble','Moss':'Musgo','Musk':'Almizcle','Leather':'Cuero',
+  'Oud':'Oud','Incense':'Incienso','Tobacco':'Tabaco','Tobacco Leaf':'Hoja de Tabaco','Honey':'Miel','Rum':'Ron',
+  'Cognac':'Coñac','Praline':'Praliné','Dark Chocolate':'Chocolate Negro','Chocolate':'Chocolate','Dates':'Dátiles',
+  'Saffron':'Azafrán','Licorice':'Regaliz','Apple':'Manzana','Green Apple':'Manzana Verde','Pear':'Pera',
+  'Pineapple':'Piña','Peach':'Durazno','Lychee':'Lichi','Raspberry':'Frambuesa','Blackcurrant':'Grosella Negra',
+  'Mandarin':'Mandarina','Bitter Orange':'Naranja Amarga','Orange':'Naranja','Marine Notes':'Notas Marinas',
+  'Sea Notes':'Notas Marinas','Juniper':'Enebro','Juniper Berries':'Bayas de Enebro','Pine Needles':'Agujas de Pino',
+  'Truffle':'Trufa','Ginger':'Jengibre','Myrtle':'Mirto','Benzoin':'Benjuí','Styrax':'Estoraque','Labdanum':'Labdano',
+  'Guaiac Wood':'Madera de Guayaco','Cashmeran':'Cashmeran','Cumin':'Comino','Aldehydes':'Aldehídos',
+  'Iso E Super':'Iso E Super','Flint':'Pedernal','Oak':'Roble','Spices':'Especias','Spicy Notes':'Notas Especiadas',
+  'Fruity Notes':'Notas Frutales','Rosewood':'Palo de Rosa','Lily':'Lirio','Lotus':'Loto','Coffee':'Café','Almond':'Almendra'
+};
+
+/* ===================================================================
+   PERFUME CATALOG — 30 products (hardcoded fallback)
+   =================================================================== */
+const PERFUMES = [
+/* ---------------------------- DESIGNER ---------------------------- */
+{ id:1, brand:'Dior', name:'Sauvage Elixir', category:'Designer', price_crc:85000, family:'Oriental',
+  intensity:5, longevity:5, sillage:4, occasions:['Night','Formal','Date','Casual'], seasons:['Fall','Winter'],
+  top_notes:['Cinnamon','Nutmeg','Cardamom','Grapefruit'], heart_notes:['Lavender','Licorice'], base_notes:['Amber','Sandalwood','Patchouli','Vetiver'],
+  description_es:'Una descarga concentrada de especias y lavanda envuelta en un ámbar oscuro como el licor. Pegado a la piel deja una estela densa que permanece mucho después de que te has ido.',
+  description_en:'A concentrated surge of spice and lavender wrapped in liquor-dark amber. Worn close to the skin, it leaves a dense trail that lingers long after you have left the room.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Futura-2024-10-04T164213.957.png?v=1742484955', in_stock:true },
+
+{ id:2, brand:'Chanel', name:'Bleu de Chanel EDP', category:'Designer', price_crc:90000, family:'Woody',
+  intensity:4, longevity:4, sillage:4, occasions:['Office','Formal','Day','Night'], seasons:['Spring','Fall','Winter'],
+  top_notes:['Grapefruit','Lemon','Mint','Pink Pepper','Aldehydes'], heart_notes:['Ginger','Nutmeg','Jasmine','Iso E Super'], base_notes:['Incense','Vetiver','Cedar','Sandalwood','Labdanum'],
+  description_es:'El equilibrio hecho perfume: cítricos brillantes que ceden a un fondo de incienso y maderas secas. Versátil, limpio y eternamente elegante — el traje azul de las fragancias.',
+  description_en:'Balance made fragrance: bright citrus giving way to a base of incense and dry woods. Versatile, clean and eternally elegant — the navy suit of scents.',
+  image_url:'', in_stock:true },
+
+{ id:3, brand:'Tom Ford', name:'Black Orchid', category:'Designer', price_crc:110000, family:'Oriental',
+  intensity:5, longevity:5, sillage:5, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Truffle','Gardenia','Blackcurrant','Bergamot'], heart_notes:['Orchid','Spices','Lotus'], base_notes:['Patchouli','Vanilla','Incense','Dark Chocolate'],
+  description_es:'Opulento, oscuro y deliberadamente provocador: trufa, chocolate negro y orquídea sobre un fondo de pachulí. Una fragancia unisex que no pide permiso para ser recordada.',
+  description_en:'Opulent, dark and deliberately provocative: truffle, dark chocolate and orchid over a patchouli base. A unisex scent that asks no permission to be remembered.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/BLACK_ORCHID_TOM_FORD.png?v=1744646418', in_stock:true },
+
+{ id:4, brand:'Yves Saint Laurent', name:'La Nuit de L’Homme', category:'Designer', price_crc:75000, family:'Woody',
+  intensity:3, longevity:3, sillage:3, occasions:['Date','Night','Casual'], seasons:['Spring','Fall'],
+  top_notes:['Cardamom'], heart_notes:['Lavender','Bergamot','Cedar'], base_notes:['Cumin','Vetiver'],
+  description_es:'Cardamomo cremoso y cedro suave con un toque cálido y seductor. Discreto pero magnético — la fragancia de cita por excelencia.',
+  description_en:'Creamy cardamom and soft cedar with a warm, seductive touch. Understated yet magnetic — the date fragrance par excellence.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/YVES_SAINT_LAURENT_LA_NUIT_DE_L_HOMME_LE_PARFUM.png?v=1747798160', in_stock:true },
+
+{ id:5, brand:'Giorgio Armani', name:'Acqua di Giò Profumo', category:'Designer', price_crc:80000, family:'Fresh',
+  intensity:4, longevity:4, sillage:3, occasions:['Office','Formal','Day','Night'], seasons:['Spring','Summer','Fall'],
+  top_notes:['Bergamot','Marine Notes'], heart_notes:['Geranium','Sage','Rosemary'], base_notes:['Incense','Patchouli'],
+  description_es:'El acuático elevado a categoría de gala: notas marinas y geranio anclados por un incienso ahumado. Fresco pero serio, perfecto del día a la noche.',
+  description_en:'The aquatic elevated to black-tie: marine notes and geranium anchored by smoky incense. Fresh yet serious, perfect from day into night.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/GiorgioArmaniAcquaDiGioProfumoParfum.png?v=1730257712', in_stock:true },
+
+{ id:6, brand:'Versace', name:'Eros EDP', category:'Designer', price_crc:70000, family:'Fresh',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Casual','Date'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Mint','Green Apple','Lemon'], heart_notes:['Tonka Bean','Ambroxan','Geranium'], base_notes:['Vanilla','Vetiver','Oakmoss','Cedar'],
+  description_es:'Menta helada y manzana verde que se funden en una base dulce de vainilla y tonka. Juvenil, audaz y hecho para llenar una habitación.',
+  description_en:'Icy mint and green apple melting into a sweet base of vanilla and tonka. Youthful, bold and built to fill a room.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/SENTSANGEL_79_1cba976d-a6cb-4923-b1e6-c15cf908cabe.jpg?v=1776367390', in_stock:true },
+
+{ id:7, brand:'Prada', name:'Luna Rossa Ocean', category:'Designer', price_crc:78000, family:'Fresh',
+  intensity:3, longevity:4, sillage:3, occasions:['Office','Day','Casual'], seasons:['Spring','Summer'],
+  top_notes:['Bergamot','Bitter Orange'], heart_notes:['Pink Pepper','Ambrette'], base_notes:['Ambroxan','Vetiver','Patchouli'],
+  description_es:'Cítrico salino y ambroxan envueltos en una limpieza casi metálica. Moderno, nítido y de una versatilidad imbatible para el día.',
+  description_en:'Saline citrus and ambroxan wrapped in an almost metallic cleanliness. Modern, crisp and unbeatably versatile for daytime.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/UP3614273768832.jpg?v=1722556803', in_stock:true },
+
+{ id:8, brand:'Givenchy', name:'Gentleman EDP', category:'Designer', price_crc:72000, family:'Woody',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Formal','Date','Office'], seasons:['Fall','Winter'],
+  top_notes:['Pear','Cardamom','Juniper Berries'], heart_notes:['Iris','Lavender','Patchouli'], base_notes:['Vanilla','Leather','Cedar'],
+  description_es:'Pera e iris sobre una base de cuero y vainilla oscura. Sofisticado y ligeramente rebelde — caballero, pero con actitud.',
+  description_en:'Pear and iris over a base of leather and dark vanilla. Sophisticated and slightly rebellious — a gentleman, but with an edge.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_9_31ff2586-b82d-4294-9062-0912c9e2a950.jpg?v=1774450410', in_stock:true },
+
+{ id:9, brand:'Valentino', name:'Uomo Intense', category:'Designer', price_crc:76000, family:'Oriental',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Bergamot','Myrtle'], heart_notes:['Iris','Orange Blossom'], base_notes:['Tonka Bean','Vanilla','Leather','Chocolate'],
+  description_es:'Iris cremoso y flor de azahar que descansan sobre cuero y chocolate. Elegancia italiana con una calidez golosa e irresistible.',
+  description_en:'Creamy iris and orange blossom resting on leather and chocolate. Italian elegance with a gourmand warmth that is hard to resist.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_d9cc17bb-fb51-4766-9487-25c9470156e4.jpg?v=1748269657', in_stock:true },
+
+{ id:10, brand:'Hermès', name:'Terre d’Hermès Parfum', category:'Designer', price_crc:95000, family:'Woody',
+  intensity:4, longevity:5, sillage:4, occasions:['Office','Formal','Day'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Orange','Grapefruit'], heart_notes:['Pepper','Geranium'], base_notes:['Vetiver','Cedar','Patchouli','Benzoin','Flint'],
+  description_es:'Cítricos minerales y pimienta sobre un vetiver terroso y pedernal. Una obra maestra de elegancia masculina — la tierra hecha perfume.',
+  description_en:'Mineral citrus and pepper over earthy vetiver and flint. A masterpiece of masculine elegance — the earth made perfume.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/SENTSANGEL_25_d19d42fe-7bdd-4d17-be63-b002c0c4412e.jpg?v=1776956218', in_stock:true },
+
+/* ----------------------------- NICHE ------------------------------ */
+{ id:11, brand:'Maison Margiela', name:'Replica Jazz Club', category:'Niche', price_crc:120000, family:'Oriental',
+  intensity:4, longevity:4, sillage:3, occasions:['Night','Casual','Date'], seasons:['Fall','Winter'],
+  top_notes:['Pink Pepper','Lemon','Neroli'], heart_notes:['Rum','Clary Sage','Vetiver'], base_notes:['Tobacco Leaf','Vanilla','Styrax'],
+  description_es:'Ron, tabaco y vainilla que evocan un bar de whisky con luz tenue. Cálido, acogedor y profundamente nostálgico.',
+  description_en:'Rum, tobacco and vanilla evoking a dimly lit whiskey bar. Warm, cozy and deeply nostalgic.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_51_5b2b101e-0f2b-48c4-bdfa-902c5ae15872.jpg?v=1780431083', in_stock:true },
+
+{ id:12, brand:'Byredo', name:'Gypsy Water', category:'Niche', price_crc:130000, family:'Woody',
+  intensity:3, longevity:3, sillage:3, occasions:['Day','Casual','Office'], seasons:['Spring','Summer'],
+  top_notes:['Bergamot','Lemon','Pepper','Juniper Berries'], heart_notes:['Incense','Pine Needles','Orris'], base_notes:['Amber','Vanilla','Sandalwood'],
+  description_es:'Bosque de pinos y humo suave sobre una base de vainilla y sándalo. Bohemio y limpio — la libertad embotellada.',
+  description_en:'Pine forest and soft smoke over a vanilla-sandalwood base. Bohemian and clean — freedom in a bottle.',
+  image_url:'', in_stock:true },
+
+{ id:13, brand:'Le Labo', name:'Santal 33', category:'Niche', price_crc:145000, family:'Woody',
+  intensity:4, longevity:4, sillage:4, occasions:['Casual','Office','Day','Night'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Cardamom','Iris','Violet'], heart_notes:['Ambroxan','Sandalwood'], base_notes:['Cedar','Leather','Musk'],
+  description_es:'Sándalo cremoso y cuero ahumado con un toque de cardamomo. Icónico, andrógino e inconfundible — el aroma de toda una era.',
+  description_en:'Creamy sandalwood and smoky leather with a hint of cardamom. Iconic, androgynous and unmistakable — the scent of an era.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_46_7d5f1635-b7a8-4064-b954-b3c0a4032fc2.jpg?v=1772804133', in_stock:true },
+
+{ id:14, brand:'Initio', name:'Oud for Greatness', category:'Niche', price_crc:160000, family:'Woody',
+  intensity:5, longevity:5, sillage:5, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Saffron','Nutmeg'], heart_notes:['Oud','Patchouli'], base_notes:['Musk','Sandalwood'],
+  description_es:'Azafrán especiado y oud poderoso elevados a una potencia monumental. Una declaración de presencia que no admite réplica.',
+  description_en:'Spiced saffron and powerful oud raised to monumental strength. A statement of presence that brooks no rival.',
+  image_url:'https://us.initioparfums.com/cdn/shop/files/OUDFORGREATNESS_MasterProductPackshot_1cc0a9e3-e99c-4c2d-814c-a1f46c9b4584.png?v=1763732592&width=900', in_stock:true },
+
+{ id:15, brand:'Parfums de Marly', name:'Layton', category:'Niche', price_crc:140000, family:'Oriental',
+  intensity:4, longevity:5, sillage:4, occasions:['Night','Formal','Date','Office'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Apple','Bergamot','Mandarin','Lavender'], heart_notes:['Geranium','Violet','Jasmine','Cardamom'], base_notes:['Vanilla','Sandalwood','Guaiac Wood','Pepper'],
+  description_es:'Manzana y lavanda sobre una base cremosa de vainilla y especias. Versátil hasta lo absurdo y de proyección imponente — un crowd-pleaser de lujo.',
+  description_en:'Apple and lavender over a creamy base of vanilla and spice. Absurdly versatile with imposing projection — a luxury crowd-pleaser.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_39_b9d340c0-e8d4-4329-acbb-a95bcdb7497f.jpg?v=1775249001', in_stock:true },
+
+{ id:16, brand:'Xerjoff', name:'Naxos', category:'Niche', price_crc:155000, family:'Gourmand',
+  intensity:5, longevity:5, sillage:5, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Bergamot','Lavender','Clary Sage'], heart_notes:['Honey','Cinnamon','Jasmine','Tobacco'], base_notes:['Vanilla','Tonka Bean','Cashmeran'],
+  description_es:'Miel y tabaco fundidos en una fougère dorada y adictiva. Lujo siciliano que envuelve como terciopelo caliente.',
+  description_en:'Honey and tobacco fused into a golden, addictive fougère. Sicilian luxury that wraps around you like warm velvet.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign-2026-05-27T022927.755.jpg?v=1779827695', in_stock:true },
+
+{ id:17, brand:'Mancera', name:'Red Tobacco', category:'Niche', price_crc:125000, family:'Oriental',
+  intensity:5, longevity:5, sillage:5, occasions:['Night','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Saffron','Spicy Notes'], heart_notes:['Oud','Cinnamon','Nutmeg','Tobacco'], base_notes:['Amber','Vanilla','Musk','Patchouli'],
+  description_es:'Especias incendiarias, tabaco y oud en una bomba de proyección sin tregua. Para quien quiere que su entrada se sienta antes de verse.',
+  description_en:'Fiery spices, tobacco and oud in a relentless projection bomb. For those who want their entrance felt before it is seen.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/T3760265191864.jpg?v=1742954980', in_stock:true },
+
+{ id:18, brand:'Kilian', name:'Angels’ Share', category:'Niche', price_crc:150000, family:'Gourmand',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Date','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Cognac'], heart_notes:['Cinnamon','Tonka Bean','Praline'], base_notes:['Oak','Vanilla','Sandalwood'],
+  description_es:'Coñac, praliné y roble como un postre servido junto a una chimenea. Goloso, cálido y embriagadoramente elegante.',
+  description_en:'Cognac, praline and oak like a dessert served by a fireplace. Gourmand, warm and intoxicatingly elegant.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_6_7eb5137a-7d7f-41fd-b27c-dcd1b4297137.jpg?v=1758143515', in_stock:true },
+
+{ id:19, brand:'Amouage', name:'Reflection Man', category:'Niche', price_crc:165000, family:'Floral',
+  intensity:4, longevity:4, sillage:4, occasions:['Office','Formal','Day','Night'], seasons:['Spring','Summer','Fall'],
+  top_notes:['Rosemary','Pink Pepper','Bergamot'], heart_notes:['Jasmine','Neroli','Ylang-Ylang'], base_notes:['Cedar','Sandalwood','Vetiver'],
+  description_es:'Un floral masculino luminoso: jazmín y neroli sobre maderas cremosas. Refinamiento omaní puro, sereno y aristocrático.',
+  description_en:'A luminous masculine floral: jasmine and neroli over creamy woods. Pure Omani refinement — serene and aristocratic.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/sentsangle_31.jpg?v=1777994095', in_stock:true },
+
+{ id:20, brand:'Ex Nihilo', name:'Fleur Narcotique', category:'Niche', price_crc:135000, family:'Floral',
+  intensity:3, longevity:4, sillage:4, occasions:['Date','Casual','Day','Night'], seasons:['Spring','Summer'],
+  top_notes:['Bergamot','Peach','Lychee'], heart_notes:['Peony','Orange Blossom','Jasmine'], base_notes:['Musk','Moss'],
+  description_es:'Durazno y peonía sobre un musgo luminoso — floral frutal y adictivo. Unisex, magnético y perfecto para acercarse.',
+  description_en:'Peach and peony over a luminous moss — fruity-floral and addictive. Unisex, magnetic and perfect up close.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Sentsangel-2025-11-17T201147.634.jpg?v=1763388818', in_stock:true },
+
+/* ----------------------------- ARABIC ----------------------------- */
+{ id:21, brand:'Lattafa', name:'Khamrah', category:'Arabic', price_crc:45000, family:'Gourmand',
+  intensity:5, longevity:5, sillage:4, occasions:['Night','Casual','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Cinnamon','Nutmeg','Bergamot'], heart_notes:['Dates','Praline','Tuberose'], base_notes:['Vanilla','Tonka Bean','Benzoin','Amberwood'],
+  description_es:'Dátiles, canela y vainilla como un postre árabe especiado. Cálido, dulce y sorprendentemente refinado para su precio.',
+  description_en:'Dates, cinnamon and vanilla like a spiced Arabian dessert. Warm, sweet and surprisingly refined for the price.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_89_d5ea77c0-acc2-40e1-9708-288c77759ec7.jpg?v=1772723396', in_stock:true },
+
+{ id:22, brand:'Rasasi', name:'La Yuqawam', category:'Arabic', price_crc:50000, family:'Woody',
+  intensity:4, longevity:5, sillage:4, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Bergamot','Apple','Cardamom'], heart_notes:['Rose','Patchouli','Cinnamon'], base_notes:['Leather','Oud','Amber','Sandalwood'],
+  description_es:'Cuero y oud con un corazón frutal y especiado — opulencia inspirada en lo irresistible. Duración descomunal y carácter de sobra.',
+  description_en:'Leather and oud with a fruity, spiced heart — opulence inspired by the irresistible. Towering longevity and character to spare.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/UP614514204023_1.jpg?v=1722976295', in_stock:true },
+
+{ id:23, brand:'Swiss Arabian', name:'Shaghaf Oud', category:'Arabic', price_crc:55000, family:'Oriental',
+  intensity:5, longevity:5, sillage:4, occasions:['Night','Formal','Date'], seasons:['Fall','Winter'],
+  top_notes:['Saffron','Raspberry'], heart_notes:['Rose','Oud','Honey'], base_notes:['Amber','Praline','Musk'],
+  description_es:'Rosa y oud endulzados con frambuesa y praliné. Una joya golosa y oriental que se siente mucho más cara de lo que es.',
+  description_en:'Rose and oud sweetened with raspberry and praline. A gourmand oriental gem that feels far more expensive than it is.',
+  image_url:'https://cdn.shopify.com/s/files/1/0793/9712/6445/products/SAP_SHAGAF-OUD.png?v=1689138902', in_stock:true },
+
+{ id:24, brand:'Ajmal', name:'Dahn Al Oudh', category:'Arabic', price_crc:60000, family:'Woody',
+  intensity:5, longevity:5, sillage:5, occasions:['Night','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Oud'], heart_notes:['Rose','Spices'], base_notes:['Musk','Amber'],
+  description_es:'Oud puro y animal en su expresión más tradicional. Intenso, terroso y profundamente árabe — no apto para tímidos.',
+  description_en:'Pure, animalic oud in its most traditional expression. Intense, earthy and deeply Arabian — not for the timid.',
+  image_url:'https://cdn.shopify.com/s/files/1/0714/0068/5720/files/41XJdGl1hrL.jpg?v=1761625122', in_stock:true },
+
+{ id:25, brand:'Afnan', name:'9PM', category:'Arabic', price_crc:40000, family:'Oriental',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Casual','Date'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Apple','Lavender','Cinnamon','Bergamot'], heart_notes:['Vanilla','Tonka Bean'], base_notes:['Amber','Cedar','Patchouli'],
+  description_es:'Manzana y lavanda sobre una base ambarina dulce y acogedora. Un éxito viral que rinde como fragancias del triple de su precio.',
+  description_en:'Apple and lavender over a sweet, cozy amber base. A viral hit that performs like fragrances three times its price.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/Untitleddesign_d16b1cf5-290f-4f54-a2e8-ef161c1adc19.jpg?v=1749473485', in_stock:true },
+
+{ id:26, brand:'Armaf', name:'Club de Nuit Intense Man', category:'Arabic', price_crc:48000, family:'Woody',
+  intensity:5, longevity:5, sillage:5, occasions:['Day','Office','Formal','Night'], seasons:['Spring','Summer','Fall'],
+  top_notes:['Pineapple','Lemon','Blackcurrant','Bergamot'], heart_notes:['Rose','Jasmine'], base_notes:['Musk','Vanilla','Ambergris','Oakmoss','Vetiver'],
+  description_es:'Piña ahumada y maderas en el clon más famoso de la historia. Proyección bestial y elegancia frutal por una fracción del original.',
+  description_en:'Smoky pineapple and woods in the most famous clone ever made. Beastly projection and fruity elegance for a fraction of the original.',
+  image_url:'https://cdn.shopify.com/s/files/1/0455/0914/8823/files/SENTSANGEL_87_797a97cf-33d1-4872-8400-4d0c8046151c.jpg', in_stock:true },
+
+{ id:27, brand:'Arabian Oud', name:'Blue Oud', category:'Arabic', price_crc:65000, family:'Woody',
+  intensity:4, longevity:4, sillage:4, occasions:['Office','Day','Night','Formal'], seasons:['Spring','Fall','Winter'],
+  top_notes:['Lemon','Bergamot','Apple'], heart_notes:['Cardamom','Cinnamon','Oud','Rosewood'], base_notes:['Sandalwood','Vetiver','Musk','Amberwood','Leather'],
+  description_es:'Frescura cítrica y especias que abrazan un oud suave y elegante. La versatilidad de un azul clásico con alma árabe.',
+  description_en:'Citrus freshness and spice embracing a smooth, elegant oud. The versatility of a classic blue with an Arabian soul.',
+  image_url:'', in_stock:true },
+
+{ id:28, brand:'Lattafa', name:'Asad', category:'Arabic', price_crc:42000, family:'Woody',
+  intensity:4, longevity:4, sillage:4, occasions:['Night','Casual','Date'], seasons:['Fall','Winter','Spring'],
+  top_notes:['Pineapple','Black Pepper','Bergamot'], heart_notes:['Violet','Vetiver','Cardamom'], base_notes:['Tonka Bean','Ambroxan','Cedar','Vanilla'],
+  description_es:'Piña y pimienta sobre ambroxan y vainilla — fresco, dulce y rugiente. Fuerza de león por un precio que parece error.',
+  description_en:'Pineapple and pepper over ambroxan and vanilla — fresh, sweet and roaring. The strength of a lion at a price that feels like a typo.',
+  image_url:'', in_stock:true },
+
+{ id:29, brand:'Rasasi', name:'Dhan Al Oudh Al Abiyad', category:'Arabic', price_crc:58000, family:'Woody',
+  intensity:5, longevity:5, sillage:4, occasions:['Night','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Saffron','Fruity Notes'], heart_notes:['Oud','Rose'], base_notes:['Sandalwood','Musk','Amber'],
+  description_es:'Oud blanco más suave y refinado, con azafrán y rosa aterciopelada. Toda la nobleza del agarwood sin la aspereza animal.',
+  description_en:'A smoother, refined white oud with saffron and velvety rose. All the nobility of agarwood without the animalic edge.',
+  image_url:'', in_stock:true },
+
+{ id:30, brand:'Zimaya', name:'Nudrat Al Oud', category:'Arabic', price_crc:52000, family:'Oriental',
+  intensity:5, longevity:5, sillage:4, occasions:['Night','Formal'], seasons:['Fall','Winter'],
+  top_notes:['Saffron','Spicy Notes'], heart_notes:['Oud','Rose','Patchouli'], base_notes:['Amber','Musk','Sandalwood','Vanilla'],
+  description_es:'Oud, rosa y ámbar en una composición densa y resinosa. Lujo árabe moderno con una calidez que perdura toda la noche.',
+  description_en:'Oud, rose and amber in a dense, resinous composition. Modern Arabian luxury with a warmth that lasts all night.',
+  image_url:'', in_stock:true }
+];
+
+/* ===================================================================
+   HELPERS
+   =================================================================== */
+const $  = (s, c=document) => c.querySelector(s);
+const $$ = (s, c=document) => [...c.querySelectorAll(s)];
+const T  = () => STRINGS[STATE.lang];
+const tr = (k) => (T()[k] !== undefined ? T()[k] : k);
+const trNote = (n) => STATE.lang === 'es' ? (NOTE_ES[n] || n) : n;
+const fmt = (n) => '₡' + Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+function priceFor(p, vol){ return vol === 50 ? Math.round(p.price_crc * 0.62 / 500) * 500 : p.price_crc; }
+
+/* elegant SVG fallback so the catalog never looks broken */
+function bottleSVG(p){
+  const tint = p.category === 'Arabic' ? '#caa35e' : p.category === 'Niche' ? '#b9b3a6' : '#c9a45b';
+  const nm = (p.name || '').toUpperCase();
+  const lines = [];
+  let cur = '';
+  nm.split(' ').forEach(w => { if ((cur + ' ' + w).trim().length > 13){ if(cur) lines.push(cur); cur = w; } else { cur = (cur + ' ' + w).trim(); } });
+  if (cur) lines.push(cur);
+  const nameTspans = lines.slice(0,3).map((l,i)=>`<tspan x="200" dy="${i===0?0:26}">${l}</tspan>`).join('');
+  const svg =
+`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="464" viewBox="0 0 400 464">
+<defs><radialGradient id="bg" cx="50%" cy="16%" r="90%">
+<stop offset="0%" stop-color="#26262e"/><stop offset="60%" stop-color="#16161b"/><stop offset="100%" stop-color="#0d0d11"/></radialGradient>
+<linearGradient id="bt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${tint}" stop-opacity=".85"/><stop offset="100%" stop-color="${tint}" stop-opacity=".25"/></linearGradient></defs>
+<rect width="400" height="464" fill="url(#bg)"/>
+<ellipse cx="200" cy="250" rx="92" ry="120" fill="${tint}" opacity="0.10"/>
+<rect x="184" y="96" width="32" height="34" rx="3" fill="${tint}" opacity=".55"/>
+<rect x="176" y="126" width="48" height="20" rx="3" fill="${tint}" opacity=".4"/>
+<rect x="148" y="146" width="104" height="172" rx="16" fill="url(#bt)" stroke="${tint}" stroke-opacity=".5"/>
+<rect x="166" y="206" width="68" height="64" rx="6" fill="#0d0d11" opacity=".35"/>
+<text x="200" y="360" text-anchor="middle" fill="#8a857c" font-family="Outfit,Arial" font-size="11" letter-spacing="3">${(p.brand||'').toUpperCase()}</text>
+<text x="200" y="392" text-anchor="middle" fill="#f3efe6" font-family="Georgia,serif" font-size="21" font-weight="600">${nameTspans}</text>
+</svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function imgTag(p, cls){
+  const fb = bottleSVG(p);
+  return `<img class="${cls||''}" alt="${p.brand} ${p.name}" src="${p.image_url || fb}"
+    loading="lazy" onload="this.classList.add('loaded')"
+    onerror="this.onerror=null;this.src='${fb}';this.classList.add('loaded')">`;
+}
+
+function toast(msg){
+  const t = $('#toast'); $('#toastMsg').textContent = msg;
+  t.classList.add('show'); clearTimeout(window._tt);
+  window._tt = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ===================================================================
+   DATA LOADING — Supabase → localStorage override → hardcoded
+   =================================================================== */
+async function loadProducts(){
+  // 1. try Supabase
+  try {
+    if (supabaseClient){
+      const { data, error } = await supabaseClient.from('perfumes').select('*').order('id');
+      if (!error && data && data.length){ return data; }
+    }
+  } catch(e){ console.warn('Supabase fetch failed, using fallback', e); }
+  // 2. local override (admin edits in demo)
+  const ov = localStorage.getItem('lb_products');
+  if (ov){ try { const a = JSON.parse(ov); if (a && a.length) return a; } catch(e){} }
+  // 3. hardcoded
+  return PERFUMES.map(p=>({...p}));
+}
+
+function persistProducts(){ localStorage.setItem('lb_products', JSON.stringify(STATE.products)); }
+
+/* ===================================================================
+   RENDER — CATALOG
+   =================================================================== */
+function renderCatalog(animate){
+  const grid = $('#grid');
+  const list = STATE.products.filter(p => STATE.filter === 'all' || p.category === STATE.filter);
+  if (!list.length){ grid.innerHTML = `<div class="catalog-empty" style="grid-column:1/-1">${tr('cat_empty')}</div>`; return; }
+
+  grid.innerHTML = list.map(p => {
+    const key3 = [...p.top_notes, ...p.heart_notes].slice(0,3).map(n=>`<span>${trNote(n)}</span>`).join('');
+    const stockBadge = p.in_stock
+      ? `<span class="badge badge-stock"><i>●</i> ${tr('limited')}</span>`
+      : `<span class="badge badge-out">${tr('soldout')}</span>`;
+    return `
+    <article class="card${p.in_stock?'':' out'}" data-id="${p.id}" data-cat="${p.category}">
+      <div class="card-media">
+        <span class="badge badge-cat cat-${p.category}">${tr(p.category)}</span>
+        ${stockBadge}
+        ${imgTag(p)}
+        <div class="quickview">
+          <span class="qv-label">${tr('keyNotes')}</span>
+          <div class="qv-notes">${key3}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-brand">${p.brand}</div>
+        <h3 class="card-name">${p.name}</h3>
+        <div class="card-foot">
+          <span class="card-price">${fmt(p.price_crc)}</span>
+          <span class="card-fam">${tr(p.family)}</span>
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-solid add" data-id="${p.id}" ${p.in_stock?'':'disabled style="opacity:.5;cursor:not-allowed"'}>${p.in_stock?tr('addToCart'):tr('soldout')}</button>
+          <button class="btn btn-ghost view" data-id="${p.id}">${tr('viewDetails')}</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+
+  bindCards();
+  if (animate && window.gsap){
+    gsap.from('#grid .card', { y:40, opacity:0, duration:.6, stagger:.05, ease:'power3.out', clearProps:'all' });
+  }
+}
+
+function bindCards(){
+  $$('#grid .card').forEach(card => {
+    const id = +card.dataset.id;
+    card.querySelector('.add').addEventListener('click', e=>{ e.stopPropagation(); addToCart(id, 100, 1); });
+    card.querySelector('.view').addEventListener('click', e=>{ e.stopPropagation(); openModal(id); });
+    card.querySelector('.card-media').addEventListener('click', ()=>openModal(id));
+    // 3D tilt
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left)/r.width - .5, py = (e.clientY - r.top)/r.height - .5;
+      card.style.transform = `perspective(900px) rotateY(${px*6}deg) rotateX(${-py*6}deg) translateY(-6px)`;
+    });
+    card.addEventListener('mouseleave', ()=>{ card.style.transform = ''; });
+  });
+}
+
+/* ===================================================================
+   PRODUCT MODAL
+   =================================================================== */
+function openModal(id){
+  const p = STATE.products.find(x=>x.id===id); if(!p) return;
+  STATE.modalProduct = p; STATE.modalVol = 100; STATE.modalQty = 1;
+  renderModal();
+  $('#modal').classList.add('show'); $('#overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function renderModal(){
+  const p = STATE.modalProduct; if(!p) return;
+  const dots = (v)=>Array.from({length:5},(_,i)=>`<i class="${i<v?'on':''}"></i>`).join('');
+  const intLabels = ['int1','int2','int3','int4'];
+  const intActive = Math.min(3, Math.round((p.intensity-1)/4*3));
+  const notesBlock = (label, arr)=>`<div class="nt-tier">${label}</div><div class="pills">${arr.map(n=>`<span>${trNote(n)}</span>`).join('')}</div>`;
+  const occAll = ['Day','Night','Office','Formal','Casual','Date'];
+  const seaAll = ['Spring','Summer','Fall','Winter'];
+  const price = priceFor(p, STATE.modalVol);
+
+  $('#modalCard').innerHTML = `
+    <button class="modal-close" id="modalClose" aria-label="close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="modal-media">
+      <span class="badge badge-cat cat-${p.category}">${tr(p.category)}</span>
+      ${imgTag(p)}
+    </div>
+    <div class="modal-body">
+      <div class="modal-brand">${p.brand}</div>
+      <h2 class="modal-title">${p.name}</h2>
+      <div class="modal-fam">✦ ${tr(p.family)} · ${tr(p.category)}</div>
+      <p class="modal-desc">${STATE.lang==='es'?p.description_es:p.description_en}</p>
+
+      <div class="block-label">${tr('m_notes')}</div>
+      <div class="notes-group">
+        ${notesBlock(tr('m_top'), p.top_notes)}
+        ${notesBlock(tr('m_heart'), p.heart_notes)}
+        ${notesBlock(tr('m_base'), p.base_notes)}
+      </div>
+
+      <div class="meter-wrap">
+        <div class="block-label">${tr('m_intensity')}</div>
+        <div class="meter"><i style="width:${p.intensity/5*100}%"></i></div>
+        <div class="meter-labels">${intLabels.map((k,i)=>`<span class="${i===intActive?'':''}">${i===intActive?'<b>'+tr(k)+'</b>':tr(k)}</span>`).join('')}</div>
+      </div>
+
+      <div class="ratings">
+        <div class="rating"><div class="rl">${tr('m_long')}</div><div class="dots">${dots(p.longevity)}</div></div>
+        <div class="rating"><div class="rl">${tr('m_sillage')}</div><div class="dots">${dots(p.sillage)}</div></div>
+      </div>
+
+      <div class="block-label">${tr('m_occasion')}</div>
+      <div class="tag-group">${occAll.map(o=>`<span class="tag ${p.occasions.includes(o)?'on':''}">${tr(o)}</span>`).join('')}</div>
+
+      <div class="block-label" style="margin-top:16px">${tr('m_season')}</div>
+      <div class="tag-group">${seaAll.map(s=>`<span class="tag ${p.seasons.includes(s)?'on':''}">${tr(s)}</span>`).join('')}</div>
+
+      <div class="block-label" style="margin-top:20px">${tr('m_vol')}</div>
+      <div class="opts" id="volOpts">
+        <div class="opt ${STATE.modalVol===50?'on':''}" data-vol="50"><small>50 ml</small><b>${fmt(priceFor(p,50))}</b></div>
+        <div class="opt ${STATE.modalVol===100?'on':''}" data-vol="100"><small>100 ml</small><b>${fmt(priceFor(p,100))}</b></div>
+      </div>
+
+      <div class="modal-buy">
+        <span class="modal-price" id="modalPrice">${fmt(price)}</span>
+        <div class="qty">
+          <button id="qMinus">–</button><span id="qVal">${STATE.modalQty}</span><button id="qPlus">+</button>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:14px">
+        <button class="btn btn-solid btn-lg" id="modalAdd" ${p.in_stock?'':'disabled style="opacity:.5"'} style="flex:1">${p.in_stock?tr('m_add'):tr('soldout')}</button>
+        <button class="btn btn-wa btn-lg" id="modalInq">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24z"/></svg>
+          ${tr('m_inquiry')}
+        </button>
+      </div>
+    </div>`;
+
+  // bind modal controls
+  $('#modalClose').addEventListener('click', closeModal);
+  $$('#volOpts .opt').forEach(o=>o.addEventListener('click', ()=>{
+    STATE.modalVol = +o.dataset.vol;
+    $$('#volOpts .opt').forEach(x=>x.classList.remove('on')); o.classList.add('on');
+    $('#modalPrice').textContent = fmt(priceFor(p, STATE.modalVol));
+  }));
+  $('#qMinus').addEventListener('click', ()=>{ STATE.modalQty=Math.max(1,STATE.modalQty-1); $('#qVal').textContent=STATE.modalQty; });
+  $('#qPlus').addEventListener('click', ()=>{ STATE.modalQty=Math.min(20,STATE.modalQty+1); $('#qVal').textContent=STATE.modalQty; });
+  $('#modalAdd').addEventListener('click', ()=>{ if(p.in_stock){ addToCart(p.id, STATE.modalVol, STATE.modalQty); closeModal(); } });
+  $('#modalInq').addEventListener('click', ()=>inquireWA(p));
+
+  if (window.gsap) gsap.from('#modalCard .modal-body > *', { y:18, opacity:0, duration:.45, stagger:.03, ease:'power2.out', clearProps:'all' });
+}
+function closeModal(){ $('#modal').classList.remove('show'); if(!$('#drawer').classList.contains('show')) $('#overlay').classList.remove('show'); document.body.style.overflow=''; }
+
+/* ===================================================================
+   CART
+   =================================================================== */
+function saveCart(){ localStorage.setItem('lb_cart', JSON.stringify(STATE.cart)); }
+function cartCount(){ return STATE.cart.reduce((s,i)=>s+i.qty,0); }
+function cartTotal(){ return STATE.cart.reduce((s,i)=>s+i.price*i.qty,0); }
+
+function addToCart(id, vol, qty){
+  const p = STATE.products.find(x=>x.id===id); if(!p || !p.in_stock) return;
+  const key = id+'|'+vol;
+  const found = STATE.cart.find(i=>i.key===key);
+  if (found) found.qty += qty;
+  else STATE.cart.push({ key, id, brand:p.brand, name:p.name, vol, price:priceFor(p,vol), image_url:p.image_url, category:p.category, qty });
+  saveCart(); updateCartUI(); toast(tr('added'));
+  const badge = $('#cartCount'); badge.classList.remove('show'); void badge.offsetWidth; badge.classList.add('show');
+}
+function changeQty(key, d){
+  const it = STATE.cart.find(i=>i.key===key); if(!it) return;
+  it.qty += d; if(it.qty<=0) STATE.cart = STATE.cart.filter(i=>i.key!==key);
+  saveCart(); updateCartUI();
+}
+function removeItem(key){ STATE.cart = STATE.cart.filter(i=>i.key!==key); saveCart(); updateCartUI(); }
+
+function updateCartUI(){
+  const n = cartCount();
+  $('#cartCount').textContent = n; $('#cartCount').classList.toggle('show', n>0);
+  $('#cartN').textContent = STATE.cart.length;
+  const body = $('#cartBody'), foot = $('#cartFoot');
+  if(!STATE.cart.length){
+    body.innerHTML = `<div class="cart-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+      <p>${tr('cart_empty')}</p>
+      <button class="btn btn-ghost" onclick="closeCart();document.getElementById('catalog').scrollIntoView()">${tr('cart_browse')}</button>
+    </div>`;
+    foot.style.display = 'none'; return;
+  }
+  foot.style.display = 'block';
+  const dummy = p => ({brand:p.brand,name:p.name,category:p.category,image_url:p.image_url});
+  body.innerHTML = STATE.cart.map(it=>{
+    const fb = bottleSVG(dummy(it));
+    return `<div class="cart-item">
+      <div class="ci-img"><img src="${it.image_url||fb}" alt="" onerror="this.onerror=null;this.src='${fb}'"></div>
+      <div>
+        <div class="ci-brand">${it.brand}</div>
+        <div class="ci-name">${it.name}</div>
+        <div class="ci-vol">${it.vol} ml</div>
+        <div class="ci-price">${fmt(it.price)}</div>
+        <div class="qty">
+          <button onclick="changeQty('${it.key}',-1)">–</button><span>${it.qty}</span><button onclick="changeQty('${it.key}',1)">+</button>
+        </div>
+      </div>
+      <button class="ci-remove" onclick="removeItem('${it.key}')">${tr('cart_remove')}</button>
+    </div>`;
+  }).join('');
+  $('#cartTotal').textContent = fmt(cartTotal());
+}
+function openCart(){ $('#drawer').classList.add('show'); $('#overlay').classList.add('show'); document.body.style.overflow='hidden'; }
+function closeCart(){ $('#drawer').classList.remove('show'); if(!$('#modal').classList.contains('show')) $('#overlay').classList.remove('show'); document.body.style.overflow=''; }
+
+/* ===================================================================
+   WHATSAPP MESSAGES
+   =================================================================== */
+function waLink(text){ return `https://wa.me/${STATE.whatsapp}?text=${encodeURIComponent(text)}`; }
+function checkout(){
+  if(!STATE.cart.length) return;
+  let m = tr('wa_greet') + '\n\n';
+  STATE.cart.forEach(it=>{ m += `• ${it.brand} ${it.name} (${it.vol}ml) ×${it.qty} — ${fmt(it.price*it.qty)}\n`; });
+  m += `\n*${tr('wa_total')}* ${fmt(cartTotal())}\n\n${tr('wa_delivery')}`;
+  window.open(waLink(m), '_blank');
+}
+function inquireWA(p){
+  const m = `${tr('wa_inq')}\n\n*${p.brand} ${p.name}*\n${tr('m_vol')}: ${STATE.modalVol}ml — ${fmt(priceFor(p,STATE.modalVol))}`;
+  window.open(waLink(m), '_blank');
+}
+function refreshWALinks(){
+  const base = waLink(STATE.lang==='es'?'¡Hola Luis! Quiero información sobre las fragancias de LuisBlades 🙌':'Hi Luis! I’d like info about LuisBlades fragrances 🙌');
+  ['#floatWa','#footWa','#footWa2'].forEach(s=>{ const e=$(s); if(e) e.href=base; });
+}
+
+/* ===================================================================
+   LANGUAGE & THEME
+   =================================================================== */
+function applyLanguage(lang){
+  STATE.lang = lang; localStorage.setItem('lb_lang', lang);
+  document.documentElement.lang = lang;
+  $$('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(T()[k]!==undefined){ if(k.indexOf('title')>-1||T()[k].indexOf('<em>')>-1) el.innerHTML=T()[k]; else el.textContent=T()[k]; }});
+  $$('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(T()[k]!==undefined) el.placeholder=T()[k]; });
+  $$('.lang-toggle button').forEach(b=>b.classList.toggle('on', b.dataset.lang===lang));
+  renderCatalog(false); updateCartUI(); refreshWALinks();
+  if($('#modal').classList.contains('show')) renderModal();
+  if($('#admin').classList.contains('show')) renderAdmin();
+}
+function applyTheme(theme){
+  STATE.theme = theme; localStorage.setItem('lb_theme', theme);
+  document.body.classList.toggle('theme-light', theme==='light');
+  document.body.classList.toggle('theme-dark', theme!=='light');
+  $('#themeLbl').textContent = theme==='light' ? tr('theme_light') : tr('theme_dark');
+  $('meta[name=theme-color]').setAttribute('content', theme==='light' ? '#f3eee2' : '#0b0b0d');
+}
+
+/* ===================================================================
+   ADMIN PANEL
+   =================================================================== */
+function openAdmin(){ $('#admin').classList.add('show'); document.body.style.overflow='hidden'; renderAdmin(); }
+function closeAdmin(){ $('#admin').classList.remove('show'); document.body.style.overflow=''; if(location.hash==='#admin') history.replaceState(null,'',location.pathname); }
+function isAuthed(){ return sessionStorage.getItem('lb_admin')==='1'; }
+
+function renderAdmin(){
+  const root = $('#admin');
+  if(!isAuthed()){
+    root.innerHTML = `
+      <div class="admin-login">
+        <svg class="blade-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="m14 6 4 4"/><path d="M3 17l4 4"/></svg>
+        <h2>LuisBlades Admin</h2>
+        <p>Panel de gestión · acceso privado</p>
+        <input type="password" id="admPass" placeholder="Contraseña" autocomplete="off">
+        <button id="admLogin">Ingresar</button>
+        <div class="err" id="admErr"></div>
+        <div class="hint">Cierra con ESC · acceso vía #admin</div>
+      </div>`;
+    const go = ()=>{
+      if($('#admPass').value==='luisblades2024'){ sessionStorage.setItem('lb_admin','1'); renderAdmin(); }
+      else $('#admErr').textContent = 'Contraseña incorrecta';
+    };
+    $('#admLogin').addEventListener('click', go);
+    $('#admPass').addEventListener('keydown', e=>{ if(e.key==='Enter') go(); });
+    setTimeout(()=>$('#admPass').focus(),50);
+    return;
+  }
+
+  const total = STATE.products.length;
+  const inStock = STATE.products.filter(p=>p.in_stock).length;
+  const val = STATE.products.reduce((s,p)=>s+p.price_crc,0);
+  const byCat = c=>STATE.products.filter(p=>p.category===c).length;
+
+  root.innerHTML = `
+    <div class="admin-shell">
+      <aside class="admin-side">
+        <div class="brand"><svg class="blade-ico" style="width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21z"/><path d="m14 6 4 4"/><path d="M3 17l4 4"/></svg>Luis<b>Blades</b></div>
+        <nav class="admin-nav">
+          <button class="${STATE.adminTab==='products'?'on':''}" data-tab="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 7 12 3 4 7l8 4 8-4Z"/><path d="m4 7 8 4v10l-8-4V7Z"/><path d="m20 7-8 4v10l8-4V7Z"/></svg>Productos</button>
+          <button class="${STATE.adminTab==='settings'?'on':''}" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 14H3.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 5 8.6l.06.06a2 2 0 1 1 2.83-2.83L8 5.95a1.65 1.65 0 0 0 1.82.33H10a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 16 8.6l.06-.06a2 2 0 1 1 2.83 2.83L18.83 11A1.65 1.65 0 0 0 19.4 13Z"/></svg>Ajustes</button>
+        </nav>
+        <button class="out" id="admExit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>Salir</button>
+      </aside>
+      <main class="admin-main" id="admMain"></main>
+    </div>`;
+
+  $$('.admin-nav button').forEach(b=>b.addEventListener('click',()=>{ STATE.adminTab=b.dataset.tab; STATE.editingId=null; renderAdmin(); }));
+  $('#admExit').addEventListener('click', ()=>{ if(confirm('¿Cerrar sesión de admin?')){ sessionStorage.removeItem('lb_admin'); closeAdmin(); }});
+
+  const main = $('#admMain');
+  if(STATE.adminTab==='settings'){
+    main.innerHTML = `
+      <div class="admin-topbar"><div><h1>Ajustes</h1><p>Configuración de la tienda</p></div></div>
+      <div class="a-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Cambios guardados localmente. Con la anon key de Supabase configurada, también se sincronizan a la nube.</div>
+      <div class="a-form" style="max-width:520px">
+        <h3>WhatsApp de pedidos</h3>
+        <div class="a-field"><label>Número (formato internacional, sin +)</label>
+          <input id="setWa" value="${STATE.whatsapp}" placeholder="50672164901">
+          <div class="hint">Usado en checkout, encargos y botones flotantes.</div>
+        </div>
+        <div class="a-form-actions"><button class="a-btn" id="saveWa">Guardar número</button></div>
+      </div>`;
+    $('#saveWa').addEventListener('click', ()=>{
+      STATE.whatsapp = $('#setWa').value.replace(/\D/g,''); localStorage.setItem('lb_whatsapp', STATE.whatsapp);
+      refreshWALinks(); alert('Número actualizado');
+    });
+    return;
+  }
+
+  if(STATE.editingId!==null){ renderAdminForm(main); return; }
+
+  main.innerHTML = `
+    <div class="admin-topbar">
+      <div><h1>Productos</h1><p>${total} fragancias en catálogo</p></div>
+      <button class="a-btn" id="addBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Añadir fragancia</button>
+    </div>
+    <div class="a-stats">
+      <div class="a-stat"><div class="v">${total}</div><div class="l">Total</div></div>
+      <div class="a-stat"><div class="v">${inStock}</div><div class="l">En stock</div></div>
+      <div class="a-stat"><div class="v">${byCat('Designer')}/${byCat('Niche')}/${byCat('Arabic')}</div><div class="l">D / N / A</div></div>
+      <div class="a-stat"><div class="v" style="font-size:1.3rem">${fmt(val)}</div><div class="l">Valor catálogo</div></div>
+    </div>
+    <table class="a-table">
+      <thead><tr><th></th><th>Marca / Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th></th></tr></thead>
+      <tbody>${STATE.products.map(p=>`
+        <tr>
+          <td><img class="a-thumb" src="${p.image_url||bottleSVG(p)}" onerror="this.onerror=null;this.src='${bottleSVG(p)}'"></td>
+          <td><div style="color:#8b929c;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase">${p.brand}</div><b style="color:#fff;font-weight:600">${p.name}</b></td>
+          <td><span class="a-cat">${p.category}</span></td>
+          <td>${fmt(p.price_crc)}</td>
+          <td><div class="toggle ${p.in_stock?'on':''}" data-toggle="${p.id}"></div></td>
+          <td><div class="a-row-actions">
+            <button class="a-icon" data-edit="${p.id}" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button class="a-icon" data-del="${p.id}" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+          </div></td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+
+  $('#addBtn').addEventListener('click', ()=>{ STATE.editingId='new'; renderAdmin(); });
+  $$('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ STATE.editingId=+b.dataset.edit; renderAdmin(); }));
+  $$('[data-del]').forEach(b=>b.addEventListener('click',()=>{
+    const id=+b.dataset.del; const p=STATE.products.find(x=>x.id===id);
+    if(confirm(`¿Eliminar "${p.brand} ${p.name}"? Esta acción no se puede deshacer.`)){
+      STATE.products = STATE.products.filter(x=>x.id!==id); persistProducts(); syncDelete(id); renderAdmin(); renderCatalog(false); updateCartUI();
+    }
+  }));
+  $$('[data-toggle]').forEach(t=>t.addEventListener('click',()=>{
+    const id=+t.dataset.toggle; const p=STATE.products.find(x=>x.id===id);
+    p.in_stock=!p.in_stock; persistProducts(); syncUpsert(p); t.classList.toggle('on'); renderCatalog(false);
+  }));
+}
+
+function renderAdminForm(main){
+  const isNew = STATE.editingId==='new';
+  const p = isNew ? { id:Math.max(0,...STATE.products.map(x=>x.id))+1, brand:'', name:'', category:'Designer', price_crc:0,
+    family:'Woody', intensity:3, longevity:3, sillage:3, occasions:[], seasons:[], top_notes:[], heart_notes:[], base_notes:[],
+    description_es:'', description_en:'', image_url:'', in_stock:true } : {...STATE.products.find(x=>x.id===STATE.editingId)};
+  const occAll=['Day','Night','Office','Formal','Casual','Date'], seaAll=['Spring','Summer','Fall','Winter'];
+
+  main.innerHTML = `
+    <div class="admin-topbar"><div><h1>${isNew?'Nueva fragancia':'Editar fragancia'}</h1><p>${isNew?'Añade un producto al catálogo':p.brand+' '+p.name}</p></div>
+      <button class="a-btn ghost" id="backBtn">← Volver</button></div>
+    <div class="a-form">
+      <h3>Información básica</h3>
+      <div class="a-grid">
+        <div class="a-field"><label>Marca</label><input id="f_brand" value="${p.brand}"></div>
+        <div class="a-field"><label>Nombre</label><input id="f_name" value="${p.name}"></div>
+        <div class="a-field"><label>Categoría</label><select id="f_cat">${['Designer','Niche','Arabic'].map(c=>`<option ${p.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div class="a-field"><label>Precio (CRC)</label><input id="f_price" type="number" value="${p.price_crc}"></div>
+        <div class="a-field"><label>Familia olfativa</label><select id="f_fam">${['Oriental','Woody','Fresh','Floral','Gourmand'].map(c=>`<option ${p.family===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div class="a-field"><label>En stock</label><select id="f_stock"><option value="1" ${p.in_stock?'selected':''}>Disponible</option><option value="0" ${!p.in_stock?'selected':''}>Agotado</option></select></div>
+      </div>
+
+      <h3 style="margin-top:24px">Pirámide olfativa <span style="font-size:.7rem;color:#5d646e;font-weight:400">(separar con comas, en inglés para traducción automática)</span></h3>
+      <div class="a-field full"><label>Notas de salida</label><input id="f_top" value="${p.top_notes.join(', ')}"></div>
+      <div class="a-field full"><label>Notas de corazón</label><input id="f_heart" value="${p.heart_notes.join(', ')}"></div>
+      <div class="a-field full"><label>Notas de fondo</label><input id="f_base" value="${p.base_notes.join(', ')}"></div>
+
+      <h3 style="margin-top:24px">Carácter</h3>
+      <div class="a-grid">
+        <div class="a-field"><label>Intensidad (1–5)</label><input id="f_int" type="number" min="1" max="5" value="${p.intensity}"></div>
+        <div class="a-field"><label>Duración (1–5)</label><input id="f_long" type="number" min="1" max="5" value="${p.longevity}"></div>
+        <div class="a-field"><label>Proyección (1–5)</label><input id="f_sil" type="number" min="1" max="5" value="${p.sillage}"></div>
+      </div>
+      <div class="a-field full" style="margin-top:8px"><label>Ocasiones</label><div class="tag-group" id="f_occ">${occAll.map(o=>`<span class="tag ${p.occasions.includes(o)?'on':''}" data-occ="${o}" style="cursor:pointer">${o}</span>`).join('')}</div></div>
+      <div class="a-field full" style="margin-top:8px"><label>Estaciones</label><div class="tag-group" id="f_sea">${seaAll.map(s=>`<span class="tag ${p.seasons.includes(s)?'on':''}" data-sea="${s}" style="cursor:pointer">${s}</span>`).join('')}</div></div>
+
+      <h3 style="margin-top:24px">Descripciones</h3>
+      <div class="a-field full"><label>Descripción (Español)</label><textarea id="f_des">${p.description_es}</textarea></div>
+      <div class="a-field full"><label>Descripción (English)</label><textarea id="f_den">${p.description_en}</textarea></div>
+
+      <h3 style="margin-top:24px">Imagen</h3>
+      <div class="a-imgrow">
+        <img class="a-imgprev" id="f_prev" src="${p.image_url||bottleSVG(p)}" onerror="this.onerror=null;this.src='${bottleSVG(p)}'">
+        <div style="flex:1">
+          <div class="a-field" style="margin-bottom:8px"><label>URL de imagen</label><input id="f_img" value="${p.image_url}" placeholder="https://..."></div>
+          <input type="file" id="f_file" accept="image/*" class="a-file">
+          <div class="hint">Sube desde tu dispositivo (se guarda como base64) o pega una URL.</div>
+        </div>
+      </div>
+
+      <div class="a-form-actions">
+        <button class="a-btn" id="saveBtn">${isNew?'Crear fragancia':'Guardar cambios'}</button>
+        <button class="a-btn ghost" id="cancelBtn">Cancelar</button>
+        ${!isNew?'<button class="a-btn danger" id="delBtn" style="margin-left:auto">Eliminar</button>':''}
+      </div>
+    </div>`;
+
+  $('#backBtn').addEventListener('click', ()=>{ STATE.editingId=null; renderAdmin(); });
+  $('#cancelBtn').addEventListener('click', ()=>{ STATE.editingId=null; renderAdmin(); });
+  $('#f_img').addEventListener('input', e=>{ $('#f_prev').src = e.target.value || bottleSVG(p); });
+  $('#f_file').addEventListener('change', e=>{
+    const file=e.target.files[0]; if(!file) return;
+    const rd=new FileReader(); rd.onload=ev=>{ $('#f_img').value=ev.target.result; $('#f_prev').src=ev.target.result; }; rd.readAsDataURL(file);
+  });
+  $$('#f_occ .tag').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  $$('#f_sea .tag').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('on')));
+  if($('#delBtn')) $('#delBtn').addEventListener('click', ()=>{
+    if(confirm('¿Eliminar esta fragancia?')){ STATE.products=STATE.products.filter(x=>x.id!==p.id); persistProducts(); syncDelete(p.id); STATE.editingId=null; renderAdmin(); renderCatalog(false); }
+  });
+  $('#saveBtn').addEventListener('click', ()=>saveProduct(isNew, p.id));
+}
+
+function parseNotes(s){ return s.split(',').map(x=>x.trim()).filter(Boolean); }
+function saveProduct(isNew, id){
+  const g=s=>$(s).value;
+  const prod = {
+    id, brand:g('#f_brand').trim(), name:g('#f_name').trim(), category:g('#f_cat'),
+    price_crc:+g('#f_price')||0, family:g('#f_fam'),
+    intensity:+g('#f_int')||3, longevity:+g('#f_long')||3, sillage:+g('#f_sil')||3,
+    top_notes:parseNotes(g('#f_top')), heart_notes:parseNotes(g('#f_heart')), base_notes:parseNotes(g('#f_base')),
+    occasions:$$('#f_occ .tag.on').map(t=>t.dataset.occ), seasons:$$('#f_sea .tag.on').map(t=>t.dataset.sea),
+    description_es:g('#f_des').trim(), description_en:g('#f_den').trim(),
+    image_url:g('#f_img').trim(), in_stock:g('#f_stock')==='1'
+  };
+  if(!prod.brand||!prod.name){ alert('Marca y nombre son obligatorios'); return; }
+  if(isNew) STATE.products.push(prod);
+  else { const i=STATE.products.findIndex(x=>x.id===id); STATE.products[i]=prod; }
+  persistProducts(); syncUpsert(prod);
+  STATE.editingId=null; renderAdmin(); renderCatalog(false); updateCartUI();
+}
+
+/* Supabase real-time sync (active once anon key is set) */
+async function syncUpsert(p){ try{ if(supabaseClient) await supabaseClient.from('perfumes').upsert(p); }catch(e){ console.warn('upsert skipped',e); } }
+async function syncDelete(id){ try{ if(supabaseClient) await supabaseClient.from('perfumes').delete().eq('id',id); }catch(e){ console.warn('delete skipped',e); } }
+
+/* ===================================================================
+   EVENTS & INIT
+   =================================================================== */
+function buildParticles(){
+  const wrap=$('#particles'); let h='';
+  for(let i=0;i<26;i++){ const l=Math.random()*100, s=1+Math.random()*2.5, d=8+Math.random()*14, dl=Math.random()*14;
+    h+=`<span style="left:${l}%;width:${s}px;height:${s}px;animation-duration:${d}s;animation-delay:-${dl}s"></span>`; }
+  wrap.innerHTML=h;
+}
+
+function setupEvents(){
+  // language
+  $$('.lang-toggle button').forEach(b=>b.addEventListener('click',()=>applyLanguage(b.dataset.lang)));
+  // theme
+  $('#themeBtn').addEventListener('click',()=>applyTheme(STATE.theme==='light'?'dark':'light'));
+  // cart
+  $('#cartBtn').addEventListener('click',openCart);
+  $('#cartClose').addEventListener('click',closeCart);
+  $('#checkoutBtn').addEventListener('click',checkout);
+  // overlay
+  $('#overlay').addEventListener('click',()=>{ closeCart(); closeModal(); });
+  // mobile menu
+  $('#menuBtn').addEventListener('click',()=>$('#mmenu').classList.add('show'));
+  $('#mclose').addEventListener('click',()=>$('#mmenu').classList.remove('show'));
+  $$('#mmenu a').forEach(a=>a.addEventListener('click',()=>$('#mmenu').classList.remove('show')));
+  // filters
+  $$('#filterBar .pill').forEach(b=>b.addEventListener('click',()=>{
+    $$('#filterBar .pill').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    STATE.filter=b.dataset.filter; renderCatalog(true);
+  }));
+  // footer category links
+  $$('[data-cat]').forEach(a=>a.addEventListener('click',()=>{
+    const c=a.dataset.cat; STATE.filter=c;
+    $$('#filterBar .pill').forEach(x=>x.classList.toggle('on', x.dataset.filter===c));
+    renderCatalog(true);
+  }));
+  // encargos form
+  $('#encForm').addEventListener('submit',e=>{
+    e.preventDefault(); const f=e.target;
+    let m=`${tr('enc_wa')}\n\n*${tr('enc_name')}:* ${f.name.value}\n*WhatsApp:* ${f.phone.value}\n*${tr('enc_frag')}:* ${f.frag.value}\n*${tr('enc_budget')}:* ${f.budget.value}`;
+    if(f.extra.value) m+=`\n*${tr('enc_notes')}:* ${f.extra.value}`;
+    toast(tr('toast_enc')); setTimeout(()=>window.open(waLink(m),'_blank'),400); f.reset();
+  });
+  // back to top + nav scroll
+  window.addEventListener('scroll',()=>{
+    const y=window.scrollY;
+    $('#nav').classList.toggle('scrolled', y>30);
+    $('#toTop').classList.toggle('show', y>500);
+  },{passive:true});
+  $('#toTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  // ESC
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeModal(); $('#mmenu').classList.remove('show'); if($('#admin').classList.contains('show')) closeAdmin(); }});
+  // admin triggers
+  let clicks=0,timer;
+  $('#adminTrigger').addEventListener('click',()=>{ clicks++; clearTimeout(timer); timer=setTimeout(()=>clicks=0,600); if(clicks>=3){ clicks=0; openAdmin(); }});
+  window.addEventListener('hashchange',()=>{ if(location.hash==='#admin') openAdmin(); });
+}
+
+function initAnimations(){
+  if(!window.gsap) return;
+  if(window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
+  // hero entrance
+  const tl=gsap.timeline({delay:.2});
+  tl.to('.hero-eyebrow',{opacity:1,y:0,duration:.7,ease:'power2.out'})
+    .to('.hero h1 .ln span',{y:0,duration:1,stagger:.12,ease:'power4.out'},'-=.3')
+    .to('.hero-sub',{opacity:1,y:0,duration:.7,ease:'power2.out'},'-=.5')
+    .to('.hero-cta',{opacity:1,y:0,duration:.7,ease:'power2.out'},'-=.4')
+    .to('.scroll-ind',{opacity:1,duration:.7},'-=.2');
+  gsap.set('.hero-sub,.hero-cta',{y:20});
+  // section reveals
+  if(window.ScrollTrigger){
+    $$('.reveal').forEach(el=>{
+      gsap.from(el,{y:50,opacity:0,duration:.9,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 85%'}});
+    });
+  }
+}
+
+async function init(){
+  $('#yr').textContent=new Date().getFullYear();
+  applyTheme(STATE.theme);
+  buildParticles();
+  // barbershop image (reliable Unsplash + svg fallback)
+  const bimg=$('#barberImg');
+  bimg.src='https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=900&q=80&auto=format&fit=crop';
+  bimg.onerror=function(){ this.onerror=null; this.src=bottleSVG({brand:'GENTS',name:'BARBERSHOP',category:'Designer'}); };
+
+  // loading skeletons
+  $('#grid').innerHTML=Array.from({length:6},()=>'<div class="skeleton"></div>').join('');
+
+  STATE.products = await loadProducts();
+  setupEvents();
+  applyLanguage(STATE.lang);   // also renders catalog + cart + wa links
+  initAnimations();
+  if(location.hash==='#admin') openAdmin();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+/* expose handlers used in inline onclick */
+window.changeQty=changeQty; window.removeItem=removeItem; window.closeCart=closeCart;
+</script>
+</body>
+</html>

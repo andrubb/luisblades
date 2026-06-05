@@ -1,0 +1,5 @@
+# Netlify configuration for LuisBlades
+# Single static index.html at the repo root — no build step.
+[build]
+  publish = "."
+  command = ""
