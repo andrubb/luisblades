@@ -458,6 +458,97 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   .admin-side .sexit{margin-top:auto}
   .admin-main{padding:34px clamp(28px,4vw,52px) 40px}
 }
+
+/* ===================================================================
+   REFINEMENT PASS — unified icons · texture · carousels · admin bulk
+   =================================================================== */
+
+/* —— unified icon family: 1.5 stroke, round joins (excludes .bottle + .lb-mark) —— */
+.icon-btn svg, .soc svg, .a-ico svg, .tool-search svg, .modal-close svg, .modal-fav svg,
+.fav svg, .daynight button svg, .to-top svg, .toast svg, .searchbar svg, .mmenu-close svg,
+.admin-tabs button svg, .admin-side .snav button svg, .admin-exit svg,
+.bulk-acts svg, .bulk-x svg, .car-nav svg, .a-img-remove svg{
+  stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round;
+}
+.fav svg, .modal-fav svg{fill:none}
+.fav.on svg, .modal-fav.on svg{fill:var(--blue)}
+
+/* —— barely-there paper grain (depth without noise) —— */
+body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");}
+
+/* —— editorial accent: faint serif quotation watermark behind the About line —— */
+.about-quote{position:relative;z-index:0}
+.about-quote::before{content:"\201C";position:absolute;top:-.42em;left:50%;transform:translateX(-50%);z-index:-1;
+  font-family:var(--font-display);font-size:5em;line-height:1;color:var(--celeste);opacity:.22;pointer-events:none}
+
+/* —— "El Hombre Detrás" — Luis section + carousels —— */
+.man{padding-top:clamp(56px,9vw,90px)}
+.cuts-head{text-align:center;margin:clamp(56px,8vw,90px) 0 clamp(26px,4vw,38px)}
+.cuts-head .eyebrow{display:block;margin-bottom:12px}
+.cuts-head h3{font-size:clamp(1.7rem,5vw,2.5rem);letter-spacing:.04em}
+.carousel{position:relative}
+.car-track{display:flex;gap:clamp(12px,2.2vw,22px);overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;padding:6px 2px 16px;scrollbar-width:none;cursor:grab}
+.car-track::-webkit-scrollbar{display:none}
+.car-track.drag{cursor:grabbing;scroll-snap-type:none}
+.car-item{flex:none;width:min(74vw,290px);scroll-snap-align:center;aspect-ratio:4/5;border-radius:12px;
+  overflow:hidden;position:relative;background:linear-gradient(160deg,#fff 0%,#f3eee6 55%,#e7eef3 100%);
+  box-shadow:var(--shadow-card);user-select:none}
+.car-item img,.car-item video{width:100%;height:100%;object-fit:cover;display:block;-webkit-user-drag:none}
+.car-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:var(--silver)}
+.car-ph svg{width:32px;height:32px;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.car-ph span{font-size:.54rem;letter-spacing:.26em;text-transform:uppercase}
+.car-ph.cut{background:linear-gradient(160deg,#fff 0%,#eef2f5 50%,#dde7ee 100%)}
+.car-unmute{position:absolute;bottom:10px;right:10px;width:38px;height:38px;border-radius:50%;
+  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(6px);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;color:var(--text);z-index:2}
+.car-unmute svg{width:16px;height:16px;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.car-nav{display:none}
+@media(min-width:760px){
+  .car-item{width:300px}
+  .car-nav{display:flex;position:absolute;top:calc(50% - 8px);transform:translateY(-50%);z-index:3;
+    width:46px;height:46px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
+    align-items:center;justify-content:center;color:var(--text);box-shadow:var(--shadow-card);transition:all .3s var(--ease)}
+  .car-nav:hover{border-color:var(--blue);color:var(--blue)}
+  .car-nav svg{width:18px;height:18px}
+  .car-nav.prev{left:-12px} .car-nav.next{right:-12px}
+}
+
+/* —— admin: filters, checkbox column, bulk action bar —— */
+.a-filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.a-filters input{flex:1 1 180px;min-height:46px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:11px 14px;color:var(--text);font-size:.9rem}
+.a-filters input:focus,.a-filters select:focus{outline:none;border-color:var(--blue)}
+.a-filters select{min-height:46px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:0 12px;color:var(--text);font-size:.8rem;letter-spacing:.04em}
+.a-selall{display:flex;align-items:center;gap:11px;margin-bottom:10px;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;min-height:30px}
+.a-check{width:22px;height:22px;border:1.4px solid var(--silver);border-radius:5px;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;transition:all .22s;background:var(--surface)}
+.a-check svg{width:13px;height:13px;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .18s}
+.a-check.on{background:var(--blue);border-color:var(--blue)}
+.a-check.on svg{opacity:1}
+.a-item{transition:border-color .25s, box-shadow .25s}
+.a-item.sel{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.a-item .a-check{align-self:center}
+.a-empty{text-align:center;color:var(--muted);font-family:var(--font-display);font-style:italic;font-size:1.2rem;padding:44px 0}
+.bulk-bar{position:fixed;left:12px;right:12px;bottom:calc(62px + env(safe-area-inset-bottom) + 12px);z-index:8;
+  background:var(--text);color:var(--bg);border-radius:10px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow-float);transform:translateY(220%);transition:transform .42s var(--ease)}
+.bulk-bar.show{transform:translateY(0)}
+.bulk-bar .bulk-n{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;display:flex;align-items:baseline;gap:6px}
+.bulk-bar .bulk-n b{font-family:var(--font-display);font-size:1.2rem;font-style:normal}
+.bulk-acts{display:flex;gap:6px;flex:1;justify-content:flex-end}
+.bulk-acts button{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 13px;border-radius:6px;
+  border:1px solid color-mix(in srgb,var(--bg) 28%,transparent);color:var(--bg);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;transition:all .25s;white-space:nowrap}
+.bulk-acts button svg{width:15px;height:15px}
+.bulk-acts button:hover{background:color-mix(in srgb,var(--bg) 16%,transparent)}
+.bulk-acts button.danger:hover{background:#b4533a;border-color:#b4533a}
+.bulk-x{flex:none;width:38px;height:42px;display:flex;align-items:center;justify-content:center;color:var(--bg);opacity:.65}
+.bulk-x:hover{opacity:1}
+.bulk-x svg{width:16px;height:16px}
+@media(min-width:900px){ .bulk-bar{left:auto;right:28px;bottom:28px;min-width:400px} }
+@media(max-width:430px){ .bulk-acts button span{display:none} .bulk-acts button{padding:0 12px} }
+.a-img-remove{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:10px;display:inline-flex;align-items:center;gap:7px;min-height:38px}
+.a-img-remove:hover{color:#b4533a}
+.a-img-remove svg{width:13px;height:13px}
 </style>
 </head>
 
@@ -481,7 +572,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
       <button class="icon-btn" id="favBtn" aria-label="Favoritos">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9.3-8.1C1.2 9.4 2.2 6 5.3 6c1.9 0 3 .9 3.7 2 .7-1.1 1.8-2 3.7-2 3.1 0 4.1 3.4 2.6 5.9C19 15.7 12 20 12 20Z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
         <span class="count" id="favCount">0</span>
       </button>
       <button class="icon-btn" id="cartBtn" aria-label="Carrito">
@@ -630,6 +721,34 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
     </div>
   </div>
 </section>
+
+<!-- ===================== LUIS — EL HOMBRE DETRÁS + SUS CORTES ===================== -->
+<section class="section man" id="luis">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="line"></span>
+      <span class="eyebrow" data-i18n="man_eyebrow">El Hombre Detrás</span>
+      <h2 data-i18n="man_title">Luis Blades</h2>
+      <p data-i18n="man_sub">El barbero y curador detrás de cada elección.</p>
+    </div>
+
+    <div class="carousel reveal">
+      <button class="car-nav prev" data-car="photoTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
+      <div class="car-track" id="photoTrack"></div>
+      <button class="car-nav next" data-car="photoTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
+    </div>
+
+    <div class="cuts-head reveal">
+      <span class="eyebrow" data-i18n="cuts_eyebrow">Su oficio</span>
+      <h3 data-i18n="cuts_title">Sus Cortes</h3>
+    </div>
+    <div class="carousel reveal">
+      <button class="car-nav prev" data-car="cutsTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
+      <div class="car-track" id="cutsTrack"></div>
+      <button class="car-nav next" data-car="cutsTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
 </main>
 
 <!-- ============================ FOOTER ============================ -->
@@ -709,6 +828,7 @@ const S = {
   whatsapp: localStorage.getItem('bp_whatsapp') || '50672164901',
   adminPass: localStorage.getItem('bp_admin_pass') || 'Blades1317',
   adminTab: 'dash',
+  adminSel: new Set(), adminQ:'', adminCat:'all', adminStock:'all',
   editingId: null,
   modalP: null, modalVol: 100, modalQty: 1
 };
@@ -738,6 +858,8 @@ const STR = {
     about_eyebrow:'El mismo ojo', about_quote:'El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em>',
     about_body:'Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.',
     foot_made:'Hecho en Costa Rica',
+    man_eyebrow:'El Hombre Detrás', man_title:'Luis Blades', man_sub:'El barbero y curador detrás de cada elección.',
+    cuts_eyebrow:'Su oficio', cuts_title:'Sus Cortes',
     cart_title:'Tu selección', cart_items:'artículos', cart_subtotal:'Subtotal',
     cart_note:'Coordina entrega o recogida al finalizar.', cart_checkout:'Finalizar por WhatsApp',
     cart_empty:'Tu selección está vacía.', cart_browse:'Ver la colección', cart_remove:'Quitar',
@@ -776,6 +898,8 @@ const STR = {
     about_eyebrow:'The same eye', about_quote:'The same eye that perfects every cut <em>curated this selection.</em>',
     about_body:'Luis works as a barber at Gents Barbershop, San José — where precision is the standard and every client leaves looking their best. That same judgement, that same obsession with detail, chose every fragrance in Blades Privé.',
     foot_made:'Made in Costa Rica',
+    man_eyebrow:'The Man Behind It', man_title:'Luis Blades', man_sub:'The barber and curator behind every choice.',
+    cuts_eyebrow:'His craft', cuts_title:'His Cuts',
     cart_title:'Your selection', cart_items:'items', cart_subtotal:'Subtotal',
     cart_note:'Arrange delivery or pickup at checkout.', cart_checkout:'Checkout via WhatsApp',
     cart_empty:'Your selection is empty.', cart_browse:'Browse the collection', cart_remove:'Remove',
@@ -856,6 +980,77 @@ function imgFor(p){ return p.image_url ? `<img src="${p.image_url}" alt="" loadi
 window.__BOTTLE = BOTTLE;
 
 /* ===================================================================
+   LUIS — photo & video carousels
+   Swapping in real media later is one line per item in the arrays below.
+   =================================================================== */
+
+// REPLACE: paste real image URLs or base64 here once Andrew uploads Luis's photos.
+// Each '' is a placeholder slot — replacing one line with a URL swaps that photo in.
+const luisPhotos = [
+  '', // photo 1
+  '', // photo 2
+  '', // photo 3
+  '', // photo 4
+  '', // photo 5
+  ''  // photo 6
+];
+
+/* -------------------------------------------------------------------
+   VIDEO COMPRESSION — read before adding real clips:
+   • Keep each clip SHORT (3–8s). It loops, so motion matters, not length.
+   • Export .mp4 (H.264), 720p, target UNDER 3 MB per clip.
+   • Free tool: HandBrake (handbrake.fr) → preset "Fast 720p30",
+     tick "Web Optimized", or drop bitrate to ~2–3 Mbps.
+   • Small files keep the page fast; clips lazy-load + autoplay on scroll.
+   ------------------------------------------------------------------- */
+// REPLACE: paste real video file URLs (compressed .mp4, ideally <3MB each) once Andrew uploads Luis's clips.
+const luisCutVideos = [
+  '', // clip 1
+  '', // clip 2
+  '', // clip 3
+  ''  // clip 4
+];
+
+const PH_PHOTO=()=>`<div class="car-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3 7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3z"/><circle cx="12" cy="12.5" r="3.5"/></svg><span>${S.lang==='es'?'Foto':'Photo'}</span></div>`;
+const PH_VIDEO=()=>`<div class="car-ph cut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.4 16 12l-6 3.6z" fill="currentColor" stroke="none"/></svg><span>Clip</span></div>`;
+
+function renderCarousels(){
+  const pt=$('#photoTrack');
+  if(pt) pt.innerHTML=luisPhotos.map((u,i)=> u
+    ? `<div class="car-item"><img src="${u}" alt="Luis Blades ${i+1}" loading="lazy"></div>`
+    : `<div class="car-item">${PH_PHOTO()}</div>`).join('');
+  const ct=$('#cutsTrack');
+  if(ct) ct.innerHTML=luisCutVideos.map((u,i)=> u
+    ? `<div class="car-item" data-video><video muted loop playsinline preload="metadata" data-src="${u}"></video><button class="car-unmute" data-unmute aria-label="Sonido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9.5a3.5 3.5 0 0 1 0 5"/><path d="M19 7a7 7 0 0 1 0 10"/></svg></button></div>`
+    : `<div class="car-item">${PH_VIDEO()}</div>`).join('');
+  setupCarousels(); lazyVideos();
+}
+
+/* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
+function setupCarousels(){
+  $$('.car-track').forEach(track=>{
+    if(track.dataset.bound) return; track.dataset.bound='1';
+    let down=false,sx=0,sl=0,moved=false;
+    track.addEventListener('pointerdown',e=>{ if(e.pointerType!=='mouse')return; down=true;moved=false;sx=e.clientX;sl=track.scrollLeft;track.classList.add('drag'); });
+    window.addEventListener('pointermove',e=>{ if(!down)return; const dx=e.clientX-sx; if(Math.abs(dx)>4)moved=true; track.scrollLeft=sl-dx; });
+    window.addEventListener('pointerup',()=>{ if(down){down=false;track.classList.remove('drag');} });
+    track.addEventListener('click',e=>{ if(moved){e.preventDefault();e.stopPropagation();} },true);
+  });
+  $$('.car-nav').forEach(btn=>{
+    if(btn.dataset.bound) return; btn.dataset.bound='1';
+    btn.addEventListener('click',()=>{ const t=$('#'+btn.dataset.car); if(!t)return; const item=t.querySelector('.car-item'); const step=item?item.offsetWidth+22:300; t.scrollBy({left:btn.classList.contains('prev')?-step:step,behavior:'smooth'}); });
+  });
+}
+
+/* lazy-load + autoplay videos only when scrolled into view */
+function lazyVideos(){
+  const items=$$('#cutsTrack .car-item[data-video]'); if(!items.length||!('IntersectionObserver'in window))return;
+  const io=new IntersectionObserver(es=>{ es.forEach(en=>{ const v=en.target.querySelector('video'); if(!v)return;
+    if(en.isIntersecting){ if(!v.src&&v.dataset.src)v.src=v.dataset.src; v.play().catch(()=>{}); } else { v.pause(); } }); },{rootMargin:'120px',threshold:.25});
+  items.forEach(it=>{ io.observe(it); const um=it.querySelector('[data-unmute]'); if(um) um.addEventListener('click',ev=>{ ev.stopPropagation(); const v=it.querySelector('video'); v.muted=!v.muted; um.style.color=v.muted?'':'var(--blue)'; if(!v.muted)v.play().catch(()=>{}); }); });
+}
+
+/* ===================================================================
    DATA LOADING — Supabase → local override → hardcoded
    =================================================================== */
 async function loadProducts(){
@@ -888,7 +1083,7 @@ function cardHTML(p){
     <div class="card-media">
       ${p.is_bestseller?`<span class="tag-best">${tr('bestseller')}</span>`:''}
       <button class="fav${faved?' on':''}" data-fav="${p.id}" aria-label="${tr('m_fav')}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9.3-8.1C1.2 9.4 2.2 6 5.3 6c1.9 0 3 .9 3.7 2 .7-1.1 1.8-2 3.7-2 3.1 0 4.1 3.4 2.6 5.9C19 15.7 12 20 12 20Z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
       </button>
       ${imgFor(p)}
     </div>
@@ -1020,7 +1215,7 @@ function renderModal(){
       </div>
       <div style="margin-top:14px">
         <button class="modal-fav${faved?' on':''}" id="modalFav" data-id="${p.id}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.3-9.3-8.1C1.2 9.4 2.2 6 5.3 6c1.9 0 3 .9 3.7 2 .7-1.1 1.8-2 3.7-2 3.1 0 4.1 3.4 2.6 5.9C19 15.7 12 20 12 20Z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
           <span>${faved?tr('m_faved'):tr('m_fav')}</span>
         </button>
       </div>
@@ -1097,7 +1292,7 @@ function applyLang(lang){
 function openAdmin(){ $('#admin').classList.add('show'); document.body.style.overflow='hidden'; renderAdmin(); }
 function closeAdmin(){ $('#admin').classList.remove('show'); document.body.style.overflow=''; if(location.hash==='#admin') history.replaceState(null,'',location.pathname); }
 const authed=()=>sessionStorage.getItem('bp_admin')==='1';
-const I={dash:'<path d="M3 13h8V3H3zM13 21h8V3h-8zM3 21h8v-6H3z"/>',prod:'<path d="M20 7 12 3 4 7l8 4 8-4Z"/><path d="m4 7 8 4v10l-8-4Z"/><path d="m20 7-8 4v10l8-4Z"/>',add:'<path d="M12 5v14M5 12h14"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0a1.6 1.6 0 0 0-2.8-1 1.6 1.6 0 0 0-1.8.3l-.1.1A2 2 0 1 1 2.6 18l.1-.1a1.6 1.6 0 0 0 1.1-2.7H3.5a2 2 0 1 1 0-4a1.6 1.6 0 0 0 1-2.8 1.6 1.6 0 0 0-.3-1.8l-.1-.1A2 2 0 1 1 6 2.6l.1.1A1.6 1.6 0 0 0 9 3.6a2 2 0 1 1 4 0a1.6 1.6 0 0 0 2.8 1l.1-.1A2 2 0 1 1 21.4 6l-.1.1a1.6 1.6 0 0 0-1 2.8a2 2 0 1 1 0 4Z"/>'};
+const I={dash:'<rect x="3" y="3" width="7.5" height="9" rx="1.2"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.2"/><rect x="13.5" y="12" width="7.5" height="9" rx="1.2"/><rect x="3" y="16" width="7.5" height="5" rx="1.2"/>',prod:'<path d="M20.5 7.3 12 2.5 3.5 7.3v9.4L12 21.5l8.5-4.8z"/><path d="m3.6 7.4 8.4 4.8 8.4-4.8"/><path d="M12 21.5v-9.3"/>',add:'<path d="M12 5v14M5 12h14"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'};
 function renderAdmin(){
   const root=$('#admin');
   if(!authed()){
@@ -1125,7 +1320,7 @@ function renderAdmin(){
     <main class="admin-main" id="amain"></main>
     <nav class="admin-tabs">${tabs.map(t=>`<button class="${S.adminTab===t[0]?'on':''}" data-tab="${t[0]}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${t[2]}</svg>${t[1]}</button>`).join('')}</nav>
   </div>`;
-  $$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{ S.adminTab=b.dataset.tab; S.editingId=null; renderAdmin(); }));
+  $$('[data-tab]').forEach(b=>b.addEventListener('click',()=>{ S.adminTab=b.dataset.tab; S.editingId=null; S.adminSel.clear(); renderAdmin(); }));
   $('#aexit').addEventListener('click',()=>{ if(confirm('¿Cerrar sesión?')){ sessionStorage.removeItem('bp_admin'); closeAdmin(); } });
   renderAdminTab();
 }
@@ -1152,19 +1347,71 @@ function adminDash(m){
     </div>
     <div class="a-note" style="margin-top:18px">Las ediciones se guardan localmente y, con la anon key de Supabase configurada, se sincronizan a la nube.</div>`;
 }
+const CHK='<svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5"/></svg>';
+function adminFilterList(){
+  let l=S.products.slice();
+  if(S.adminCat!=='all') l=l.filter(p=>p.category===S.adminCat);
+  if(S.adminStock!=='all') l=l.filter(p=>S.adminStock==='in'?p.in_stock:!p.in_stock);
+  if(S.adminQ){ const q=S.adminQ.toLowerCase(); l=l.filter(p=>(p.name+' '+p.brand).toLowerCase().includes(q)); }
+  return l;
+}
+function aItemHTML(p){
+  const sel=S.adminSel.has(p.id);
+  return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
+    <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
+    <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
+    <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
+    <div class="a-acts">
+      <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button class="a-ico danger" data-del="${p.id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+    </div></div>`;
+}
 function adminProducts(m){
   m.innerHTML=`<div class="admin-topbar"><div><h1>Productos</h1><div class="sub">${S.products.length} fragancias</div></div>
     <button class="admin-exit" id="aAdd" style="border-color:var(--blue);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:15px;height:15px"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Agregar</button></div>
-    <div class="a-list">${S.products.map(p=>`<div class="a-item">
-      <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
-      <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
-      <div class="a-acts">
-        <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
-        <button class="a-ico danger" data-del="${p.id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-      </div></div>`).join('')}</div>`;
+    <div class="a-filters">
+      <input id="aq" placeholder="Buscar nombre o marca…" value="${S.adminQ.replace(/"/g,'&quot;')}" autocomplete="off">
+      <select id="acat"><option value="all">Todas las categorías</option><option value="Designer">Designer</option><option value="Niche">Niche</option><option value="Arabic">Árabe</option></select>
+      <select id="astock"><option value="all">Stock: todos</option><option value="in">En stock</option><option value="out">Agotados</option></select>
+    </div>
+    <div class="a-selall" id="aSelAll"><span class="a-check" id="aSelChk">${CHK}</span><span>Seleccionar todo</span></div>
+    <div class="a-list" id="aList"></div>
+    <div class="bulk-bar" id="bulkBar">
+      <span class="bulk-n"><b id="bulkN">0</b> sel.</span>
+      <div class="bulk-acts">
+        <button data-bulk="stock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7 12 3 4 7v10l8 4 8-4z"/><path d="m4 7 8 4 8-4M12 21V11"/></svg><span>Stock</span></button>
+        <button data-bulk="best"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17.8 6.8 19l1-5.8L3.5 9.2l5.9-.9z"/></svg><span>Favorito</span></button>
+        <button data-bulk="del" class="danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>Eliminar</span></button>
+      </div>
+      <button class="bulk-x" data-bulk="clear" aria-label="Limpiar selección"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>`;
+  const listEl=$('#aList');
+  function updateBulk(){ const n=S.adminSel.size; $('#bulkN').textContent=n; $('#bulkBar').classList.toggle('show',n>0); const list=adminFilterList(),ids=list.map(p=>p.id); $('#aSelChk').classList.toggle('on',ids.length>0&&ids.every(id=>S.adminSel.has(id))); }
+  function paint(){
+    const list=adminFilterList();
+    listEl.innerHTML=list.length?list.map(aItemHTML).join(''):'<div class="a-empty">Sin resultados</div>';
+    $$('#aList [data-sel]').forEach(b=>b.addEventListener('click',()=>{ const id=+b.dataset.sel; S.adminSel.has(id)?S.adminSel.delete(id):S.adminSel.add(id); b.classList.toggle('on'); b.closest('.a-item').classList.toggle('sel'); updateBulk(); }));
+    $$('#aList [data-edit]').forEach(b=>b.addEventListener('click',()=>{ S.editingId=+b.dataset.edit; S.adminTab='prod'; renderAdminTab(); }));
+    $$('#aList [data-del]').forEach(b=>b.addEventListener('click',()=>{ const id=+b.dataset.del,p=S.products.find(x=>x.id===id); if(confirm(`¿Eliminar "${p.brand} ${p.name}"?`)){ S.products=S.products.filter(x=>x.id!==id); S.adminSel.delete(id); persistProducts(); syncDel(id); paint(); updateBulk(); refresh(false); } }));
+    updateBulk();
+  }
   $('#aAdd').addEventListener('click',()=>{ S.adminTab='add'; S.editingId='new'; renderAdmin(); });
-  $$('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ S.editingId=+b.dataset.edit; S.adminTab='prod'; renderAdminTab(); }));
-  $$('[data-del]').forEach(b=>b.addEventListener('click',()=>{ const id=+b.dataset.del,p=S.products.find(x=>x.id===id); if(confirm(`¿Eliminar "${p.brand} ${p.name}"?`)){ S.products=S.products.filter(x=>x.id!==id); persistProducts(); syncDel(id); renderAdminTab(); refresh(false); } }));
+  $('#aq').addEventListener('input',e=>{ S.adminQ=e.target.value.trim(); paint(); });
+  $('#acat').value=S.adminCat; $('#astock').value=S.adminStock;
+  $('#acat').addEventListener('change',e=>{ S.adminCat=e.target.value; paint(); });
+  $('#astock').addEventListener('change',e=>{ S.adminStock=e.target.value; paint(); });
+  $('#aSelAll').addEventListener('click',()=>{ const ids=adminFilterList().map(p=>p.id); const allSel=ids.length&&ids.every(id=>S.adminSel.has(id)); ids.forEach(id=>allSel?S.adminSel.delete(id):S.adminSel.add(id)); paint(); });
+  $$('#bulkBar [data-bulk]').forEach(b=>b.addEventListener('click',()=>bulkAction(b.dataset.bulk,paint,updateBulk)));
+  paint();
+}
+function bulkAction(kind,paint,updateBulk){
+  const ids=[...S.adminSel]; const get=id=>S.products.find(p=>p.id===id);
+  if(kind==='clear'){ S.adminSel.clear(); paint(); return; }
+  if(!ids.length) return;
+  if(kind==='del'){ if(!confirm(`¿Eliminar ${ids.length} fragancia(s)? Esta acción no se puede deshacer.`))return; ids.forEach(id=>{ S.products=S.products.filter(p=>p.id!==id); syncDel(id); }); S.adminSel.clear(); persistProducts(); refresh(false); paint(); toast(ids.length+' eliminadas'); return; }
+  if(kind==='stock'){ const allIn=ids.every(id=>get(id).in_stock); ids.forEach(id=>{ const p=get(id); p.in_stock=!allIn; syncUp(p); }); }
+  if(kind==='best'){ const allB=ids.every(id=>get(id).is_bestseller); ids.forEach(id=>{ const p=get(id); p.is_bestseller=!allB; syncUp(p); }); }
+  persistProducts(); refresh(false); paint(); toast('Actualizadas');
 }
 function adminForm(m){
   const isNew=S.editingId==='new';
@@ -1185,7 +1432,9 @@ function adminForm(m){
       <div class="block-label" style="margin:8px 0 12px;color:var(--muted)">Imagen — subir desde dispositivo</div>
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px">
         <div class="a-thumb a-imgprev" id="f_prev">${p.image_url?`<img src="${p.image_url}" style="width:100%;height:100%;object-fit:contain" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
-        <div style="flex:1"><div class="a-drop" id="f_drop">Toca para elegir o arrastra una imagen aquí<input type="file" id="f_file" accept="image/*" style="display:none"></div></div>
+        <div style="flex:1"><div class="a-drop" id="f_drop">Toca para elegir o arrastra una imagen aquí<input type="file" id="f_file" accept="image/*" style="display:none"></div>
+          <button type="button" class="a-img-remove" id="f_rmimg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Quitar imagen — usar silueta</button>
+        </div>
       </div>
 
       <div class="field"><label>Notas de salida (coma)</label><input id="f_top" value="${p.top_notes.join(', ')}"></div>
@@ -1217,6 +1466,7 @@ function adminForm(m){
   $('#f_stock').addEventListener('click',e=>e.target.classList.toggle('on'));
   $$('#f_occ .a-chip,#f_sea .a-chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
   $('#f_img').addEventListener('input',e=>setPrev(e.target.value));
+  $('#f_rmimg').addEventListener('click',()=>{ $('#f_img').value=''; $('#f_file').value=''; setPrev(''); toast('Imagen quitada'); });
   const drop=$('#f_drop'), file=$('#f_file');
   drop.addEventListener('click',()=>file.click());
   file.addEventListener('change',e=>{ const f=e.target.files[0]; if(f) readImg(f); });
@@ -1325,6 +1575,7 @@ async function init(){
   setupEvents();
   applyLang(S.lang);     // renders grid + cart + wa
   updateFavUI();
+  renderCarousels();     // Luis photos + cuts (placeholders until real media added)
   initAnim();
   if(location.hash==='#admin') openAdmin();
 }
