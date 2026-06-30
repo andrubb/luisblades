@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" role="img" aria-label="Luis Blades">
+  <!-- razor blade mark (black ink, reads on warm off-white) -->
+  <path d="M5 26 20 7 24 10.2 9 29.2 Z" fill="#1A1A1A"/>
+  <path d="M16.2 12 20.2 15.2" fill="none" stroke="#1A1A1A" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- wordmark -->
+  <text x="34" y="20.8" font-family="'Cormorant Garamond','Cormorant',Georgia,'Times New Roman',serif" font-size="23" font-weight="500" letter-spacing="1.8" fill="#1A1A1A" dominant-baseline="middle">Luis Blades</text>
+</svg>
