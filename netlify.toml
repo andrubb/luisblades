@@ -1,5 +1,4 @@
-# Netlify configuration for LuisBlades
-# Single static index.html at the repo root — no build step.
+# Netlify configuration for Blades Privé
+# Single static index.html at the repo root — no build step, just publish root.
 [build]
   publish = "."
-  command = ""
