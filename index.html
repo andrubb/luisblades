@@ -622,6 +622,91 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
   .anim .hero-eyebrow,.anim .hero .sub,.anim .hero .tagline,.anim .hero .cta,.anim .scroll-cue,.anim .hero h1 .hl,.reveal{opacity:1!important;transform:none!important}
   .marquee-row{animation:none!important}
 }
+
+/* ===================================================================
+   BLACK EDITORIAL DETAILS + MICRO-DETAILS (CSS-only luxury pass)
+   =================================================================== */
+
+/* ---- LOGO — real PNG (white bg removed via multiply); SVG fallback ---- */
+.logo img{max-height:none;width:auto;display:block;mix-blend-mode:multiply}
+.nav .logo img{height:36px}
+#footLogo img{height:32px}
+@media(max-width:560px){ .nav .logo img{height:30px} }
+
+/* ---- NAVBAR ---- */
+.nav.scrolled{border-bottom-color:#000}
+.icon-btn:hover{color:#000}
+.nav-links a::after{left:0;right:0;background:#000;transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.nav-links a:hover{color:#000}
+.nav-links a:hover::after{transform:scaleX(1)}
+
+/* ---- HERO ---- */
+.hero h1{color:#000}
+.hero-eyebrow,.hero h1,.hero .sub,.hero .tagline,.hero .cta{position:relative;z-index:1}
+.hero .tagline::after{content:"";display:block;width:min(440px,72vw);height:1px;background:#000;margin:26px auto 0}
+.hero .cta .btn:hover{background:#000;border-color:#000;color:#fff}
+.hero::before{content:"B";position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:0;font-family:var(--font-display);font-weight:500;font-size:30vw;line-height:1;color:#000;opacity:.03;pointer-events:none}
+.hero::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:1px;height:80px;background:#000;opacity:.2;z-index:0}
+.hero-mark{position:absolute;top:calc(var(--nav-h) + 20px);right:var(--pad);z-index:1;font-family:var(--font-display);font-size:1.2rem;color:#000;opacity:.15;pointer-events:none}
+
+/* ---- SECTION NUMERALS (luxury magazine pagination) ---- */
+.sec-num{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;pointer-events:none}
+.hero .sec-num{position:absolute;top:calc(var(--nav-h) + 20px);left:var(--pad);z-index:1}
+#catalog::before,#about::before,#encargos::before{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;position:absolute;top:clamp(22px,4vw,40px);left:var(--pad);z-index:2;pointer-events:none}
+#catalog::before{content:"02"} #about::before{content:"03"} #encargos::before{content:"04"}
+
+/* ---- DECORATIVE MARKS / WATERMARKS ---- */
+#about::after{content:"\2726";position:absolute;top:clamp(22px,4vw,40px);right:var(--pad);font-family:var(--font-display);font-size:1.1rem;color:#000;opacity:.15;pointer-events:none}
+.encargos{overflow:hidden}
+#encargos::after{content:"?";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-display);font-weight:500;font-size:25vw;line-height:1;color:#000;opacity:.025;pointer-events:none;z-index:0}
+.encargos-inner{position:relative;z-index:1}
+
+/* ---- PRODUCT CARDS ---- */
+.card{border-bottom:1px solid #000}
+.card-media{border:1px solid var(--border);transition:border-color .4s var(--ease)}
+@media(hover:hover){ .card:hover .card-media{border-color:#000} .card:hover .card-name{color:#000} }
+.card-cat{color:#000;letter-spacing:.12em}
+.card-price{color:#000;font-size:1.28rem}
+.tag-best{color:#000;font-family:var(--font-display);font-style:italic;font-size:12px;letter-spacing:.01em;text-transform:none}
+.tag-best::before{background:#000;width:12px}
+
+/* ---- FILTER PILLS ---- */
+.pill{border-color:#000;color:#000}
+.pill.on{background:#000;color:#fff;border-color:#000}
+
+/* ---- PRODUCT COUNT LABEL ---- */
+.catalog-meta #resultCount{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#000;opacity:.4}
+
+/* ---- MARQUEE ---- */
+.marquee{border-top-color:#000;border-bottom-color:#000}
+.marquee-row span{color:#000;opacity:.3}
+
+/* ---- DAY / NIGHT ---- */
+.daynight{border-color:#000}
+.daynight button{color:#000}
+.daynight button.on{background:#000;color:#fff}
+
+/* ---- ABOUT ---- */
+.about-quote{align-self:flex-start;text-align:left;border-left:3px solid #000;padding-left:1.5rem}
+.about-quote::before{content:none}
+.about-handle{color:#000}
+
+/* ---- FOOTER ---- */
+footer{border-top:2px solid #000}
+.foot-soc .soc:hover{color:#000;border-color:#000}
+.foot-bottom small{color:#000;opacity:.45}
+
+/* ---- MODAL note tags + meters ---- */
+.note-tags span{border-color:#000;color:#000;transition:background .3s,color .3s}
+.note-tags span:hover{background:#000;color:#fff}
+.meter-track .fill{background:#000}
+/* primary action — Add to Cart gets maximum weight: solid black */
+#modalAdd{background:#000;border-color:#000;color:#fff}
+#modalAdd:hover{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
+
+/* ---- TYPOGRAPHY ---- */
+.eyebrow{color:rgba(0,0,0,.5);letter-spacing:.25em;font-size:.625rem}
+.about-body,.modal-desc{color:#1A1A1A}
 </style>
 </head>
 
@@ -632,7 +717,7 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="logo" aria-label="Luis Blades — Blades Privé">
-      <img src="assets/luis-blades-logo.svg" alt="Luis Blades" width="160" height="32">
+      <img src="assets/luis-blades-logo.png" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
     </a>
 
     <div class="nav-links">
@@ -692,6 +777,8 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 
 <!-- ============================== HERO ============================== -->
 <header class="hero">
+  <span class="sec-num" aria-hidden="true">01</span>
+  <span class="hero-mark" aria-hidden="true">✦</span>
   <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Une sélection privée · San José</div>
   <h1 aria-label="PRIVÉ"><span class="hl">P</span><span class="hl">R</span><span class="hl">I</span><span class="hl">V</span><span class="hl">É</span></h1>
   <p class="sub" data-i18n="hero_sub">Una selección privada de aroma.</p>
@@ -844,7 +931,7 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
   <div class="wrap">
     <div class="foot-inner">
       <a href="#top" class="logo" id="footLogo" style="align-items:center">
-        <img src="assets/luis-blades-logo.svg" alt="Luis Blades" width="190" height="38" style="max-height:38px">
+        <img src="assets/luis-blades-logo.png" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
       </a>
       <p class="foot-tag">Carved by the blade. Finished by the scent.</p>
       <div class="foot-soc">
