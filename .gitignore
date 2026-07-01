@@ -16,3 +16,6 @@ Thumbs.db
 .netlify
 
 .vercel
+
+# Local audit artifacts — never deploy
+lighthouse-*.json

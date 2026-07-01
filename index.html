@@ -5,12 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#FAF8F5" />
 <title>Blades Privé — A private selection of scent</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' text-anchor='middle' fill='%231A1A1A'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
 <meta name="description" content="Blades Privé — una selección privada de fragancias Designer, Niche y Árabes. Carved by the blade. Finished by the scent." />
 
 <!-- ===================== FONTS ===================== -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
 
 <style>
 /* ===================================================================
@@ -707,17 +710,127 @@ footer{border-top:2px solid #000}
 /* ---- TYPOGRAPHY ---- */
 .eyebrow{color:rgba(0,0,0,.5);letter-spacing:.25em;font-size:.625rem}
 .about-body,.modal-desc{color:#1A1A1A}
+
+/* ===================================================================
+   DESIGN UPGRADE V2 — press feedback · focus rings · contrast budget ·
+   skeleton cards · fav morph · CSS scroll-driven reveals · sillage scrub
+   =================================================================== */
+
+/* ---- tokens: a11y-verified variants of the SAME identity ---- */
+:root{
+  --muted:#6E6E6E;          /* was #8C8C8C — now 4.8:1 on old-white */
+  --blue-text:#4E6B85;      /* dusty blue, deep enough for small text (5.3:1) */
+  --press:cubic-bezier(.25,.46,.45,.94);   /* quick ease-out for tap feedback */
+}
+
+/* ---- contrast budget (WCAG AA on #FAF8F5) ---- */
+.eyebrow{color:rgba(0,0,0,.62)}                       /* 6:1 */
+.btn-blue{color:var(--blue-text)}
+.btn-blue:hover{background:var(--blue-text);border-color:var(--blue-text)}
+.btn-wa{color:var(--blue-text)}
+.btn-wa:hover{background:var(--blue-text);border-color:var(--blue-text)}
+.marquee-row span{color:var(--muted);opacity:1}
+.scroll-cue small{color:var(--muted)}
+.loadmore-wrap .count-txt{color:var(--muted)}
+.ci-vol{color:var(--muted)}
+.modal-fam{color:var(--blue-text)}
+.modal-fam::before{background:var(--blue-text)}
+.ci-price{color:var(--blue-text)}
+.enc-steps .n{color:var(--blue-text)}
+.foot-bottom small{opacity:.6}                        /* 5:1 */
+.catalog-meta #resultCount{opacity:.55}
+
+/* ---- typography refinement: no widows on display copy ---- */
+h1,h2,h3,h4{text-wrap:balance}
+.hero .tagline{text-wrap:balance}   /* "Carved by the blade. / Finished by the scent." — never a widowed word */
+.shead p,.about-body,.enc-note,.modal-desc{text-wrap:pretty}
+
+/* ---- universal press feedback — tap-first (mobile has no hover) ---- */
+.btn{transition:background .5s var(--ease),color .5s var(--ease),border-color .5s var(--ease),transform .12s var(--press)}
+.btn:active{transform:scale(.97)}
+.pill{transition:border-color .4s var(--ease),color .4s var(--ease),background .4s var(--ease),transform .12s var(--press)}
+.pill:active{transform:scale(.95)}
+.icon-btn{transition:color .3s,transform .12s var(--press)}
+.icon-btn:active{transform:scale(.88)}
+.daynight button{transition:background .4s var(--ease),color .4s var(--ease),transform .12s var(--press)}
+.daynight button:active{transform:scale(.95)}
+.soc,.tool-search,.a-ico,.car-nav{transition:border-color .4s var(--ease),color .4s var(--ease),transform .12s var(--press)}
+.soc:active,.tool-search:active,.a-ico:active,.car-nav:active{transform:scale(.9)}
+.qty button:active,.lang button:active{transform:scale(.85)}
+.qty button,.lang button{transition:transform .12s var(--press)}
+.float-wa:active{transform:scale(.92)}
+.to-top.show:active{transform:translateY(0) scale(.92)}
+.chip[data-vol]{cursor:pointer;transition:border-color .3s,color .3s,background .3s,transform .12s var(--press)}
+.chip[data-vol]:active{transform:scale(.95)}
+.a-chip:active,.admin-tabs button:active svg{transform:scale(.93)}
+
+/* ---- focus ring — branded hairline, never browser default ---- */
+:where(a,button,select,[tabindex]):focus-visible{outline:1px solid #000;outline-offset:3px;border-radius:2px}
+.pill:focus-visible,.daynight button:focus-visible{border-radius:999px}
+input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their blue border+glow */
+
+/* ---- primary CTA shimmer — desktop hover only ---- */
+@media(hover:hover) and (pointer:fine){
+  .hero .cta .btn{position:relative;overflow:hidden}
+  .hero .cta .btn::after{content:"";position:absolute;top:0;bottom:0;left:0;width:55%;
+    transform:translateX(-130%) skewX(-18deg);
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);pointer-events:none}
+  .hero .cta .btn:hover::after{transform:translateX(300%) skewX(-18deg);transition:transform .9s cubic-bezier(.22,.61,.36,1)}
+}
+
+/* ---- favorite: real morph (fill blooms + spring pop), not a color swap ---- */
+.fav svg,.modal-fav svg{fill:rgba(91,124,153,0);transition:transform .3s var(--ease),fill .3s var(--ease),color .3s var(--ease)}
+.fav.on svg,.modal-fav.on svg{fill:var(--blue)}
+.fav.pop svg,.modal-fav.pop svg{animation:favpop .5s var(--press) both}
+@keyframes favpop{0%{transform:scale(1)}30%{transform:scale(.72)}62%{transform:scale(1.18)}100%{transform:scale(1)}}
+
+/* ---- skeleton cards — brand-toned shimmer, full card silhouette (zero CLS) ---- */
+.sk-card{background:var(--surface);border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.sk-media{aspect-ratio:4/5;background:linear-gradient(100deg,#F5F1EA 30%,#FCFAF7 50%,#F5F1EA 70%);background-size:200% 100%;animation:sk 1.4s ease-in-out infinite}
+.sk-body{padding:18px 18px 22px;display:flex;flex-direction:column;gap:10px}
+.sk-line{height:10px;border-radius:2px;background:linear-gradient(100deg,#F0EBE2 30%,#F9F6F1 50%,#F0EBE2 70%);background-size:200% 100%;animation:sk 1.4s ease-in-out infinite}
+.sk-line.w40{width:40%}.sk-line.w70{width:70%;height:15px}.sk-line.w55{width:55%;margin-top:8px}
+
+/* ---- "— Favorito" — editorial italic beneath the name (no badge) ---- */
+.card-body .tag-best{position:static;display:block;margin-top:-2px;
+  font-family:var(--font-display);font-style:italic;font-size:12px;letter-spacing:.08em;
+  color:#000;opacity:.6;text-transform:none}
+.card-body .tag-best::before{content:"\2014\00a0";display:inline;width:auto;height:auto;background:none;margin:0;vertical-align:baseline}
+
+/* ---- viewport reveals — compositor-thread CSS scroll-driven where supported
+       (GSAP ScrollTrigger fallback is skipped in JS when this path is active) ---- */
+@supports (animation-timeline: view()){
+  .reveal{animation:reveal-rise both;animation-timeline:view();animation-range:entry 0% cover 32%}
+}
+@keyframes reveal-rise{from{opacity:0;translate:0 44px}to{opacity:1;translate:0 0}}
+
+/* ---- drawer: same spring on desktop as mobile (was stiffer var(--ease)) ---- */
+@media(min-width:560px){
+  .drawer{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+}
+
+/* ---- tap-target floor: logo links reach 44px without visual change ---- */
+.logo{min-height:44px;min-width:44px;align-items:center}
+
+/* ---- reduced motion: new decorations fully off, content visible ---- */
+@media(prefers-reduced-motion:reduce){
+  .reveal{animation:none!important}
+  .sk-media,.sk-line{animation:none!important}
+  .fav.pop svg,.modal-fav.pop svg{animation:none!important}
+  .hero .cta .btn::after{content:none!important}
+}
 </style>
 </head>
 
 <body>
-<script>/* mark JS available so we can pre-hide animated bits without FOUC; reduced-motion CSS overrides this */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim');}catch(e){}})();</script>
+<script>/* mark JS available so we can pre-hide animated bits without FOUC; reduced-motion CSS overrides this.
+   LCP guard: if GSAP hasn't arrived within 2.2s (slow 4G), un-hide the hero so content paints — initAnim skips the intro in that case. */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('anim');setTimeout(function(){if(!window.__bpAnim)document.documentElement.classList.remove('anim');},2200);}}catch(e){}})();</script>
 
 <!-- ============================ NAVBAR ============================ -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="logo" aria-label="Luis Blades — Blades Privé">
-      <img src="assets/luis-blades-logo.png" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
+      <img src="assets/luis-blades-logo.png" fetchpriority="high" width="180" height="180" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
     </a>
 
     <div class="nav-links">
@@ -732,11 +845,11 @@ footer{border-top:2px solid #000}
       </button>
       <button class="icon-btn" id="favBtn" aria-label="Favoritos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
-        <span class="count" id="favCount">0</span>
+        <span class="count" id="favCount" aria-hidden="true">0</span>
       </button>
       <button class="icon-btn" id="cartBtn" aria-label="Carrito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-        <span class="count" id="cartCount">0</span>
+        <span class="count" id="cartCount" aria-hidden="true">0</span>
       </button>
       <div class="lang">
         <button data-lang="es" class="on">ES</button><span class="sep">/</span><button data-lang="en">EN</button>
@@ -757,7 +870,7 @@ footer{border-top:2px solid #000}
 </nav>
 
 <!-- mobile menu -->
-<div class="mmenu" id="mmenu">
+<div class="mmenu" id="mmenu" role="navigation" aria-label="Menú">
   <button class="icon-btn mmenu-close" id="mmenuClose" aria-label="Cerrar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
   </button>
@@ -854,12 +967,12 @@ footer{border-top:2px solid #000}
       <div class="reveal">
         <form id="encForm">
           <div class="field-row">
-            <div class="field"><label data-i18n="enc_name">Nombre</label><input type="text" name="name" required></div>
-            <div class="field"><label>WhatsApp</label><input type="tel" name="phone" required placeholder="8888 8888"></div>
+            <div class="field"><label for="encName" data-i18n="enc_name">Nombre</label><input type="text" id="encName" name="name" required autocomplete="name"></div>
+            <div class="field"><label for="encPhone">WhatsApp</label><input type="tel" id="encPhone" name="phone" required placeholder="8888 8888" autocomplete="tel"></div>
           </div>
-          <div class="field"><label data-i18n="enc_frag">Fragancia o descripción</label><input type="text" name="frag" required data-i18n-ph="enc_frag_ph" placeholder="Ej: Creed Aventus, o algo amaderado"></div>
-          <div class="field"><label data-i18n="enc_budget">Presupuesto</label>
-            <select name="budget">
+          <div class="field"><label for="encFrag" data-i18n="enc_frag">Fragancia o descripción</label><input type="text" id="encFrag" name="frag" required data-i18n-ph="enc_frag_ph" placeholder="Ej: Creed Aventus, o algo amaderado"></div>
+          <div class="field"><label for="encBudget" data-i18n="enc_budget">Presupuesto</label>
+            <select id="encBudget" name="budget">
               <option data-i18n="enc_b1">Hasta ₡60.000</option>
               <option data-i18n="enc_b2">₡60.000 – ₡120.000</option>
               <option data-i18n="enc_b3">₡120.000 – ₡250.000</option>
@@ -909,7 +1022,7 @@ footer{border-top:2px solid #000}
 
     <div class="carousel reveal">
       <button class="car-nav prev" data-car="photoTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
-      <div class="car-track" id="photoTrack"></div>
+      <div class="car-track" id="photoTrack" tabindex="0" role="region" aria-label="Fotos de Luis"></div>
       <button class="car-nav next" data-car="photoTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
 
@@ -919,7 +1032,7 @@ footer{border-top:2px solid #000}
     </div>
     <div class="carousel reveal">
       <button class="car-nav prev" data-car="cutsTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
-      <div class="car-track" id="cutsTrack"></div>
+      <div class="car-track" id="cutsTrack" tabindex="0" role="region" aria-label="Videos de cortes"></div>
       <button class="car-nav next" data-car="cutsTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
   </div>
@@ -965,11 +1078,13 @@ footer{border-top:2px solid #000}
 <div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
 
 <!-- ============================ FLOAT / TOAST / ADMIN ============================ -->
+<aside style="display:contents" aria-label="Accesos rápidos">
 <a class="float-wa" id="floatWa" href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.5 23.5l1.6-5.8a11.2 11.2 0 1 1 4.2 4.1L.5 23.5Zm6.2-3.6 .35.2a9.3 9.3 0 1 0-3.2-3.1l.22.36-.95 3.48 3.58-.94Z"/><path d="M17.5 14.4c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2-.72-.64-1.2-1.42-1.34-1.66-.14-.24 0-.37.1-.49.1-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2 0 1.18.86 2.32.98 2.48.12.16 1.7 2.6 4.12 3.64.58.25 1.03.4 1.38.51.58.18 1.1.16 1.52.1.46-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z"/></svg>
 </a>
 <button class="to-top" id="toTop" aria-label="Arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
-<div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg"></span></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="toastMsg"></span></div>
+</aside>
 
 <div class="admin" id="admin"></div>
 
@@ -1018,7 +1133,7 @@ const STR = {
     cat_eyebrow:'La Colección', cat_title:'Aromas seleccionados',
     cat_sub:'Designer, Niche y Árabe — cada fragancia elegida por carácter, no por catálogo.',
     day:'Día', night:'Noche', f_all:'Todas', f_arabic:'Árabe',
-    bestseller:'Favorito de clientes', soldout:'Agotado', addToCart:'Añadir', viewDetails:'Ver',
+    bestseller:'Favorito', soldout:'Agotado', addToCart:'Añadir', viewDetails:'Ver',
     fav_showing:'Mostrando favoritos', load_more:'Cargar más', added:'Añadido a tu selección',
     fav_added:'Guardado en favoritos', fav_removed:'Quitado de favoritos',
     results_one:'1 fragancia', results_n:'{n} fragancias', showing_n:'Mostrando {a} de {b}',
@@ -1058,7 +1173,7 @@ const STR = {
     cat_eyebrow:'The Collection', cat_title:'A curated edit',
     cat_sub:'Designer, Niche and Arabic — every fragrance chosen for character, not for catalogue.',
     day:'Day', night:'Night', f_all:'All', f_arabic:'Arabic',
-    bestseller:'Client favourite', soldout:'Sold out', addToCart:'Add', viewDetails:'View',
+    bestseller:'Favourite', soldout:'Sold out', addToCart:'Add', viewDetails:'View',
     fav_showing:'Showing favourites', load_more:'Load more', added:'Added to your selection',
     fav_added:'Saved to favourites', fav_removed:'Removed from favourites',
     results_one:'1 fragrance', results_n:'{n} fragrances', showing_n:'Showing {a} of {b}',
@@ -1264,7 +1379,6 @@ function cardHTML(p){
   const faved=S.favs.includes(p.id);
   return `<article class="card${p.in_stock?'':' out'}" data-id="${p.id}">
     <div class="card-media">
-      ${p.is_bestseller?`<span class="tag-best">${tr('bestseller')}</span>`:''}
       <button class="fav${faved?' on':''}" data-fav="${p.id}" aria-label="${tr('m_fav')}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
       </button>
@@ -1273,6 +1387,7 @@ function cardHTML(p){
     <div class="card-body">
       <div class="card-brand">${p.brand}</div>
       <h3 class="card-name">${p.name}</h3>
+      ${p.is_bestseller?`<span class="tag-best">${tr('bestseller')}</span>`:''}
       <div class="card-foot">
         <span class="card-cat">${tr(p.category)}</span>
         ${p.in_stock?`<span class="card-price">${fmt(p.price_crc)}</span>`:`<span class="card-soldout">${tr('soldout')}</span>`}
@@ -1339,14 +1454,17 @@ function toggleFav(id){
   const i=S.favs.indexOf(id);
   if(i>-1){ S.favs.splice(i,1); toast(tr('fav_removed')); } else { S.favs.push(id); toast(tr('fav_added')); }
   saveFavs(); updateFavUI();
-  // update any visible heart for this id
-  $$(`.fav[data-fav="${id}"]`).forEach(b=>b.classList.toggle('on',S.favs.includes(id)));
-  const mf=$('#modalFav'); if(mf&&+mf.dataset.id===id){ mf.classList.toggle('on',S.favs.includes(id)); mf.querySelector('span').textContent=S.favs.includes(id)?tr('m_faved'):tr('m_fav'); }
+  const nowOn=S.favs.includes(id);
+  // update any visible heart for this id — spring "pop" morph when favoriting
+  const pop=b=>{ b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); setTimeout(()=>b.classList.remove('pop'),540); };
+  $$(`.fav[data-fav="${id}"]`).forEach(b=>{ b.classList.toggle('on',nowOn); if(nowOn) pop(b); });
+  const mf=$('#modalFav'); if(mf&&+mf.dataset.id===id){ mf.classList.toggle('on',nowOn); if(nowOn) pop(mf); mf.querySelector('span').textContent=nowOn?tr('m_faved'):tr('m_fav'); }
   if(S.favOnly) refresh(true);
 }
 function updateFavUI(){
   const n=S.favs.length, b=$('#favCount'); b.textContent=n; b.classList.toggle('show',n>0);
   $('#favBtn').style.color=S.favOnly?'var(--blue)':'';
+  $('#favBtn').setAttribute('aria-label',(S.lang==='es'?'Favoritos':'Favourites')+', '+n);
 }
 
 /* ===================================================================
@@ -1443,6 +1561,7 @@ window.removeItem=key=>{ S.cart=S.cart.filter(i=>i.key!==key); saveCart(); updat
 window.closeCart=()=>{ $('#cart').classList.remove('show'); if(!$('#modal').classList.contains('show'))$('#overlay').classList.remove('show'); document.body.style.overflow=''; };
 function updateCart(){
   const n=cartCount(); $('#cartCount').textContent=n; $('#cartCount').classList.toggle('show',n>0);
+  $('#cartBtn').setAttribute('aria-label',(S.lang==='es'?'Carrito':'Cart')+', '+n);
   $('#cartN').textContent=S.cart.length;
   const body=$('#cartBody'), foot=$('#cartFoot');
   if(!S.cart.length){ body.innerHTML=`<div class="cart-empty">${BOTTLE}<p>${tr('cart_empty')}</p><button class="btn" onclick="closeCart();document.getElementById('catalog').scrollIntoView()">${tr('cart_browse')}</button></div>`; foot.style.display='none'; return; }
@@ -1749,26 +1868,42 @@ function reflow(){
     onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
 function initAnim(){
+  window.__bpAnim=true;                        // tells the head LCP-guard the animation path is live
   const html=document.documentElement;
   // reduced-motion or no GSAP: reveal everything, no animation, no broken layout
   if(reduceMotion()||!window.gsap){ html.classList.remove('anim'); return; }
   if(window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
   const m=isMob();
-  // HERO — one orchestrated page-load reveal (letters rise + stagger)
-  const heroEls='.hero h1 .hl,.hero .sub,.hero .tagline,.hero .cta';
-  gsap.set(heroEls,{willChange:'transform'});
-  gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
-  gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
-  const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
-  const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},onComplete:clearWC});
-  tl.to('.hero-eyebrow',{opacity:1,duration:m?.5:.7})
-    .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.65:.9,stagger:m?.05:.08},'-=.15')
-    .to('.hero .sub',{opacity:1,y:0,duration:m?.5:.7},'-=.35')
-    .to('.hero .tagline',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
-    .to('.hero .cta',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
-    .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
-  // SECTION REVEALS on scroll — tighter + earlier trigger on mobile
+  // If the 2.2s LCP guard already un-hid the hero (slow network), skip the intro — no double reveal
+  if(html.classList.contains('anim')){
+    // HERO — one orchestrated page-load reveal (letters rise + stagger)
+    const heroEls='.hero h1 .hl,.hero .sub,.hero .tagline,.hero .cta';
+    gsap.set(heroEls,{willChange:'transform'});
+    gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
+    gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
+    const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
+    const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},onComplete:clearWC});
+    tl.to('.hero-eyebrow',{opacity:1,duration:m?.5:.7})
+      .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.65:.9,stagger:m?.05:.08},'-=.15')
+      .to('.hero .sub',{opacity:1,y:0,duration:m?.5:.7},'-=.35')
+      .to('.hero .tagline',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
+      .to('.hero .cta',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
+      .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
+  }
   if(window.ScrollTrigger){
+    // SIGNATURE — "sillage": leaving the hero, PRIVÉ drifts apart and dissolves like scent.
+    // Scrub-tied, transform/opacity only (compositor-safe on mid-range Android).
+    gsap.to('.hero h1 .hl',{x:i=>(i-2)*(isMob()?16:44),ease:'none',immediateRender:false,
+      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom 30%',scrub:.4,invalidateOnRefresh:true}});
+    gsap.to('.hero h1',{opacity:.06,ease:'none',immediateRender:false,
+      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom 35%',scrub:.4}});
+    gsap.to('.scroll-cue',{opacity:0,ease:'none',immediateRender:false,
+      scrollTrigger:{trigger:'.hero',start:'top top',end:'25% top',scrub:true}});
+  }
+  // SECTION REVEALS — native CSS scroll-driven animation where supported (zero JS cost);
+  // GSAP ScrollTrigger only as the fallback for older engines.
+  const cssReveal=(typeof CSS!=='undefined')&&CSS.supports('animation-timeline: view()');
+  if(window.ScrollTrigger&&!cssReveal){
     const ry=m?35:60, rd=m?.55:.9, rs=m?'top 88%':'top 84%';
     $$('.reveal').forEach(el=>{
       gsap.from(el,{y:ry,opacity:0,duration:rd,ease:'power3.out',
@@ -1777,11 +1912,20 @@ function initAnim(){
         onComplete:()=>{el.style.willChange='';}});
     });
   }
+  // MAGNETIC CTA — cursor-follow strictly on hover-capable fine pointers, never simulated on touch
+  if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+    const cta=document.querySelector('.hero .cta .btn');
+    if(cta){
+      cta.addEventListener('mousemove',e=>{const r=cta.getBoundingClientRect();
+        gsap.to(cta,{x:((e.clientX-r.left)/r.width-.5)*14,y:((e.clientY-r.top)/r.height-.5)*8,duration:.35,ease:'power2.out'});});
+      cta.addEventListener('mouseleave',()=>gsap.to(cta,{x:0,y:0,duration:.55,ease:'elastic.out(1,.5)'}));
+    }
+  }
 }
 async function init(){
   $('#yr').textContent=new Date().getFullYear();
-  // loading skeletons
-  $('#grid').innerHTML=Array.from({length:6},()=>'<div class="skeleton"></div>').join('');
+  // loading skeletons — full card silhouette (media + text lines) so real cards land with zero layout jump
+  $('#grid').innerHTML=Array.from({length:6},()=>'<div class="sk-card" aria-hidden="true"><div class="sk-media"></div><div class="sk-body"><span class="sk-line w40"></span><span class="sk-line w70"></span><span class="sk-line w55"></span></div></div>').join('');
   S.products=await loadProducts();
   if(S.mode) $$('#daynight button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
   setupEvents();
