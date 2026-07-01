@@ -549,10 +549,84 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .a-img-remove{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:10px;display:inline-flex;align-items:center;gap:7px;min-height:38px}
 .a-img-remove:hover{color:#b4533a}
 .a-img-remove svg{width:13px;height:13px}
+
+/* ===================================================================
+   MOBILE-FIRST ANIMATION PASS — snappy, iOS-safe, reduced-motion aware
+   =================================================================== */
+:root{--hl-y:40px}
+@media(max-width:760px){ :root{--hl-y:25px} }
+
+/* hero visible by default (reduced-motion / no-JS safe); .anim pre-hides only when JS present */
+.hero-eyebrow,.hero h1,.hero .sub,.hero .tagline,.hero .cta,.scroll-cue{opacity:1}
+.anim .hero-eyebrow,.anim .scroll-cue{opacity:0}
+.anim .hero .sub,.anim .hero .tagline,.anim .hero .cta{opacity:0;transform:translateY(14px)}
+.anim .hero h1 .hl{opacity:0;transform:translateY(var(--hl-y))}
+.hero{overflow:hidden}               /* contain letter movement — never on <body> */
+.hero h1 .hl{display:inline-block}
+
+/* scroll cue: hairline on desktop, bouncing chevron on mobile */
+.scroll-cue .chev{color:var(--silver)}
+.scroll-cue .chev svg{width:20px;height:20px;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;animation:bounce 1.5s ease-in-out infinite}
+@media(min-width:760px){ .scroll-cue .chev{display:none} }
+@media(max-width:759px){ .scroll-cue .ln{display:none} }
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+/* marquee divider — CSS loop (no scroll-scrub); full-bleed, no horizontal bleed */
+.marquee{overflow:hidden;width:100%;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;background:var(--surface)}
+.marquee-row{display:flex;width:max-content;animation:marq 34s linear infinite;will-change:transform}
+.marquee-row span{font-family:var(--font-display);font-style:italic;font-size:1.35rem;letter-spacing:.05em;color:var(--silver);white-space:nowrap}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(max-width:560px){ .marquee{padding:12px 0} .marquee-row{animation-duration:20s} .marquee-row span{font-size:1rem} }
+
+/* "Cargar más" pulsing-dots loading state */
+.btn.loading{pointer-events:none;position:relative;color:transparent!important}
+.btn.loading::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;transform:translate(-50%,-50%);color:var(--blue);box-shadow:-11px 0 0 0 currentColor,11px 0 0 0 currentColor;animation:dots .9s ease-in-out infinite}
+@keyframes dots{0%,100%{opacity:.35}50%{opacity:1}}
+
+/* card press feedback (touch + click; no hover dependency) */
+.card{transition:transform .18s var(--ease), box-shadow .5s var(--ease)}
+.card:active{transform:scale(.98)}
+
+/* CART — full-screen slide-up on mobile; side drawer on >=560px */
+.drawer{transform:translateY(100%);transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.drawer.show{transform:translateY(0)}
+.drawer-body{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(min-width:560px){
+  .drawer{transform:translateX(100%);transition:transform .42s var(--ease)}
+  .drawer.show{transform:translateX(0)}
+}
+
+/* MODAL — slide up from bottom on mobile; sticky Add-to-Cart; scroll isolation */
+.overlay{touch-action:none}
+.modal-card{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@media(max-width:767px){
+  .modal-card{transform:translateY(100%);transition:transform .35s cubic-bezier(.16,1,.3,1)}
+  .modal.show .modal-card{transform:translateY(0)}
+  .modal-actions{position:sticky;bottom:0;background:var(--bg);padding:14px 0 calc(14px + env(safe-area-inset-bottom));margin-top:6px;border-top:1px solid var(--border);z-index:4}
+}
+
+/* ADMIN mobile — 16px inputs (no iOS auto-zoom), 28px slider thumb */
+input[type=range]::-webkit-slider-thumb{width:28px;height:28px}
+input[type=range]::-moz-range-thumb{width:28px;height:28px}
+@media(max-width:760px){
+  .field input,.field textarea,.field select,.a-filters input,.a-filters select,
+  .admin-login input,.a-form input,.a-form textarea,.a-form select,#searchInput,.a-drop{font-size:16px}
+}
+
+/* carousels — momentum + snap containment on iOS */
+.car-track{overscroll-behavior-x:contain}
+
+/* REDUCED MOTION — kill motion, keep everything visible and laid out */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+  .anim .hero-eyebrow,.anim .hero .sub,.anim .hero .tagline,.anim .hero .cta,.anim .scroll-cue,.anim .hero h1 .hl,.reveal{opacity:1!important;transform:none!important}
+  .marquee-row{animation:none!important}
+}
 </style>
 </head>
 
 <body>
+<script>/* mark JS available so we can pre-hide animated bits without FOUC; reduced-motion CSS overrides this */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('anim');}catch(e){}})();</script>
 
 <!-- ============================ NAVBAR ============================ -->
 <nav class="nav" id="nav">
@@ -619,12 +693,19 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 <!-- ============================== HERO ============================== -->
 <header class="hero">
   <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Une sélection privée · San José</div>
-  <h1>PRIVÉ</h1>
+  <h1 aria-label="PRIVÉ"><span class="hl">P</span><span class="hl">R</span><span class="hl">I</span><span class="hl">V</span><span class="hl">É</span></h1>
   <p class="sub" data-i18n="hero_sub">Una selección privada de aroma.</p>
   <p class="tagline">Carved by the blade. Finished by the scent.</p>
   <div class="cta"><a href="#catalog" class="btn btn-blue" data-i18n="hero_cta">Explorar la Colección</a></div>
-  <div class="scroll-cue"><small data-i18n="scroll">Desliza</small><span class="ln"></span></div>
+  <div class="scroll-cue"><small data-i18n="scroll">Desliza</small><span class="ln"></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></span></div>
 </header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-row">
+    <span>Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;</span>
+    <span>Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;</span>
+  </div>
+</div>
 
 <main>
 <!-- ============================ CATALOG ============================ -->
@@ -721,6 +802,13 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
     </div>
   </div>
 </section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-row">
+    <span>Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;</span>
+    <span>Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;</span>
+  </div>
+</div>
 
 <!-- ===================== LUIS — EL HOMBRE DETRÁS + SUS CORTES ===================== -->
 <section class="section man" id="luis">
@@ -964,6 +1052,9 @@ const tr=k=>T()[k]!==undefined?T()[k]:k;
 const trNote=n=>S.lang==='es'?(NOTE_ES[n]||n):n;
 const fmt=n=>'₡'+Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 const priceFor=(p,v)=>v===50?Math.round(p.price_crc*0.62/500)*500:p.price_crc;
+const mqMobile=window.matchMedia('(max-width:760px)');
+const isMob=()=>mqMobile.matches;
+const reduceMotion=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* consistent thin-line bottle silhouette — identical for every product */
 const BOTTLE = `<svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
@@ -1046,7 +1137,12 @@ function setupCarousels(){
 function lazyVideos(){
   const items=$$('#cutsTrack .car-item[data-video]'); if(!items.length||!('IntersectionObserver'in window))return;
   const io=new IntersectionObserver(es=>{ es.forEach(en=>{ const v=en.target.querySelector('video'); if(!v)return;
-    if(en.isIntersecting){ if(!v.src&&v.dataset.src)v.src=v.dataset.src; v.play().catch(()=>{}); } else { v.pause(); } }); },{rootMargin:'120px',threshold:.25});
+    if(en.isIntersecting){                                  // >= 50% in view
+      if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }   // lazy: load only now
+      const play=()=>{ if(v.readyState>=3) v.play().catch(()=>{}); }; // wait until buffered enough (readyState>=3)
+      if(v.readyState>=3) play(); else v.addEventListener('canplay',play,{once:true});
+    } else { v.pause(); }
+  }); },{threshold:.5});                                     // autoplay only when at least half visible
   items.forEach(it=>{ io.observe(it); const um=it.querySelector('[data-unmute]'); if(um) um.addEventListener('click',ev=>{ ev.stopPropagation(); const v=it.querySelector('video'); v.muted=!v.muted; um.style.color=v.muted?'':'var(--blue)'; if(!v.muted)v.play().catch(()=>{}); }); });
 }
 
@@ -1097,7 +1193,7 @@ function cardHTML(p){
     </div>
   </article>`;
 }
-function renderGrid(animate){
+function renderGrid(animate,fast){
   const list=computeList();
   const grid=$('#grid');
   const slice=list.slice(0,S.visible);
@@ -1108,9 +1204,19 @@ function renderGrid(animate){
   if(list.length>S.visible){ $('#loadMore').style.display=''; } else { $('#loadMore').style.display='none'; }
   $('#loadCount').textContent=tr('showing_n').replace('{a}',slice.length).replace('{b}',list.length);
   updateMeta(slice.length,list.length);
-  if(animate&&window.gsap) gsap.from('#grid .card',{y:24,opacity:0,duration:.7,stagger:.04,ease:'power2.out',clearProps:'all'});
+  if(animate&&window.gsap&&!reduceMotion()){
+    const m=isMob(); const cards=$$('#grid .card');
+    cards.forEach(c=>c.style.willChange='transform,opacity');
+    gsap.from(cards,{y:m?20:24,opacity:0,duration:fast?(m?.2:.3):(m?.4:.6),stagger:fast?(m?.04:.03):(m?.08:.05),ease:'power2.out',clearProps:'all',onComplete:()=>cards.forEach(c=>c.style.willChange='')});
+  }
 }
 function appendMore(){
+  const btn=$('#loadMore'); if(btn.classList.contains('loading'))return;
+  if(reduceMotion()||!window.gsap){ _appendCards(); return; }
+  btn.classList.add('loading');              // pulsing dots — prevents double-tap
+  setTimeout(()=>{ btn.classList.remove('loading'); _appendCards(); },260);
+}
+function _appendCards(){
   const list=computeList();
   const prev=S.visible; S.visible+=12;
   const next=list.slice(prev,S.visible);
@@ -1119,7 +1225,7 @@ function appendMore(){
   const added=[...frag.children];
   added.forEach(el=>grid.appendChild(el));
   bindCards();
-  if(window.gsap) gsap.from(added,{y:24,opacity:0,duration:.7,stagger:.05,ease:'power2.out',clearProps:'all'});
+  if(window.gsap&&!reduceMotion()){ added.forEach(c=>c.style.willChange='transform,opacity'); gsap.from(added,{y:isMob()?20:24,opacity:0,duration:isMob()?.4:.6,stagger:.06,ease:'power2.out',clearProps:'all',onComplete:()=>added.forEach(c=>c.style.willChange='')}); }
   if(list.length<=S.visible) $('#loadMore').style.display='none';
   $('#loadCount').textContent=tr('showing_n').replace('{a}',Math.min(S.visible,list.length)).replace('{b}',list.length);
 }
@@ -1128,7 +1234,7 @@ function updateMeta(shown,total){
   el.textContent=total===1?tr('results_one'):tr('results_n').replace('{n}',total);
   $('#favHint').style.display=S.favOnly?'':'none';
 }
-function refresh(animate){ S.visible=12; renderGrid(animate); }
+function refresh(animate,fast){ S.visible=12; renderGrid(animate,fast); }
 function bindCards(){
   $$('#grid .card').forEach(card=>{
     const id=+card.dataset.id;
@@ -1206,17 +1312,17 @@ function renderModal(){
         <span class="chip${S.modalVol===50?' on':''}" data-vol="50">50 ml · ${fmt(priceFor(p,50))}</span>
         <span class="chip${S.modalVol===100?' on':''}" data-vol="100">100 ml · ${fmt(priceFor(p,100))}</span>
       </div>
+      <div style="margin-bottom:6px">
+        <button class="modal-fav${faved?' on':''}" id="modalFav" data-id="${p.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
+          <span>${faved?tr('m_faved'):tr('m_fav')}</span>
+        </button>
+      </div>
       <div class="modal-actions">
         <button class="btn btn-blue" id="modalAdd"${p.in_stock?'':' disabled style="opacity:.5"'}>${p.in_stock?tr('m_add'):tr('soldout')}</button>
         <button class="btn btn-wa" id="modalInq">
           <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M.5 23.5l1.6-5.8a11.2 11.2 0 1 1 4.2 4.1L.5 23.5Zm6.2-3.6 .35.2a9.3 9.3 0 1 0-3.2-3.1l.22.36-.95 3.48 3.58-.94Z"/></svg>
           ${tr('m_inquiry')}
-        </button>
-      </div>
-      <div style="margin-top:14px">
-        <button class="modal-fav${faved?' on':''}" id="modalFav" data-id="${p.id}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
-          <span>${faved?tr('m_faved'):tr('m_fav')}</span>
         </button>
       </div>
     </div>`;
@@ -1549,21 +1655,40 @@ function setupEvents(){
   window.addEventListener('hashchange',()=>{ if(location.hash==='#admin')openAdmin(); });
 }
 function reflow(){
-  if(window.gsap){ gsap.to('#grid .card',{opacity:0,y:10,duration:.28,stagger:.015,ease:'power1.in',onComplete:()=>refresh(true)}); }
-  else refresh(false);
+  if(!window.gsap||reduceMotion()){ refresh(false); return; }
+  const m=isMob();
+  gsap.killTweensOf('#grid .card');   // rapid-tap safe: never pile up or leave a half state
+  gsap.to('#grid .card',{opacity:0,y:8,duration:m?.15:.26,stagger:m?.008:.015,ease:'power1.in',
+    onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
 function initAnim(){
-  if(!window.gsap) return;
+  const html=document.documentElement;
+  // reduced-motion or no GSAP: reveal everything, no animation, no broken layout
+  if(reduceMotion()||!window.gsap){ html.classList.remove('anim'); return; }
   if(window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-  const tl=gsap.timeline({delay:.15,defaults:{ease:'power2.out'}});
-  tl.to('.hero-eyebrow',{opacity:1,duration:.8})
-    .to('.hero h1',{opacity:1,duration:1.1},'-=.5')
-    .to('.hero .sub',{opacity:1,duration:.9},'-=.7')
-    .to('.hero .tagline',{opacity:1,duration:.9},'-=.6')
-    .to('.hero .cta',{opacity:1,duration:.9},'-=.6')
-    .to('.scroll-cue',{opacity:1,duration:.9},'-=.4');
+  const m=isMob();
+  // HERO — one orchestrated page-load reveal (letters rise + stagger)
+  const heroEls='.hero h1 .hl,.hero .sub,.hero .tagline,.hero .cta';
+  gsap.set(heroEls,{willChange:'transform'});
+  gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
+  gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
+  const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
+  const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},onComplete:clearWC});
+  tl.to('.hero-eyebrow',{opacity:1,duration:m?.5:.7})
+    .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.65:.9,stagger:m?.05:.08},'-=.15')
+    .to('.hero .sub',{opacity:1,y:0,duration:m?.5:.7},'-=.35')
+    .to('.hero .tagline',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
+    .to('.hero .cta',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
+    .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
+  // SECTION REVEALS on scroll — tighter + earlier trigger on mobile
   if(window.ScrollTrigger){
-    $$('.reveal').forEach(el=>gsap.from(el,{y:40,opacity:0,duration:.9,ease:'power2.out',scrollTrigger:{trigger:el,start:'top 86%'}}));
+    const ry=m?35:60, rd=m?.55:.9, rs=m?'top 88%':'top 84%';
+    $$('.reveal').forEach(el=>{
+      gsap.from(el,{y:ry,opacity:0,duration:rd,ease:'power3.out',
+        scrollTrigger:{trigger:el,start:rs,once:true},
+        onStart:()=>{el.style.willChange='transform,opacity';},
+        onComplete:()=>{el.style.willChange='';}});
+    });
   }
 }
 async function init(){
