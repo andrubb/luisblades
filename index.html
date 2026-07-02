@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#FAF8F5" />
 <title>Blades Privé — A private selection of scent</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' text-anchor='middle' fill='%231A1A1A'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' text-anchor='middle' fill='%231A1A1A'%3EB%3C/text%3E%3C/svg%3E">
 <meta name="description" content="Blades Privé — una selección privada de fragancias Designer, Niche y Árabes. Carved by the blade. Finished by the scent." />
 
 <!-- ===================== FONTS ===================== -->
@@ -397,6 +397,16 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:clamp(56p
 .admin-tabs button svg{width:20px;height:20px;stroke-width:1.4}
 .admin-tabs button.on{color:var(--blue)}
 
+.a-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+@media(min-width:900px){.a-stats{grid-template-columns:repeat(4,1fr)}}
+.a-stat{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:18px}
+.a-stat .v{font-family:var(--font-display);font-size:2rem;color:var(--blue);line-height:1}
+.a-stat .l{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+/* labeled section headings inside admin forms */
+.a-sect{font-family:var(--font-struct);font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  color:#000;margin:26px 0 14px;padding-top:18px;border-top:1px solid var(--border)}
+.a-sect:first-child{margin-top:0;padding-top:0;border-top:none}
+
 .a-list{display:flex;flex-direction:column;gap:10px}
 .a-item{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:12px 14px;display:flex;align-items:center;gap:14px}
 .a-thumb{width:42px;height:52px;border:1px solid var(--border);border-radius:3px;flex:none;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
@@ -634,7 +644,6 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 .hero .cta .btn:hover{background:#000;border-color:#000;color:#fff}
 .hero::before{content:"B";position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:0;font-family:var(--font-display);font-weight:500;font-size:30vw;line-height:1;color:#000;opacity:.03;pointer-events:none}
 .hero::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:1px;height:80px;background:#000;opacity:.2;z-index:0}
-.hero-mark{position:absolute;top:calc(var(--nav-h) + 20px);right:var(--pad);z-index:1;font-family:var(--font-display);font-size:1.2rem;color:#000;opacity:.15;pointer-events:none}
 
 /* ---- SECTION NUMERALS (luxury magazine pagination) ---- */
 .sec-num{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;pointer-events:none}
@@ -645,7 +654,6 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 #encargos::before{content:"05"} #about::before{content:"06"} #luis::before{content:"07"} #faq::before{content:"08"}
 
 /* ---- DECORATIVE MARKS / WATERMARKS ---- */
-#about::after{content:"\2726";position:absolute;top:clamp(22px,4vw,40px);right:var(--pad);font-family:var(--font-display);font-size:1.1rem;color:#000;opacity:.15;pointer-events:none}
 .encargos{overflow:hidden}
 #encargos::after{content:"?";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-display);font-weight:500;font-size:25vw;line-height:1;color:#000;opacity:.025;pointer-events:none;z-index:0}
 .encargos-inner{position:relative;z-index:1}
@@ -871,8 +879,6 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 .ed-inner .bottle .accent{stroke:var(--celeste)}
 .ed-line{font-family:var(--font-display);font-style:italic;font-weight:300;
   font-size:clamp(1.5rem,5.4vw,2.4rem);line-height:1.35;color:var(--text);letter-spacing:.01em;max-width:22ch}
-.ed-break::before{content:"✦";position:absolute;top:clamp(26px,5vw,48px);left:50%;transform:translateX(-50%);
-  font-family:var(--font-display);font-size:1rem;color:#000;opacity:.16;pointer-events:none}
 
 /* ---- SUS CORTES — gallery grid (placeholder-intentional) ---- */
 .cuts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,2vw,20px)}
@@ -1007,11 +1013,7 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
    =================================================================== */
 :root{--gold:#C2A25F}   /* champagne — premium/exclusive signal only */
 
-/* ---- gold: the ✦ family + featured marks ---- */
-.hero-mark{color:var(--gold);opacity:.65}
-#about::after{color:var(--gold);opacity:.55}
-.ed-break::before{color:var(--gold);opacity:.65}
-.fl-star{color:var(--gold);font-size:.7rem;margin-right:7px;vertical-align:1px}
+/* gold remains a premium signal only: connector endpoint + CTA glow */
 
 /* ---- CTA hover glow: the one moment gold meets celeste ---- */
 @media(hover:hover) and (pointer:fine){
@@ -1068,14 +1070,49 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 .fq-name{font-family:var(--font-display);font-size:1.5rem;line-height:1.15}
 .fq-note{font-family:var(--font-display);font-style:italic;color:var(--muted);font-size:1.02rem;max-width:40ch}
 .fq-acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;align-items:center}
-.fq-spark{position:absolute;left:50%;top:34%;pointer-events:none}
-.fq-spark i{position:absolute;font-style:normal;color:var(--gold);font-size:1rem;opacity:0}
 
 /* v5 reduced-motion */
 @media(prefers-reduced-motion:reduce){
   .how-line-fill{transform:none!important}
-  .fq-spark{display:none}
 }
+
+/* ===================================================================
+   DESIGN UPGRADE V7 — ink layering + the silver (steel) voice
+   Rhythm: light (hero→encargos) → INK (ed-break) → light (about→cortes)
+   → INK (faq) → light (footer). The two dark plates bracket the human
+   middle of the page: the mood break sets it up, the trust section
+   closes it. Accent jobs: celeste = structure · silver = steel hairlines
+   · gold = premium signal (connector endpoint, CTA glow) only.
+   =================================================================== */
+:root{--ink:#101010;--ivory:#FAF8F5}
+
+/* ---- INK PLATE 1: editorial break ---- */
+.ed-break{background:radial-gradient(130% 100% at 50% 42%,#181818 38%,#0B0B0B 100%);
+  border-top:1px solid rgba(192,192,194,.28);border-bottom:1px solid rgba(192,192,194,.28)}
+.ed-inner .bottle{color:var(--silver);opacity:.13}
+.ed-inner .bottle .accent{stroke:var(--celeste)}
+.ed-line{color:var(--ivory)}
+.ed-line::after{content:"";display:block;width:74px;height:1px;background:var(--silver);opacity:.6;margin:26px auto 0}
+
+/* ---- INK PLATE 2: FAQ (trust reads signed, serious) ---- */
+#faq{background:var(--ink)}
+#faq::before{color:var(--ivory)}                      /* section numeral 08 */
+#faq .shead .line{background:rgba(192,192,194,.45)}
+#faq .eyebrow{color:rgba(250,248,245,.6)}             /* 8.9:1 on ink */
+#faq .struct-h{color:var(--ivory)}                    /* 17.9:1 */
+#faq .faq-list{border-top-color:rgba(250,248,245,.85)}
+#faq .faq-list details{border-bottom-color:rgba(192,192,194,.18)}
+#faq .faq-list details:last-child{border-bottom-color:rgba(250,248,245,.85)}
+#faq .faq-list summary .q{color:var(--ivory)}
+#faq .faq-list summary svg{color:var(--ivory)}
+#faq .faq-list .a{color:#CFCAC2}                      /* serif answers — 11.4:1 */
+#faq .faq-list summary:focus-visible{outline:1px solid var(--ivory);outline-offset:3px;border-radius:2px}
+
+/* ---- SILVER — the steel voice, formalized ----
+   hairline borders on the ink plates (above), the shead vertical line,
+   the scroll-cue line, the eye-art hairlines, and: */
+.meter-track{background:#DBDBDD}                       /* modal meters read as steel */
+.faq-list summary:focus-visible{outline:1px solid #000;outline-offset:3px;border-radius:2px}  /* light-context default */
 </style>
 </head>
 
@@ -1148,7 +1185,6 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 <!-- ============================== HERO ============================== -->
 <header class="hero">
   <span class="sec-num" aria-hidden="true">01</span>
-  <span class="hero-mark" aria-hidden="true">✦</span>
   <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Une sélection privée · San José</div>
   <h1 aria-label="PRIVÉ"><span class="hl">P</span><span class="hl">R</span><span class="hl">I</span><span class="hl">V</span><span class="hl">É</span></h1>
   <p class="sub" data-i18n="hero_sub">Una selección privada de aroma.</p>
@@ -1344,7 +1380,6 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
           <path class="ea-s" pathLength="1" d="M74 438 258 148 318 192 134 482 Z" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
           <path class="ea-s" pathLength="1" d="M252 158 296 92 336 121 292 187" stroke="#1A1A1A" stroke-width="2.2" stroke-linejoin="round"/>
           <circle cx="313" cy="106" r="2.6" fill="#C2A25F"/>
-          <text x="52" y="84" font-family="Georgia,serif" font-size="17" fill="#C2A25F" opacity=".55">✦</text>
         </svg>
         <span class="eye-tint"></span>
       </div>
@@ -1525,7 +1560,7 @@ const S = {
   favs: JSON.parse(localStorage.getItem('bp_favs') || '[]'),
   whatsapp: localStorage.getItem('bp_whatsapp') || '50672164901',
   adminPass: localStorage.getItem('bp_admin_pass') || 'Blades1317',
-  adminTab: 'prod',
+  adminTab: 'dash',
   adminSel: new Set(), adminQ:'', adminCat:'all', adminStock:'all',
   editingId: null,
   modalP: null, modalVol: 100, modalQty: 1
@@ -1800,7 +1835,7 @@ function renderCuts(){
     if(/\.mp4($|\?)/i.test(u)) return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
-  lazyVideos();
+  lazyVideos(); queueRefresh();
 }
 
 /* CURATOR PICKS — is_featured products (bestsellers as fallback), why-line per pick */
@@ -1815,7 +1850,7 @@ function renderFeatured(){
     return `<div class="feat-card" data-id="${p.id}" role="button" tabindex="0">
       <div class="feat-media">${imgFor(p)}</div>
       <div class="feat-label">
-        <span class="fl-cat"><span class="fl-star" aria-hidden="true">✦</span>${tr(p.category)} · ${tr(p.family)}</span>
+        <span class="fl-cat">${tr(p.category)} · ${tr(p.family)}</span>
         <span class="fl-name">${p.brand} — ${p.name}</span>
         ${note?`<p class="fl-note">${note}</p>`:''}
       </div>
@@ -1826,6 +1861,7 @@ function renderFeatured(){
     c.addEventListener('click',open);
     c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
   });
+  queueRefresh();
 }
 
 /* ===================================================================
@@ -1861,7 +1897,6 @@ function renderFinder(){
     const note=(S.lang==='es'?p.featured_note_es:p.featured_note_en)
       ||((S.lang==='es'?p.description_es:p.description_en)||'').split('.')[0]+'.';
     box.innerHTML=`<div class="fq-result" id="fqResult">
-      <div class="fq-spark" aria-hidden="true"><i>✦</i><i>✦</i><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>
       <span class="eyebrow">${tr('fq_res')}</span>
       <div class="fq-media">${imgFor(p)}</div>
       <div class="fq-name">${p.brand} — ${p.name}</div>
@@ -1874,10 +1909,7 @@ function renderFinder(){
     $('#fqView').addEventListener('click',()=>openModal(p.id));
     $('#fqAgain').addEventListener('click',()=>{FQ.step=0;FQ.occ=null;FQ.int=null;renderFinder();});
     if(window.gsap&&!reduceMotion()){
-      gsap.from('#fqResult',{scale:.92,opacity:0,duration:.65,ease:'elastic.out(1,.6)'});
-      $$('.fq-spark i').forEach((el,i)=>{const a=(i/6)*Math.PI*2;   // gold ✦ burst
-        gsap.fromTo(el,{x:0,y:0,opacity:1,scale:.5},
-          {x:Math.cos(a)*92,y:Math.sin(a)*60,opacity:0,scale:1.2,duration:.9,delay:.1,ease:'power2.out'});});
+      gsap.from('#fqResult',{scale:.92,opacity:0,duration:.65,ease:'elastic.out(1,.6)'});   // celebration = the elastic pop
     }
   }
   $$('#finderBox .fq-opt').forEach(b=>b.addEventListener('click',()=>{
@@ -1885,6 +1917,7 @@ function renderFinder(){
     renderFinder();
   }));
   const bk=$('#fqBack'); if(bk) bk.addEventListener('click',()=>{FQ.step=0;renderFinder();});
+  queueRefresh();   // finder box height varies per step
 }
 
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
@@ -1979,6 +2012,7 @@ function renderGrid(animate,fast){
     cards.forEach(c=>c.style.willChange='transform,opacity');
     gsap.from(cards,{y:m?20:24,opacity:0,duration:fast?(m?.2:.3):(m?.4:.6),stagger:fast?(m?.04:.03):(m?.08:.05),ease:'power2.out',clearProps:'all',onComplete:()=>cards.forEach(c=>c.style.willChange='')});
   }
+  queueRefresh();   // grid height changed — sections below moved
 }
 function appendMore(){
   const btn=$('#loadMore'); if(btn.classList.contains('loading'))return;
@@ -1998,6 +2032,7 @@ function _appendCards(){
   if(window.gsap&&!reduceMotion()){ added.forEach(c=>c.style.willChange='transform,opacity'); gsap.from(added,{y:isMob()?20:24,opacity:0,duration:isMob()?.4:.6,stagger:.06,ease:'power2.out',clearProps:'all',onComplete:()=>added.forEach(c=>c.style.willChange='')}); }
   if(list.length<=S.visible) $('#loadMore').style.display='none';
   $('#loadCount').textContent=tr('showing_n').replace('{a}',Math.min(S.visible,list.length)).replace('{b}',list.length);
+  queueRefresh();
 }
 function updateMeta(shown,total){
   const el=$('#resultCount');
@@ -2175,7 +2210,7 @@ function applyLang(lang){
 function openAdmin(){ $('#admin').classList.add('show'); document.body.style.overflow='hidden'; renderAdmin(); }
 function closeAdmin(){ $('#admin').classList.remove('show'); document.body.style.overflow=''; if(location.hash==='#admin') history.replaceState(null,'',location.pathname); }
 const authed=()=>sessionStorage.getItem('bp_admin')==='1';
-const I={prod:'<path d="M20.5 7.3 12 2.5 3.5 7.3v9.4L12 21.5l8.5-4.8z"/><path d="m3.6 7.4 8.4 4.8 8.4-4.8"/><path d="M12 21.5v-9.3"/>',add:'<path d="M12 5v14M5 12h14"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'};
+const I={dash:'<rect x="3" y="3" width="7.5" height="9" rx="1.2"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.2"/><rect x="13.5" y="12" width="7.5" height="9" rx="1.2"/><rect x="3" y="16" width="7.5" height="5" rx="1.2"/>',prod:'<path d="M20.5 7.3 12 2.5 3.5 7.3v9.4L12 21.5l8.5-4.8z"/><path d="m3.6 7.4 8.4 4.8 8.4-4.8"/><path d="M12 21.5v-9.3"/>',add:'<path d="M12 5v14M5 12h14"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'};
 function renderAdmin(){
   const root=$('#admin');
   if(!authed()){
@@ -2193,7 +2228,7 @@ function renderAdmin(){
     setTimeout(()=>$('#apass').focus(),60);
     return;
   }
-  const tabs=[['prod','Productos',I.prod],['add','Agregar',I.add],['set','Ajustes',I.set]];
+  const tabs=[['dash','Panel',I.dash],['prod','Productos',I.prod],['add','Agregar',I.add],['set','Ajustes',I.set]];
   root.innerHTML=`<div class="admin-shell">
     <aside class="admin-side">
       <div class="brand"><svg class="lb-mark" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4l5 5L9 21z"/><path d="m16 8 5 5"/><path d="M27 12h9"/><path d="M30 17h6"/></svg><b>Privé</b></div>
@@ -2209,9 +2244,32 @@ function renderAdmin(){
 }
 function renderAdminTab(){
   const m=$('#amain'); const tab=S.adminTab;
+  if(tab==='dash') return adminDash(m);
   if(tab==='set') return adminSettings(m);
-  if(tab==='add'||S.editingId!==null) return adminForm(m);
+  // FIX: the Agregar TAB used to land here with editingId=null and crash on an
+  // undefined product (blank panel). The tab now always opens a fresh form.
+  if(tab==='add'){ if(S.editingId===null) S.editingId='new'; return adminForm(m); }
+  if(S.editingId!==null) return adminForm(m);
   return adminProducts(m);
+}
+function adminDash(m){
+  const P=S.products, byc=c=>P.filter(p=>p.category===c).length;
+  const stat=(v,l)=>`<div class="a-stat"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+  m.innerHTML=`<div class="admin-topbar"><div><h1>Panel</h1><div class="sub">Resumen de la tienda</div></div></div>
+    <div class="a-stats">
+      ${stat(P.length,'Productos')}
+      ${stat(P.filter(p=>p.in_stock).length,'En stock')}
+      ${stat(P.filter(p=>p.is_bestseller).length,'Favoritos ★')}
+      ${stat(P.filter(p=>p.is_featured).length,'Curador')}
+    </div>
+    <div class="a-stats" style="margin-top:12px">
+      ${stat(byc('Designer'),'Designer')}${stat(byc('Niche'),'Niche')}${stat(byc('Arabic'),'Árabe')}
+      ${stat(P.filter(p=>!p.in_stock).length,'Agotados')}
+    </div>
+    <div class="a-stats" style="margin-top:12px;grid-template-columns:1fr">
+      ${stat(fmt(P.reduce((s,p)=>s+p.price_crc,0)).replace('₡','₡ '),'Valor del catálogo')}
+    </div>
+    <div class="a-note" style="margin-top:18px">Las ediciones se guardan localmente y, con la anon key de Supabase configurada, se sincronizan a la nube.</div>`;
 }
 const CHK='<svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5"/></svg>';
 function adminFilterList(){
@@ -2226,7 +2284,7 @@ function aItemHTML(p){
   return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
     <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
     <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
-    <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · ✦':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
+    <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
     <div class="a-acts">
       <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
       <button class="a-ico danger" data-del="${p.id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
@@ -2286,6 +2344,7 @@ function adminForm(m){
   m.innerHTML=`<div class="admin-topbar"><div><h1>${isNew?'Nueva fragancia':'Editar'}</h1><div class="sub">${isNew?'Añade un producto':p.brand+' '+p.name}</div></div>
     <button class="admin-exit" id="aBack">← Volver</button></div>
     <div class="a-form">
+      <div class="a-sect">Información básica</div>
       <div class="a-grid2">
         <div class="field"><label>Marca</label><input id="f_brand" value="${p.brand}"></div>
         <div class="field"><label>Nombre</label><input id="f_name" value="${p.name}"></div>
@@ -2295,7 +2354,8 @@ function adminForm(m){
         <div class="field"><label>Imagen (URL)</label><input id="f_img" value="${p.image_url}" placeholder="https://… (opcional)"></div>
       </div>
 
-      <div class="block-label" style="margin:8px 0 12px;color:var(--muted)">Imagen — subir desde dispositivo</div>
+      <div class="a-sect">Imagen</div>
+      <div class="block-label" style="margin:8px 0 12px;color:var(--muted)">Subir desde dispositivo (o URL arriba)</div>
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px">
         <div class="a-thumb a-imgprev" id="f_prev">${p.image_url?`<img src="${p.image_url}" style="width:100%;height:100%;object-fit:contain" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
         <div style="flex:1"><div class="a-drop" id="f_drop">Toca para elegir o arrastra una imagen aquí<input type="file" id="f_file" accept="image/*" style="display:none"></div>
@@ -2303,22 +2363,28 @@ function adminForm(m){
         </div>
       </div>
 
+      <div class="a-sect">Pirámide olfativa</div>
       <div class="field"><label>Notas de salida (coma)</label><input id="f_top" value="${p.top_notes.join(', ')}"></div>
       <div class="field"><label>Notas de corazón (coma)</label><input id="f_heart" value="${p.heart_notes.join(', ')}"></div>
       <div class="field"><label>Notas de fondo (coma)</label><input id="f_base" value="${p.base_notes.join(', ')}"></div>
 
+      <div class="a-sect">Perfil — intensidad, duración, proyección</div>
+
       ${['intensity','longevity','sillage'].map(k=>{const lbl={intensity:'Intensidad',longevity:'Duración',sillage:'Proyección'}[k];return `<div class="a-slider"><div class="top"><span>${lbl}</span><b id="lab_${k}">${p[k]}/5</b></div><input type="range" min="1" max="5" value="${p[k]}" id="f_${k}" oninput="document.getElementById('lab_${k}').textContent=this.value+'/5'"></div>`;}).join('')}
 
+      <div class="a-sect">Ocasiones y estaciones</div>
       <div class="block-label" style="margin:6px 0 10px;color:var(--muted)">Ocasiones</div>
       <div class="a-chips" id="f_occ">${occAll.map(o=>`<span class="a-chip${p.occasions.includes(o)?' on':''}" data-v="${o}">${tr(o)}</span>`).join('')}</div>
       <div class="block-label" style="margin:16px 0 10px;color:var(--muted)">Estaciones</div>
       <div class="a-chips" id="f_sea">${seaAll.map(s=>`<span class="a-chip${p.seasons.includes(s)?' on':''}" data-v="${s}">${tr(s)}</span>`).join('')}</div>
 
-      <div class="field" style="margin-top:18px"><label>Descripción (Español)</label><textarea id="f_des">${p.description_es}</textarea></div>
+      <div class="a-sect">Descripciones</div>
+      <div class="field"><label>Descripción (Español)</label><textarea id="f_des">${p.description_es}</textarea></div>
       <div class="field"><label>Descripción (English)</label><textarea id="f_den">${p.description_en}</textarea></div>
 
+      <div class="a-sect">Estado y curaduría</div>
       <div class="a-toggle-row"><span>Favorito de clientes</span><div class="toggle${p.is_bestseller?' on':''}" id="f_best"></div></div>
-      <div class="a-toggle-row"><span>✦ Selección del curador</span><div class="toggle${p.is_featured?' on':''}" id="f_feat"></div></div>
+      <div class="a-toggle-row"><span>Selección del curador</span><div class="toggle${p.is_featured?' on':''}" id="f_feat"></div></div>
       <div id="f_featFields" style="display:${p.is_featured?'block':'none'}">
         <div class="field"><label>Nota del curador (Español)</label><input id="f_fnes" value="${(p.featured_note_es||'').replace(/"/g,'&quot;')}" placeholder="Una línea: por qué esta fragancia"></div>
         <div class="field"><label>Curator note (English)</label><input id="f_fnen" value="${(p.featured_note_en||'').replace(/"/g,'&quot;')}" placeholder="One line: why this one"></div>
@@ -2370,14 +2436,17 @@ function saveProduct(isNew,id){
 function adminSettings(m){
   m.innerHTML=`<div class="admin-topbar"><div><h1>Ajustes</h1><div class="sub">Configuración</div></div></div>
     <div class="a-form" style="max-width:520px">
+      <div class="a-sect">Contacto</div>
       <div class="field"><label>WhatsApp (sin +)</label><input id="s_wa" value="${S.whatsapp}" inputmode="numeric"></div>
       <div class="field"><label>Horario de respuesta (línea del pie de página)</label><input id="s_hours" value="${S.hours.replace(/"/g,'&quot;')}" placeholder="Ej: Lun–Sáb, 9am–7pm · San José, CR"></div>
+      <div class="a-sect">Catálogo e idioma</div>
       <div class="field"><label>Modo del catálogo por defecto</label><select id="s_mode">
         <option value=""${!localStorage.getItem('bp_mode_default')?' selected':''}>Sin preferencia</option>
         <option value="day"${localStorage.getItem('bp_mode_default')==='day'?' selected':''}>Día</option>
         <option value="night"${localStorage.getItem('bp_mode_default')==='night'?' selected':''}>Noche</option>
       </select></div>
       <div class="field"><label>Idioma por defecto</label><select id="s_lang"><option value="es"${S.lang==='es'?' selected':''}>Español</option><option value="en"${S.lang==='en'?' selected':''}>English</option></select></div>
+      <div class="a-sect">Seguridad</div>
       <div class="field"><label>Cambiar contraseña</label><input id="s_pass" type="text" placeholder="Nueva contraseña (dejar vacío = sin cambio)"></div>
       <div class="a-form-actions"><button class="btn btn-blue" id="s_save">Guardar</button></div>
       <div class="a-note" style="margin-top:18px">La contraseña es una protección básica del lado del cliente, no seguridad real. Para datos sensibles usa las políticas RLS de Supabase.</div>
@@ -2588,6 +2657,21 @@ function buildHow(){
     .to({},{duration:1});
 }
 
+/* ---- layout-settle refresh (one shared utility) ----
+   ScrollTrigger positions are measured at build time; web fonts (Cormorant/
+   Jost/Archivo), image decodes, and re-rendered content (grid filters, admin
+   edits, Supabase-sourced products) all shift layout AFTER that. Rather than
+   per-mechanic checks (the matchMedia contexts stay as-is), we re-measure
+   everything with a debounced ScrollTrigger.refresh() whenever layout settles. */
+let _rq=null;
+function queueRefresh(){ if(!window.ScrollTrigger) return; clearTimeout(_rq); _rq=setTimeout(()=>ScrollTrigger.refresh(),150); }
+function armSettleRefresh(){
+  if(!window.ScrollTrigger) return;
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(queueRefresh);
+  Promise.allSettled($$('img[src]').map(im=>im.decode?im.decode():Promise.resolve())).then(queueRefresh);
+  window.addEventListener('load',queueRefresh,{once:true});
+}
+
 function initAnim(){
   window.__bpAnim=true;                        // tells the head LCP-guard the animation path is live
   const html=document.documentElement;
@@ -2630,6 +2714,7 @@ function initAnim(){
     buildCuratorCross();
     buildFilm();
     window.__fxReady=true;
+    armSettleRefresh();   // re-measure all six mechanics once fonts/images/late layout settle
   }
   // SECTION REVEALS — native CSS scroll-driven animation where supported (zero JS cost);
   // GSAP ScrollTrigger only as the fallback for older engines.
