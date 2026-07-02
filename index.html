@@ -2447,7 +2447,7 @@ function reflow(){
     onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
 /* ---------------- v4 scroll choreography — 5 distinct mechanics ---------------- */
-let worldsTl=null, crossTl=null;
+let worldsTl=null;
 
 /* Mechanic 1 — HERO EXIT: short pinned handoff. Sillage drift + scale-down/fade
    while Tres mundos rises over it. pinSpacing:false → building it late (post-intro)
@@ -2477,42 +2477,87 @@ function buildWorlds(){
   worldsTl.fromTo('#worlds .wb',{opacity:.1,y:m?12:22},{opacity:1,y:0,stagger:.14,ease:'none'});
 }
 
-/* Mechanic 3 — CURATOR: pinned crossfade with celeste counter. DESKTOP ONLY —
-   mobile falls back to the normal stacked-card scroll reveal (no pin). */
+/* Mechanic 3 — CURATOR: pinned crossfade with celeste counter, DESKTOP ONLY.
+   gsap.matchMedia() owns the breakpoint + reduced-motion branches: crossing
+   900px or toggling reduced-motion mid-session auto-reverts/rebuilds. The
+   instance is re-registered on language/product re-renders because the card
+   nodes themselves are rebuilt. */
+let mmCurator=null;
 function buildCuratorCross(){
   if(!window.gsap||!window.ScrollTrigger) return;
+  if(mmCurator){ mmCurator.revert(); mmCurator=null; }
   const cur=$('.curator'); if(!cur) return;
-  if(crossTl){ if(crossTl.scrollTrigger) crossTl.scrollTrigger.kill(true); crossTl.kill(); crossTl=null; }
-  const cards=$$('#featured .feat-card'), counter=$('#curCount');
-  const on=!reduceMotion()&&matchMedia('(min-width:900px)').matches&&cards.length>1;
-  cur.classList.toggle('cross',on);
-  if(!on) return;
-  gsap.set(cards,{opacity:0,zIndex:1}); gsap.set(cards[0],{opacity:1,zIndex:2});
-  const n=cards.length, pad=v=>String(v).padStart(2,'0');
-  counter.textContent=pad(1)+' / '+pad(n);
-  crossTl=gsap.timeline({scrollTrigger:{trigger:cur,start:'top 12%',end:'+='+(n*65)+'%',
-    pin:true,scrub:.35,anticipatePin:1,
-    onUpdate:st=>{ counter.textContent=pad(Math.min(n,Math.floor(st.progress*n)+1))+' / '+pad(n); }}});
-  for(let i=1;i<n;i++){
-    crossTl.to(cards[i-1],{opacity:0,duration:.5},i)
-           .to(cards[i],{opacity:1,duration:.5},i);
-  }
-  crossTl.to({},{duration:.55});   // hold on the last pick before unpin
+  mmCurator=gsap.matchMedia();
+  mmCurator.add({desk:'(min-width: 900px)',reduce:'(prefers-reduced-motion: reduce)'},ctx=>{
+    const cards=$$('#featured .feat-card'), counter=$('#curCount');
+    if(ctx.conditions.reduce||!ctx.conditions.desk||cards.length<2) return;
+    cur.classList.add('cross');
+    gsap.set(cards,{opacity:0,zIndex:1}); gsap.set(cards[0],{opacity:1,zIndex:2});
+    const n=cards.length, pad=v=>String(v).padStart(2,'0');
+    counter.textContent=pad(1)+' / '+pad(n);
+    const tl=gsap.timeline({scrollTrigger:{trigger:cur,start:'top 12%',end:'+='+(n*65)+'%',
+      pin:true,scrub:.35,anticipatePin:1,
+      onUpdate:st=>{ counter.textContent=pad(Math.min(n,Math.floor(st.progress*n)+1))+' / '+pad(n); }}});
+    for(let i=1;i<n;i++){
+      tl.to(cards[i-1],{opacity:0,duration:.5},i)
+        .to(cards[i],{opacity:1,duration:.5},i);
+    }
+    tl.to({},{duration:.55});   // hold on the last pick before unpin
+    return ()=>cur.classList.remove('cross');   // class isn't GSAP-tracked — clean up ourselves
+  });
 }
 
 /* Mechanic 5 — FILMSTRIP: pin the photo stage, translate the track horizontally
    as the user scrolls vertically. DESKTOP ONLY — mobile keeps the native
-   horizontal scroll-snap carousel (no gesture hijacking). */
+   horizontal scroll-snap carousel. gsap.matchMedia() reverts the pin + track
+   transform automatically when dropping below 900px or under reduced motion. */
+let mmFilm=null;
 function buildFilm(){
-  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
-  if(!matchMedia('(min-width:900px)').matches) return;
+  if(!window.gsap||!window.ScrollTrigger) return;
+  if(mmFilm){ mmFilm.revert(); mmFilm=null; }
   const stage=$('#photoStage'), track=$('#photoTrack'); if(!stage||!track) return;
-  stage.classList.add('film');
-  const dist=()=>Math.max(0,track.scrollWidth-stage.clientWidth);
-  if(dist()<60){ stage.classList.remove('film'); return; }
-  gsap.to(track,{x:()=>-dist(),ease:'none',
-    scrollTrigger:{trigger:stage,start:'top 18%',end:()=>'+='+dist(),pin:true,scrub:.4,
-      anticipatePin:1,invalidateOnRefresh:true}});
+  mmFilm=gsap.matchMedia();
+  mmFilm.add({desk:'(min-width: 900px)',reduce:'(prefers-reduced-motion: reduce)'},ctx=>{
+    if(ctx.conditions.reduce||!ctx.conditions.desk) return;
+    stage.classList.add('film');
+    const dist=()=>Math.max(0,track.scrollWidth-stage.clientWidth);
+    if(dist()<60){ stage.classList.remove('film'); return; }
+    gsap.to(track,{x:()=>-dist(),ease:'none',
+      scrollTrigger:{trigger:stage,start:'top 18%',end:()=>'+='+dist(),pin:true,scrub:.4,
+        anticipatePin:1,invalidateOnRefresh:true}});
+    return ()=>stage.classList.remove('film');
+  });
+}
+
+/* Mechanic 6 — EL MISMO OJO: stroke-draw scrub on desktop, blade-wipe on mobile.
+   gsap.matchMedia() swaps the mechanic live when 860px is crossed (orientation
+   change, split view, resize) and strips all motion under reduced-motion. */
+let mmEye=null;
+function buildEye(){
+  if(!window.gsap||!window.ScrollTrigger) return;
+  if(mmEye){ mmEye.revert(); mmEye=null; }
+  const eg=$('.eye-grid'); if(!eg) return;
+  mmEye=gsap.matchMedia();
+  mmEye.add({desk:'(min-width: 860px)',mob:'(max-width: 859.98px)',reduce:'(prefers-reduced-motion: reduce)'},ctx=>{
+    if(ctx.conditions.reduce) return;   // static composition, fully visible
+    if(ctx.conditions.desk){
+      // DESKTOP — the razor draws itself in (stroke scrub, like being cut), text follows once
+      gsap.set('.eye-art .ea-s',{strokeDasharray:1,strokeDashoffset:1});
+      gsap.set('.eye-art .ea-fill',{opacity:0});
+      gsap.timeline({scrollTrigger:{trigger:eg,start:'top 80%',end:'center 42%',scrub:.35}})
+        .to('.eye-art .ea-s',{strokeDashoffset:0,stagger:.18,ease:'none'})
+        .to('.eye-art .ea-fill',{opacity:1,ease:'none'},'>-.2');
+      gsap.from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1,
+        scrollTrigger:{trigger:eg,start:'top 48%',once:true}});
+    } else {
+      // MOBILE — diagonal blade-wipe with celeste tint
+      const tl=gsap.timeline({scrollTrigger:{trigger:eg,start:'top 72%',once:true}});
+      tl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
+          {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
+        .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:'power2.out'},'-=.35')
+        .from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1},'-=.5');
+    }
+  });
 }
 
 /* Mechanic 4 (v5) — CÓMO FUNCIONA: short pin; active step at full size while others
@@ -2576,27 +2621,8 @@ function initAnim(){
     const rule=$('.celeste-rule span');
     if(rule) gsap.fromTo(rule,{scaleX:0},{scaleX:1,duration:1.1,ease:'power3.inOut',
       scrollTrigger:{trigger:'.celeste-rule',start:'top 88%',once:true}});
-    // Mechanic 6 — EL MISMO OJO: two viewport-specific mechanics
-    const eg=$('.eye-grid');
-    if(eg){
-      if(matchMedia('(min-width:860px)').matches){
-        // DESKTOP — the razor composition draws itself in (stroke scrub, like being cut), text follows once
-        gsap.set('.eye-art .ea-s',{strokeDasharray:1,strokeDashoffset:1});
-        gsap.set('.eye-art .ea-fill',{opacity:0});
-        gsap.timeline({scrollTrigger:{trigger:eg,start:'top 80%',end:'center 42%',scrub:.35}})
-          .to('.eye-art .ea-s',{strokeDashoffset:0,stagger:.18,ease:'none'})
-          .to('.eye-art .ea-fill',{opacity:1,ease:'none'},'>-.2');
-        gsap.from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1,
-          scrollTrigger:{trigger:eg,start:'top 48%',once:true}});
-      } else {
-        // MOBILE — diagonal blade-wipe with celeste tint (confirmed working; unchanged)
-        const eyeTl=gsap.timeline({scrollTrigger:{trigger:eg,start:'top 72%',once:true}});
-        eyeTl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
-            {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
-          .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:'power2.out'},'-=.35')
-          .from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1},'-=.5');
-      }
-    }
+    // Mechanic 6 — EL MISMO OJO: gsap.matchMedia-managed (desktop stroke-draw / mobile wipe)
+    buildEye();
     // TRES MUNDOS blocks — cascade in after the title unpins
     gsap.from('.worlds-grid .world',{opacity:0,y:m?24:40,duration:.65,ease:'power3.out',stagger:.14,
       scrollTrigger:{trigger:'.worlds-grid',start:'top 85%',once:true}});
