@@ -228,7 +228,6 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:300;line-height:1.1}
 .loadmore-wrap .count-txt{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--silver)}
 .empty{grid-column:1/-1;text-align:center;padding:70px 0;font-family:var(--font-display);font-style:italic;font-size:1.4rem;color:var(--muted)}
 
-.skeleton{aspect-ratio:4/5;border-radius:5px;background:linear-gradient(100deg,#fff 30%,#f5f3f0 50%,#fff 70%);background-size:200% 100%;animation:sk 1.5s infinite}
 @keyframes sk{to{background-position:-200% 0}}
 
 /* ============================ ENCARGOS ============================ */
@@ -249,7 +248,6 @@ h1,h2,h3,h4{font-family:var(--font-display);font-weight:300;line-height:1.1}
 @media(max-width:520px){.field-row{grid-template-columns:1fr}}
 
 /* ============================ ABOUT ============================ */
-.about-inner{max-width:780px;margin:0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;gap:26px}
 .about-quote{font-family:var(--font-display);font-weight:300;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.4;letter-spacing:.02em}
 .about-quote em{font-style:italic;color:var(--blue)}
 .about-body{color:var(--muted);max-width:54ch;font-size:1rem}
@@ -502,11 +500,6 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .car-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:var(--silver)}
 .car-ph svg{width:32px;height:32px;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .car-ph span{font-size:.54rem;letter-spacing:.26em;text-transform:uppercase}
-.car-ph.cut{background:linear-gradient(160deg,#fff 0%,#eef2f5 50%,#dde7ee 100%)}
-.car-unmute{position:absolute;bottom:10px;right:10px;width:38px;height:38px;border-radius:50%;
-  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(6px);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;color:var(--text);z-index:2}
-.car-unmute svg{width:16px;height:16px;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .car-nav{display:none}
 @media(min-width:760px){
   .car-item{width:300px}
@@ -574,12 +567,9 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 @media(max-width:759px){ .scroll-cue .ln{display:none} }
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
-/* marquee divider — CSS loop (no scroll-scrub); full-bleed, no horizontal bleed */
-.marquee{overflow:hidden;width:100%;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;background:var(--surface)}
-.marquee-row{display:flex;width:max-content;animation:marq 34s linear infinite;will-change:transform}
-.marquee-row span{font-family:var(--font-display);font-style:italic;font-size:1.35rem;letter-spacing:.05em;color:var(--silver);white-space:nowrap}
-@keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media(max-width:560px){ .marquee{padding:12px 0} .marquee-row{animation-duration:20s} .marquee-row span{font-size:1rem} }
+/* celeste divider rule — quiet 2px line, draws left→right once on scroll-into-view */
+.celeste-rule{max-width:var(--maxw);margin:0 auto;padding:clamp(4px,1vw,10px) var(--pad)}
+.celeste-rule span{display:block;height:2px;background:var(--celeste);transform-origin:left center}
 
 /* "Cargar más" pulsing-dots loading state */
 .btn.loading{pointer-events:none;position:relative;color:transparent!important}
@@ -623,7 +613,6 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
   .anim .hero-eyebrow,.anim .hero .sub,.anim .hero .tagline,.anim .hero .cta,.anim .scroll-cue,.anim .hero h1 .hl,.reveal{opacity:1!important;transform:none!important}
-  .marquee-row{animation:none!important}
 }
 
 /* ===================================================================
@@ -682,10 +671,6 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 /* ---- PRODUCT COUNT LABEL ---- */
 .catalog-meta #resultCount{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#000;opacity:.4}
 
-/* ---- MARQUEE ---- */
-.marquee{border-top-color:#000;border-bottom-color:#000}
-.marquee-row span{color:#000;opacity:.3}
-
 /* ---- DAY / NIGHT ---- */
 .daynight{border-color:#000}
 .daynight button{color:#000}
@@ -731,7 +716,6 @@ footer{border-top:2px solid #000}
 .btn-blue:hover{background:var(--blue-text);border-color:var(--blue-text)}
 .btn-wa{color:var(--blue-text)}
 .btn-wa:hover{background:var(--blue-text);border-color:var(--blue-text)}
-.marquee-row span{color:var(--muted);opacity:1}
 .scroll-cue small{color:var(--muted)}
 .loadmore-wrap .count-txt{color:var(--muted)}
 .ci-vol{color:var(--muted)}
@@ -880,7 +864,8 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 .how{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .how-steps{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,30px);max-width:1000px;margin:0 auto}
 @media(min-width:760px){.how-steps{grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,52px)}}
-.how-step .hs-n{font-family:var(--font-struct);font-weight:900;font-size:clamp(3.4rem,11vw,5.2rem);line-height:1;
+/* numerals live in ::before (decorative watermark — pseudo text, like the section numerals) */
+.how-step::before{content:attr(data-n);font-family:var(--font-struct);font-weight:900;font-size:clamp(3.4rem,11vw,5.2rem);line-height:1;
   color:#000;opacity:.14;display:block;margin-bottom:6px;letter-spacing:-.03em}
 .how-step h3{font-family:var(--font-struct);font-weight:800;text-transform:uppercase;letter-spacing:.01em;
   font-size:clamp(1.02rem,3.4vw,1.18rem);color:#000;margin-bottom:10px;line-height:1.2}
@@ -945,6 +930,82 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 @media(prefers-reduced-motion:reduce){
   .struct-h{animation:none!important}
   .feat-media .bottle,.feat-media img,.cut-cell img,.cut-cell video{transition:none!important}
+}
+
+/* ===================================================================
+   DESIGN UPGRADE V4 — scroll choreography (5 distinct mechanics) +
+   El mismo ojo editorial rebuild + measured celeste presence
+   =================================================================== */
+
+/* worlds rides over the pinned hero during the exit handoff */
+.worlds{position:relative;z-index:3;background:var(--bg)}
+.worlds::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;z-index:10;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");}
+
+/* worlds title: word-build treatment replaces the generic struct entrance */
+#worlds .struct-h{animation:none!important}
+#worlds .struct-h .wb{display:inline-block}
+
+/* ---- curator crossfade (desktop pin only) ---- */
+.cur-count{display:none;align-self:flex-start;background:#1A1A1A;color:var(--celeste);
+  font-family:var(--font-struct);font-weight:800;font-size:.72rem;letter-spacing:.2em;
+  padding:7px 13px 6px;border-radius:2px;font-variant-numeric:tabular-nums}
+@media(min-width:900px){
+  .curator.cross .cur-count{display:inline-flex}
+  .curator.cross #featured{display:block;position:relative;height:min(60vh,540px)}
+  .curator.cross .feat-card{position:absolute;inset:0;margin:0;animation:none!important;
+    display:grid;grid-template-columns:1.25fr 1fr;align-items:center}
+  .curator.cross .feat-media{aspect-ratio:auto;height:100%}
+  .curator.cross .feat-label{padding:0 44px}
+  .curator.cross .fl-note{opacity:1;transform:none}
+}
+/* celeste frame on curator pick images */
+.feat-media{box-shadow:inset 0 0 0 1px var(--celeste)}
+
+/* ---- cómo funciona: celeste progress connector 01→02→03 ---- */
+.how-steps{position:relative}
+.how-line{position:absolute;background:var(--celeste);z-index:0;
+  left:4px;top:6px;bottom:6px;width:2px;transform-origin:top center}
+.how-step{position:relative;z-index:1;padding-left:22px}
+@media(min-width:760px){
+  .how-line{left:0;right:0;top:calc(clamp(3.4rem,11vw,5.2rem)/2);bottom:auto;width:auto;height:2px;transform-origin:left center}
+  .how-step{padding-left:0}
+}
+
+/* ---- el mismo ojo: asymmetric editorial split + blade-wipe visual ---- */
+.eye-grid{display:grid;grid-template-columns:1fr;gap:clamp(30px,6vw,40px);align-items:center}
+.eye-visual{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;aspect-ratio:4/5;width:min(320px,86%);margin:0 auto}
+.eye-art{width:100%;height:100%;display:block}
+.eye-tint{position:absolute;inset:0;background:var(--celeste);opacity:0;pointer-events:none}
+.eye-text{display:flex;flex-direction:column;gap:22px;align-items:flex-start;text-align:left}
+.eye-text .about-quote{font-size:clamp(1.9rem,5.6vw,2.9rem)}
+.eye-text .about-body{max-width:54ch}
+@media(min-width:860px){
+  .eye-grid{grid-template-columns:5fr 7fr;gap:0}
+  .eye-visual{width:100%;max-width:430px;margin:0}
+  .eye-text{margin-left:-52px;position:relative;z-index:2}   /* magazine overlap */
+}
+
+/* ---- filmstrip mode (desktop pin only) ---- */
+@media(min-width:900px){
+  .carousel.film{overflow:hidden}
+  .carousel.film .car-track{overflow:visible;cursor:default;padding-bottom:6px}
+  .carousel.film .car-nav{display:none}
+}
+
+/* ---- celeste presence: link underlines, CTA glow ---- */
+.nav-links a::after{background:var(--celeste);height:2px}
+.fg-col a,.mmenu a{background:linear-gradient(var(--celeste),var(--celeste)) no-repeat left calc(100% - 4px)/0% 2px;
+  transition:background-size .35s var(--ease),color .3s}
+@media(hover:hover) and (pointer:fine){
+  .fg-col a:hover,.mmenu a:hover{background-size:100% 2px}
+  .hero .cta .btn:hover{box-shadow:0 0 0 3px rgba(174,198,216,.28),0 12px 36px -10px rgba(174,198,216,.55)}
+}
+
+/* v4 reduced-motion: choreography is JS-gated off; keep statics static */
+@media(prefers-reduced-motion:reduce){
+  .celeste-rule span,.how-line{transform:none!important}
 }
 </style>
 </head>
@@ -1027,34 +1088,27 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   <div class="scroll-cue"><small data-i18n="scroll">Desliza</small><span class="ln"></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></span></div>
 </header>
 
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-row">
-    <span>Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;</span>
-    <span>Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;Blades Privé&ensp;·&ensp;Carved by the blade&ensp;·&ensp;Finished by the scent&ensp;·&ensp;</span>
-  </div>
-</div>
-
 <main>
 <!-- ================== 02 · TRES MUNDOS — category guide ================== -->
 <section class="section worlds" id="worlds">
   <div class="wrap">
-    <div class="shead reveal">
+    <div class="shead worlds-head">
       <span class="line"></span>
       <span class="eyebrow" data-i18n="w_eyebrow">La guía</span>
       <h2 class="struct-h" data-i18n="w_title">Tres mundos, un mismo criterio</h2>
     </div>
     <div class="worlds-grid">
-      <div class="world reveal">
+      <div class="world">
         <span class="w-n">I</span>
         <h3 class="w-h">Designer</h3>
         <p class="w-b" data-i18n="w_d_b">Las casas que definieron la elegancia moderna — Dior, Chanel, Hermès. Composiciones probadas por décadas, seguras para cualquier ocasión y siempre reconocibles. El punto de partida perfecto.</p>
       </div>
-      <div class="world reveal">
+      <div class="world">
         <span class="w-n">II</span>
         <h3 class="w-h">Niche</h3>
         <p class="w-b" data-i18n="w_n_b">Perfumería de autor en producciones pequeñas — Le Labo, Xerjoff, Amouage. Aromas con carácter propio, para quien ya sabe lo que busca y prefiere llevar algo que casi nadie más tiene.</p>
       </div>
-      <div class="world reveal">
+      <div class="world">
         <span class="w-n">III</span>
         <h3 class="w-h" data-i18n="f_arabic">Árabe</h3>
         <p class="w-b" data-i18n="w_a_b">La tradición del oud, el azafrán y el ámbar — Lattafa, Rasasi, Afnan. Intensidad y duración fuera de serie a precios que todavía sorprenden. El secreto mejor guardado del catálogo.</p>
@@ -1073,10 +1127,11 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <p data-i18n="cat_sub">Designer, Niche y Árabe — cada fragancia elegida por carácter, no por catálogo.</p>
     </div>
 
-    <div class="curator reveal">
+    <div class="curator">
       <div class="cur-head">
         <span class="eyebrow" data-i18n="cur_eyebrow">Escogidos a mano</span>
         <h3 class="struct-h cur-title" data-i18n="cur_title">Selección del curador</h3>
+        <span class="cur-count" id="curCount" aria-hidden="true">01 / 04</span>
       </div>
       <div class="featured" id="featured"></div>
     </div>
@@ -1123,18 +1178,16 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <h2 class="struct-h" data-i18n="how_title">Cómo funciona</h2>
     </div>
     <div class="how-steps">
-      <div class="how-step">
-        <span class="hs-n" aria-hidden="true">01</span>
+      <span class="how-line" aria-hidden="true"></span>
+      <div class="how-step" data-n="01">
         <h3 data-i18n="how1_t">Elige tu fragancia</h3>
         <p data-i18n="how1_b">Explora el catálogo, filtra por día o noche, y añade a tu selección lo que te llame la atención.</p>
       </div>
-      <div class="how-step">
-        <span class="hs-n" aria-hidden="true">02</span>
+      <div class="how-step" data-n="02">
         <h3 data-i18n="how2_t">Coordina por WhatsApp</h3>
         <p data-i18n="how2_b">Tu selección se convierte en un mensaje directo a Luis. Sin cuentas, sin pagos en línea, sin complicaciones.</p>
       </div>
-      <div class="how-step">
-        <span class="hs-n" aria-hidden="true">03</span>
+      <div class="how-step" data-n="03">
         <h3 data-i18n="how3_t">Recibe donde estés</h3>
         <p data-i18n="how3_b">Recogida en San José o envío coordinado a todo el país. El pago se acuerda al confirmar tu pedido.</p>
       </div>
@@ -1195,28 +1248,37 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 <!-- ============================ 06 · ABOUT ============================ -->
 <section class="section" id="about">
   <div class="wrap">
-    <div class="about-inner reveal">
-      <span class="line" style="width:1px;height:46px;background:var(--silver)"></span>
-      <span class="eyebrow" data-i18n="about_eyebrow">El mismo ojo</span>
-      <p class="about-quote" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
-      <p class="about-body" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
-      <p class="about-body" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
-      <p class="about-body" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
+    <div class="eye-grid">
+      <div class="eye-visual" aria-hidden="true">
+        <!-- abstract razor composition — echoes the wordmark until a real photo of Luis exists -->
+        <svg class="eye-art" viewBox="0 0 400 520" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <line x1="18" y1="512" x2="368" y2="34" stroke="#AEC6D8" stroke-width="1.2"/>
+          <line x1="58" y1="520" x2="392" y2="66" stroke="#C0C0C2" stroke-width="1" opacity=".55"/>
+          <line x1="-8" y1="496" x2="330" y2="14" stroke="#E8E4DD" stroke-width="1"/>
+          <path d="M74 438 258 148 318 192 134 482 Z" fill="#1A1A1A"/>
+          <path d="M252 158 296 92 336 121 292 187" fill="none" stroke="#1A1A1A" stroke-width="2.2" stroke-linejoin="round"/>
+          <circle cx="313" cy="106" r="2.6" fill="#AEC6D8"/>
+          <text x="52" y="84" font-family="Georgia,serif" font-size="17" fill="#1A1A1A" opacity=".3">✦</text>
+        </svg>
+        <span class="eye-tint"></span>
+      </div>
+      <div class="eye-text">
+        <span class="eyebrow" data-i18n="about_eyebrow">El mismo ojo</span>
+        <p class="about-quote" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
+        <p class="about-body" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
+        <p class="about-body" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
+        <p class="about-body" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
       <div class="about-soc">
         <a class="soc" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
         <a class="soc" id="tiktok2" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.2 1.7 3.9 3.8 4.2v2.6c-1.3.1-2.6-.3-3.8-1v6.2A5.5 5.5 0 1 1 10.5 9.6v2.8a2.8 2.8 0 1 0 2 2.7V3H16Z"/></svg></a>
       </div>
       <span class="about-handle">@luisblades_</span>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-row">
-    <span>Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;</span>
-    <span>Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;Designer&ensp;·&ensp;Niche&ensp;·&ensp;Árabe&ensp;·&ensp;Une sélection privée&ensp;·&ensp;San José&ensp;·&ensp;</span>
-  </div>
-</div>
+<div class="celeste-rule" aria-hidden="true"><span></span></div>
 
 <!-- ===================== LUIS — EL HOMBRE DETRÁS + SUS CORTES ===================== -->
 <section class="section man" id="luis">
@@ -1228,7 +1290,7 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <p data-i18n="man_sub">El barbero y curador detrás de cada elección.</p>
     </div>
 
-    <div class="carousel reveal">
+    <div class="carousel" id="photoStage">
       <button class="car-nav prev" data-car="photoTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
       <div class="car-track" id="photoTrack" tabindex="0" role="region" aria-label="Fotos de Luis"></div>
       <button class="car-nav next" data-car="photoTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
@@ -1648,7 +1710,7 @@ function renderFeatured(){
   if(!picks.length){ host.closest('.curator').style.display='none'; return; }
   host.innerHTML=picks.map(p=>{
     const note=(S.lang==='es'?p.featured_note_es:p.featured_note_en)||'';
-    return `<div class="feat-card" data-id="${p.id}" role="button" tabindex="0" aria-label="${p.brand} ${p.name}">
+    return `<div class="feat-card" data-id="${p.id}" role="button" tabindex="0">
       <div class="feat-media">${imgFor(p)}</div>
       <div class="feat-label">
         <span class="fl-cat">${tr(p.category)} · ${tr(p.family)}</span>
@@ -1939,6 +2001,8 @@ function applyLang(lang){
   $$('[data-i18n-html]').forEach(el=>{ const k=el.getAttribute('data-i18n-html'); if(T()[k]!==undefined) el.innerHTML=T()[k]; });
   $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
   refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts();
+  // scroll FX bound to re-rendered/re-worded DOM must rebuild (worlds title respan, curator cards)
+  if(window.__fxReady){ buildWorlds(); buildCuratorCross(); }
   if($('#modal').classList.contains('show')) renderModal();
   if($('#admin').classList.contains('show')) renderAdmin();
 }
@@ -2219,6 +2283,75 @@ function reflow(){
   gsap.to('#grid .card',{opacity:0,y:8,duration:m?.15:.26,stagger:m?.008:.015,ease:'power1.in',
     onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
+/* ---------------- v4 scroll choreography — 5 distinct mechanics ---------------- */
+let worldsTl=null, crossTl=null;
+
+/* Mechanic 1 — HERO EXIT: short pinned handoff. Sillage drift + scale-down/fade
+   while Tres mundos rises over it. pinSpacing:false → building it late (post-intro)
+   causes zero layout shift. */
+function buildHeroExit(){
+  if(!window.ScrollTrigger||reduceMotion()) return;
+  const m=isMob();
+  const tl=gsap.timeline({scrollTrigger:{trigger:'.hero',start:'top top',
+    end:m?'+=38%':'+=55%',pin:true,pinSpacing:false,scrub:.4,anticipatePin:1}});
+  tl.to('.hero h1 .hl',{x:i=>(i-2)*(m?16:44),ease:'none'},0)                      // sillage (signature, kept)
+    .to('.hero h1,.hero .sub,.hero .tagline,.hero .cta',{scale:.92,opacity:0,ease:'none'},0)
+    .to('.hero-eyebrow,.scroll-cue',{opacity:0,ease:'none'},0);
+}
+
+/* Mechanic 2 — TRES MUNDOS: pinned scrub word-build of the title (manual span
+   wrapping, no SplitText), then unpin; blocks cascade separately. Rebuilt on
+   language switch since the title text changes. */
+function buildWorlds(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  const h=$('#worlds .struct-h'); if(!h) return;
+  if(worldsTl){ if(worldsTl.scrollTrigger) worldsTl.scrollTrigger.kill(true); worldsTl.kill(); worldsTl=null; }
+  const words=h.textContent.trim().split(/\s+/);
+  h.innerHTML=words.map(w=>`<span class="wb">${w}</span>`).join(' ');
+  const m=isMob();
+  worldsTl=gsap.timeline({scrollTrigger:{trigger:'.worlds-head',start:'top 22%',
+    end:m?'+=55%':'+=95%',pin:true,scrub:.3,anticipatePin:1}});   // mobile pin kept SHORT — never scroll-jack
+  worldsTl.fromTo('#worlds .wb',{opacity:.1,y:m?12:22},{opacity:1,y:0,stagger:.14,ease:'none'});
+}
+
+/* Mechanic 3 — CURATOR: pinned crossfade with celeste counter. DESKTOP ONLY —
+   mobile falls back to the normal stacked-card scroll reveal (no pin). */
+function buildCuratorCross(){
+  if(!window.gsap||!window.ScrollTrigger) return;
+  const cur=$('.curator'); if(!cur) return;
+  if(crossTl){ if(crossTl.scrollTrigger) crossTl.scrollTrigger.kill(true); crossTl.kill(); crossTl=null; }
+  const cards=$$('#featured .feat-card'), counter=$('#curCount');
+  const on=!reduceMotion()&&matchMedia('(min-width:900px)').matches&&cards.length>1;
+  cur.classList.toggle('cross',on);
+  if(!on) return;
+  gsap.set(cards,{opacity:0,zIndex:1}); gsap.set(cards[0],{opacity:1,zIndex:2});
+  const n=cards.length, pad=v=>String(v).padStart(2,'0');
+  counter.textContent=pad(1)+' / '+pad(n);
+  crossTl=gsap.timeline({scrollTrigger:{trigger:cur,start:'top 12%',end:'+='+(n*65)+'%',
+    pin:true,scrub:.35,anticipatePin:1,
+    onUpdate:st=>{ counter.textContent=pad(Math.min(n,Math.floor(st.progress*n)+1))+' / '+pad(n); }}});
+  for(let i=1;i<n;i++){
+    crossTl.to(cards[i-1],{opacity:0,duration:.5},i)
+           .to(cards[i],{opacity:1,duration:.5},i);
+  }
+  crossTl.to({},{duration:.55});   // hold on the last pick before unpin
+}
+
+/* Mechanic 5 — FILMSTRIP: pin the photo stage, translate the track horizontally
+   as the user scrolls vertically. DESKTOP ONLY — mobile keeps the native
+   horizontal scroll-snap carousel (no gesture hijacking). */
+function buildFilm(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  if(!matchMedia('(min-width:900px)').matches) return;
+  const stage=$('#photoStage'), track=$('#photoTrack'); if(!stage||!track) return;
+  stage.classList.add('film');
+  const dist=()=>Math.max(0,track.scrollWidth-stage.clientWidth);
+  if(dist()<60){ stage.classList.remove('film'); return; }
+  gsap.to(track,{x:()=>-dist(),ease:'none',
+    scrollTrigger:{trigger:stage,start:'top 18%',end:()=>'+='+dist(),pin:true,scrub:.4,
+      anticipatePin:1,invalidateOnRefresh:true}});
+}
+
 function initAnim(){
   window.__bpAnim=true;                        // tells the head LCP-guard the animation path is live
   const html=document.documentElement;
@@ -2234,26 +2367,45 @@ function initAnim(){
     gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
     gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
     const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
-    const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},onComplete:clearWC});
+    const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},
+      onComplete:()=>{ clearWC(); buildHeroExit(); }});    // exit pin only once intro settles
     tl.to('.hero-eyebrow',{opacity:1,duration:m?.5:.7})
       .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.65:.9,stagger:m?.05:.08},'-=.15')
       .to('.hero .sub',{opacity:1,y:0,duration:m?.5:.7},'-=.35')
       .to('.hero .tagline',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
       .to('.hero .cta',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
       .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
+  } else {
+    buildHeroExit();
   }
   if(window.ScrollTrigger){
-    // CÓMO FUNCIONA — numbered steps scale/fade in, staggered .15s, once only
+    // Mechanic 4a — CÓMO FUNCIONA: numbered stagger (kept from last pass)…
     gsap.from('.how-step',{opacity:0,y:26,scale:.94,duration:.6,ease:'power3.out',stagger:.15,
       scrollTrigger:{trigger:'.how-steps',start:'top 82%',once:true}});
-    // SIGNATURE — "sillage": leaving the hero, PRIVÉ drifts apart and dissolves like scent.
-    // Scrub-tied, transform/opacity only (compositor-safe on mid-range Android).
-    gsap.to('.hero h1 .hl',{x:i=>(i-2)*(isMob()?16:44),ease:'none',immediateRender:false,
-      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom 30%',scrub:.4,invalidateOnRefresh:true}});
-    gsap.to('.hero h1',{opacity:.06,ease:'none',immediateRender:false,
-      scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom 35%',scrub:.4}});
-    gsap.to('.scroll-cue',{opacity:0,ease:'none',immediateRender:false,
-      scrollTrigger:{trigger:'.hero',start:'top top',end:'25% top',scrub:true}});
+    // …4b: celeste connector draws itself through 01→02→03 (vertical on mobile, horizontal on desktop)
+    const hline=$('.how-line');
+    if(hline) gsap.fromTo(hline, m?{scaleY:0}:{scaleX:0}, {scaleY:1,scaleX:1,duration:1.2,ease:'power2.inOut',
+      scrollTrigger:{trigger:'.how-steps',start:'top 82%',once:true}});
+    // celeste divider rule (replaces the removed marquee): draws left→right once
+    const rule=$('.celeste-rule span');
+    if(rule) gsap.fromTo(rule,{scaleX:0},{scaleX:1,duration:1.1,ease:'power3.inOut',
+      scrollTrigger:{trigger:'.celeste-rule',start:'top 88%',once:true}});
+    // Mechanic 6 — EL MISMO OJO: diagonal blade-wipe (celeste-tinted), then copy builds in
+    const eg=$('.eye-grid');
+    if(eg){
+      const eyeTl=gsap.timeline({scrollTrigger:{trigger:eg,start:'top 72%',once:true}});
+      eyeTl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
+          {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
+        .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:'power2.out'},'-=.35')
+        .from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1},'-=.5');
+    }
+    // TRES MUNDOS blocks — cascade in after the title unpins
+    gsap.from('.worlds-grid .world',{opacity:0,y:m?24:40,duration:.65,ease:'power3.out',stagger:.14,
+      scrollTrigger:{trigger:'.worlds-grid',start:'top 85%',once:true}});
+    buildWorlds();
+    buildCuratorCross();
+    buildFilm();
+    window.__fxReady=true;
   }
   // SECTION REVEALS — native CSS scroll-driven animation where supported (zero JS cost);
   // GSAP ScrollTrigger only as the fallback for older engines.
