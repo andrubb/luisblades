@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
 
 <style>
 /* ===================================================================
@@ -655,8 +655,10 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 /* ---- SECTION NUMERALS (luxury magazine pagination) ---- */
 .sec-num{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;pointer-events:none}
 .hero .sec-num{position:absolute;top:calc(var(--nav-h) + 20px);left:var(--pad);z-index:1}
-#catalog::before,#about::before,#encargos::before{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;position:absolute;top:clamp(22px,4vw,40px);left:var(--pad);z-index:2;pointer-events:none}
-#catalog::before{content:"02"} #about::before{content:"03"} #encargos::before{content:"04"}
+#worlds::before,#catalog::before,#how::before,#encargos::before,#about::before,#luis::before,#faq::before{font-family:var(--font-display);font-size:11px;letter-spacing:.2em;color:#000;opacity:.35;position:absolute;top:clamp(22px,4vw,40px);left:var(--pad);z-index:2;pointer-events:none}
+/* true page order — the numerals encode real sequence */
+#worlds::before{content:"02"} #catalog::before{content:"03"} #how::before{content:"04"}
+#encargos::before{content:"05"} #about::before{content:"06"} #luis::before{content:"07"} #faq::before{content:"08"}
 
 /* ---- DECORATIVE MARKS / WATERMARKS ---- */
 #about::after{content:"\2726";position:absolute;top:clamp(22px,4vw,40px);right:var(--pad);font-family:var(--font-display);font-size:1.1rem;color:#000;opacity:.15;pointer-events:none}
@@ -819,6 +821,131 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   .fav.pop svg,.modal-fav.pop svg{animation:none!important}
   .hero .cta .btn::after{content:none!important}
 }
+
+/* ===================================================================
+   DESIGN UPGRADE V3 — dual-voice typography + content sections
+   Voice 1: Cormorant Garamond — hero, tagline, bio, emotional copy.
+   Voice 2: Archivo 800/900 — NEW structural headers only. Loud on purpose.
+   =================================================================== */
+:root{--font-struct:'Archivo',system-ui,sans-serif}
+
+/* structural headline scale — deliberately larger + heavier than default */
+.struct-h,.shead .struct-h{
+  font-family:var(--font-struct);font-weight:900;text-transform:uppercase;
+  letter-spacing:-.015em;line-height:.96;color:#000;
+  font-size:clamp(2.05rem,7.6vw,4.2rem);
+}
+/* emphatic entrance for structural headers only: scale .94→1 on top of the shared rise */
+@supports (animation-timeline: view()){
+  .struct-h{animation:struct-in both;animation-timeline:view();animation-range:entry 0% cover 28%}
+}
+@keyframes struct-in{from{opacity:0;translate:0 26px;scale:.94}to{opacity:1;translate:0 0;scale:1}}
+
+/* ---- 02 · TRES MUNDOS — category guide ---- */
+.worlds{border-bottom:1px solid var(--border)}
+.worlds-grid{display:grid;grid-template-columns:1fr;gap:clamp(34px,5vw,30px)}
+@media(min-width:760px){.worlds-grid{grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,56px)}}
+.world{border-top:1px solid #000;padding-top:22px}
+.world .w-h{font-family:var(--font-struct);font-weight:900;text-transform:uppercase;letter-spacing:-.01em;
+  font-size:clamp(1.4rem,5vw,1.85rem);color:#000;line-height:1;margin-bottom:14px}
+.world .w-n{font-family:var(--font-body);font-size:.6rem;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:16px}
+.world .w-b{font-family:var(--font-display);font-size:1.13rem;font-weight:400;line-height:1.62;color:var(--text)}
+
+/* ---- CURATOR PICKS — image-forward tiles ---- */
+.curator{margin-bottom:clamp(44px,7vw,72px)}
+.cur-head{display:flex;flex-direction:column;gap:12px;margin-bottom:clamp(22px,4vw,34px)}
+.cur-title{font-size:clamp(1.7rem,6vw,2.7rem)!important}
+.featured{display:grid;grid-template-columns:1fr;gap:clamp(14px,2.5vw,24px)}
+@media(min-width:600px){.featured{grid-template-columns:1fr 1fr}}
+.feat-card{position:relative;background:var(--surface);border:1px solid var(--border);border-bottom:1px solid #000;
+  border-radius:5px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow-card);
+  transition:box-shadow .5s var(--ease),transform .12s var(--press)}
+.feat-card:active{transform:scale(.985)}
+.feat-media{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(120% 100% at 50% 30%,#fff 0%,#fbfafa 70%,#f5f3f0 100%)}
+.feat-media .bottle{width:20%;min-width:74px;transition:transform .7s var(--ease)}
+.feat-media img{max-height:78%;width:auto;transition:transform .7s var(--ease)}
+.feat-label{padding:16px 18px 20px;display:flex;flex-direction:column;gap:4px}
+.fl-cat{font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.fl-name{font-family:var(--font-display);font-size:1.3rem;line-height:1.15;color:var(--text)}
+.fl-note{font-family:var(--font-display);font-style:italic;font-size:.98rem;line-height:1.45;color:var(--muted);margin-top:4px}
+@media(hover:hover) and (pointer:fine){
+  .feat-card:hover{box-shadow:var(--shadow-lift)}
+  .feat-card:hover .feat-media .bottle,.feat-card:hover .feat-media img{transform:scale(1.05)}
+  .fl-note{opacity:0;transform:translateY(4px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+  .feat-card:hover .fl-note,.feat-card:focus-visible .fl-note{opacity:1;transform:translateY(0)}
+}
+
+/* ---- 04 · CÓMO FUNCIONA — numbered steps ---- */
+.how{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-steps{display:grid;grid-template-columns:1fr;gap:clamp(36px,6vw,30px);max-width:1000px;margin:0 auto}
+@media(min-width:760px){.how-steps{grid-template-columns:repeat(3,1fr);gap:clamp(24px,4vw,52px)}}
+.how-step .hs-n{font-family:var(--font-struct);font-weight:900;font-size:clamp(3.4rem,11vw,5.2rem);line-height:1;
+  color:#000;opacity:.14;display:block;margin-bottom:6px;letter-spacing:-.03em}
+.how-step h3{font-family:var(--font-struct);font-weight:800;text-transform:uppercase;letter-spacing:.01em;
+  font-size:clamp(1.02rem,3.4vw,1.18rem);color:#000;margin-bottom:10px;line-height:1.2}
+.how-step p{font-family:var(--font-display);font-size:1.08rem;line-height:1.62;color:var(--text);max-width:34ch}
+
+/* ---- EDITORIAL BREAK — mood only, no CTA ---- */
+.ed-break{padding:clamp(90px,16vw,170px) 0}
+.ed-inner{display:flex;flex-direction:column;align-items:center;gap:clamp(30px,5vw,44px);text-align:center;position:relative}
+.ed-inner .bottle{width:clamp(150px,26vw,230px);color:var(--silver)}
+.ed-inner .bottle .accent{stroke:var(--celeste)}
+.ed-line{font-family:var(--font-display);font-style:italic;font-weight:300;
+  font-size:clamp(1.5rem,5.4vw,2.4rem);line-height:1.35;color:var(--text);letter-spacing:.01em;max-width:22ch}
+.ed-break::before{content:"✦";position:absolute;top:clamp(26px,5vw,48px);left:50%;transform:translateX(-50%);
+  font-family:var(--font-display);font-size:1rem;color:#000;opacity:.16;pointer-events:none}
+
+/* ---- SUS CORTES — gallery grid (placeholder-intentional) ---- */
+.cuts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,2vw,20px)}
+@media(min-width:760px){.cuts-grid{grid-template-columns:repeat(3,1fr)}}
+.cut-cell{aspect-ratio:4/5;border-radius:10px;overflow:hidden;position:relative;
+  background:linear-gradient(160deg,#fff 0%,#eef2f5 50%,#dde7ee 100%);box-shadow:var(--shadow-card)}
+.cut-cell img,.cut-cell video{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+@media(hover:hover) and (pointer:fine){.cut-cell:hover img,.cut-cell:hover video{transform:scale(1.05)}}
+.cut-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--silver)}
+.cut-ph svg{width:26px;height:26px;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.cut-ph span{font-size:.54rem;letter-spacing:.26em;text-transform:uppercase}
+
+/* ---- MODAL — olfactory pyramid tier bars (salida→fondo widens to the base) ---- */
+.pyr-bar{display:block;height:2px;background:#000;border-radius:1px;margin:0 0 10px}
+.pyr-tier:nth-child(1) .pyr-bar{width:38%;opacity:.5}
+.pyr-tier:nth-child(2) .pyr-bar{width:66%;opacity:.32}
+.pyr-tier:nth-child(3) .pyr-bar{width:100%;opacity:.16}
+
+/* ---- 08 · FAQ — native accordion ---- */
+.faq-list{max-width:760px;margin:0 auto;border-top:1px solid #000}
+.faq-list details{border-bottom:1px solid var(--border)}
+.faq-list details:last-child{border-bottom:1px solid #000}
+.faq-list summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:20px 2px;min-height:44px;-webkit-tap-highlight-color:transparent}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary .q{font-family:var(--font-struct);font-weight:800;text-transform:uppercase;
+  font-size:clamp(.82rem,2.8vw,.95rem);letter-spacing:.02em;color:#000;line-height:1.3}
+.faq-list summary svg{width:16px;height:16px;flex:none;color:#000;stroke-width:1.6;stroke-linecap:round;
+  transition:transform .4s var(--ease)}
+.faq-list details[open] summary svg{transform:rotate(45deg)}
+.faq-list .a{font-family:var(--font-display);font-size:1.08rem;line-height:1.65;color:var(--text);
+  padding:0 2px 24px;max-width:60ch}
+
+/* ---- FOOTER — substance columns ---- */
+.foot-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,44px);width:100%;
+  padding-bottom:clamp(36px,6vw,56px);margin-bottom:clamp(36px,6vw,56px);border-bottom:1px solid var(--border);text-align:left}
+@media(min-width:760px){.foot-grid{grid-template-columns:1.4fr 1fr 1fr}}
+.fg-col .fg-h{font-family:var(--font-struct);font-weight:800;text-transform:uppercase;font-size:.66rem;
+  letter-spacing:.14em;color:#000;margin-bottom:16px}
+.fg-col a,.fg-col span{display:block;font-family:var(--font-body);font-size:.86rem;color:var(--muted);
+  padding:6px 0;min-height:32px;transition:color .3s}
+.fg-col a:hover{color:#000}
+.fg-wa{font-family:var(--font-display)!important;font-size:1.35rem!important;color:var(--text)!important;letter-spacing:.02em}
+.fg-note{font-size:.74rem!important;color:var(--muted)}
+@media(max-width:759px){.fg-col.fg-contact{grid-column:1/-1}}
+
+/* v3 reduced-motion additions */
+@media(prefers-reduced-motion:reduce){
+  .struct-h{animation:none!important}
+  .feat-media .bottle,.feat-media img,.cut-cell img,.cut-cell video{transition:none!important}
+}
 </style>
 </head>
 
@@ -908,7 +1035,35 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 </div>
 
 <main>
-<!-- ============================ CATALOG ============================ -->
+<!-- ================== 02 · TRES MUNDOS — category guide ================== -->
+<section class="section worlds" id="worlds">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="line"></span>
+      <span class="eyebrow" data-i18n="w_eyebrow">La guía</span>
+      <h2 class="struct-h" data-i18n="w_title">Tres mundos, un mismo criterio</h2>
+    </div>
+    <div class="worlds-grid">
+      <div class="world reveal">
+        <span class="w-n">I</span>
+        <h3 class="w-h">Designer</h3>
+        <p class="w-b" data-i18n="w_d_b">Las casas que definieron la elegancia moderna — Dior, Chanel, Hermès. Composiciones probadas por décadas, seguras para cualquier ocasión y siempre reconocibles. El punto de partida perfecto.</p>
+      </div>
+      <div class="world reveal">
+        <span class="w-n">II</span>
+        <h3 class="w-h">Niche</h3>
+        <p class="w-b" data-i18n="w_n_b">Perfumería de autor en producciones pequeñas — Le Labo, Xerjoff, Amouage. Aromas con carácter propio, para quien ya sabe lo que busca y prefiere llevar algo que casi nadie más tiene.</p>
+      </div>
+      <div class="world reveal">
+        <span class="w-n">III</span>
+        <h3 class="w-h" data-i18n="f_arabic">Árabe</h3>
+        <p class="w-b" data-i18n="w_a_b">La tradición del oud, el azafrán y el ámbar — Lattafa, Rasasi, Afnan. Intensidad y duración fuera de serie a precios que todavía sorprenden. El secreto mejor guardado del catálogo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 03 · CATALOG ============================ -->
 <section class="section" id="catalog" style="padding-top:clamp(56px,9vw,90px)">
   <div class="wrap">
     <div class="shead reveal">
@@ -916,6 +1071,14 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <span class="eyebrow" data-i18n="cat_eyebrow">La Colección</span>
       <h2 data-i18n="cat_title">Aromas seleccionados</h2>
       <p data-i18n="cat_sub">Designer, Niche y Árabe — cada fragancia elegida por carácter, no por catálogo.</p>
+    </div>
+
+    <div class="curator reveal">
+      <div class="cur-head">
+        <span class="eyebrow" data-i18n="cur_eyebrow">Escogidos a mano</span>
+        <h3 class="struct-h cur-title" data-i18n="cur_title">Selección del curador</h3>
+      </div>
+      <div class="featured" id="featured"></div>
     </div>
 
     <div class="catalog-head reveal">
@@ -951,7 +1114,35 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   </div>
 </section>
 
-<!-- ============================ ENCARGOS ============================ -->
+<!-- ================== 04 · CÓMO FUNCIONA — 3 steps ================== -->
+<section class="section how" id="how">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="line"></span>
+      <span class="eyebrow" data-i18n="how_eyebrow">El proceso</span>
+      <h2 class="struct-h" data-i18n="how_title">Cómo funciona</h2>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <span class="hs-n" aria-hidden="true">01</span>
+        <h3 data-i18n="how1_t">Elige tu fragancia</h3>
+        <p data-i18n="how1_b">Explora el catálogo, filtra por día o noche, y añade a tu selección lo que te llame la atención.</p>
+      </div>
+      <div class="how-step">
+        <span class="hs-n" aria-hidden="true">02</span>
+        <h3 data-i18n="how2_t">Coordina por WhatsApp</h3>
+        <p data-i18n="how2_b">Tu selección se convierte en un mensaje directo a Luis. Sin cuentas, sin pagos en línea, sin complicaciones.</p>
+      </div>
+      <div class="how-step">
+        <span class="hs-n" aria-hidden="true">03</span>
+        <h3 data-i18n="how3_t">Recibe donde estés</h3>
+        <p data-i18n="how3_b">Recogida en San José o envío coordinado a todo el país. El pago se acuerda al confirmar tu pedido.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 05 · ENCARGOS ============================ -->
 <section class="section encargos" id="encargos">
   <div class="wrap">
     <div class="encargos-inner">
@@ -986,7 +1177,22 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   </div>
 </section>
 
-<!-- ============================ ABOUT ============================ -->
+<!-- ================== EDITORIAL BREAK — mood only ================== -->
+<section class="ed-break" aria-label="Blades Privé">
+  <div class="wrap ed-inner reveal">
+    <svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
+      <rect x="49" y="9" width="22" height="15" rx="1.5"/>
+      <path d="M53 24h14v8h-14z"/>
+      <path d="M53 32c-12 4-13 13-13 22v92c0 7 5 11 12 11h16c7 0 12-4 12-11V54c0-9-1-18-13-22"/>
+      <line class="accent" x1="40" y1="92" x2="80" y2="92"/>
+      <line class="accent" x1="40" y1="98" x2="80" y2="98"/>
+      <line x1="46" y1="120" x2="74" y2="120" stroke-opacity=".5"/>
+    </svg>
+    <p class="ed-line" data-i18n="ed_line">Un aroma no se ve. Se recuerda.</p>
+  </div>
+</section>
+
+<!-- ============================ 06 · ABOUT ============================ -->
 <section class="section" id="about">
   <div class="wrap">
     <div class="about-inner reveal">
@@ -994,6 +1200,8 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <span class="eyebrow" data-i18n="about_eyebrow">El mismo ojo</span>
       <p class="about-quote" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
       <p class="about-body" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
+      <p class="about-body" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
+      <p class="about-body" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
       <div class="about-soc">
         <a class="soc" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
         <a class="soc" id="tiktok2" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.2 1.7 3.9 3.8 4.2v2.6c-1.3.1-2.6-.3-3.8-1v6.2A5.5 5.5 0 1 1 10.5 9.6v2.8a2.8 2.8 0 1 0 2 2.7V3H16Z"/></svg></a>
@@ -1030,10 +1238,39 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
       <span class="eyebrow" data-i18n="cuts_eyebrow">Su oficio</span>
       <h3 data-i18n="cuts_title">Sus Cortes</h3>
     </div>
-    <div class="carousel reveal">
-      <button class="car-nav prev" data-car="cutsTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
-      <div class="car-track" id="cutsTrack" tabindex="0" role="region" aria-label="Videos de cortes"></div>
-      <button class="car-nav next" data-car="cutsTrack" aria-label="Siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6"/></svg></button>
+    <div class="cuts-grid reveal" id="cutsGrid"></div>
+  </div>
+</section>
+
+<!-- ============================ 08 · FAQ ============================ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="shead reveal">
+      <span class="line"></span>
+      <span class="eyebrow" data-i18n="faq_eyebrow">Antes de comprar</span>
+      <h2 class="struct-h" data-i18n="faq_title">Preguntas frecuentes</h2>
+    </div>
+    <div class="faq-list reveal">
+      <details>
+        <summary><span class="q" data-i18n="faq_q1">¿Los perfumes son originales?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="a" data-i18n="faq_a1">Sí. Cada pieza proviene de distribuidores establecidos y se verifica — lote, empaque y sellado — antes de entregarse. Si algo no nos convence, no se vende.</p>
+      </details>
+      <details>
+        <summary><span class="q" data-i18n="faq_q2">¿Cuánto tarda la entrega?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="a" data-i18n="faq_a2">En San José normalmente coordinamos en 24–48 horas. Para el resto del país, el envío se coordina por encomienda o Correos y suele tomar de 2 a 4 días hábiles.</p>
+      </details>
+      <details>
+        <summary><span class="q" data-i18n="faq_q3">¿Cómo se paga?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="a" data-i18n="faq_a3">Efectivo o SINPE Móvil al recibir en San José; para envíos, SINPE o transferencia antes del despacho. Todo se acuerda por WhatsApp — nunca pagos en línea.</p>
+      </details>
+      <details>
+        <summary><span class="q" data-i18n="faq_q4">¿Qué pasa si algo está agotado?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="a" data-i18n="faq_a4">Las fragancias agotadas se marcan en el catálogo. Si te interesa una, escríbenos — muchas veces podemos conseguirla como encargo, con precio y tiempo confirmados antes de que te comprometas.</p>
+      </details>
+      <details>
+        <summary><span class="q" data-i18n="faq_q5">¿Pueden conseguir algo que no está en el catálogo?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+        <p class="a" data-i18n="faq_a5">Sí — para eso existe el servicio de encargos. Creed, Roja, ediciones limitadas o árabes difíciles de encontrar: dinos qué buscas y lo rastreamos por ti.</p>
+      </details>
     </div>
   </div>
 </section>
@@ -1043,6 +1280,27 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 <footer id="footer">
   <div class="wrap">
     <div class="foot-inner">
+      <div class="foot-grid">
+        <div class="fg-col fg-contact">
+          <h3 class="fg-h" data-i18n="fg_contact">Contacto</h3>
+          <a class="fg-wa" id="footWaLink" href="https://wa.me/50672164901" target="_blank" rel="noopener">+506 7216 4901</a>
+          <span data-i18n="fg_wa_note">WhatsApp — pedidos y encargos</span>
+          <span class="fg-note" data-i18n="fg_hours">Respuesta usual en horas hábiles · San José, CR</span>
+        </div>
+        <div class="fg-col">
+          <h3 class="fg-h" data-i18n="fg_cats">Categorías</h3>
+          <a href="#catalog" data-cat-link="Designer">Designer</a>
+          <a href="#catalog" data-cat-link="Niche">Niche</a>
+          <a href="#catalog" data-cat-link="Arabic" data-i18n="f_arabic">Árabe</a>
+        </div>
+        <div class="fg-col">
+          <h3 class="fg-h" data-i18n="fg_explore">Explorar</h3>
+          <a href="#catalog" data-i18n="nav_collection">Colección</a>
+          <a href="#encargos" data-i18n="nav_orders">Encargos</a>
+          <a href="#about" data-i18n="nav_about">Sobre Luis</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
       <a href="#top" class="logo" id="footLogo" style="align-items:center">
         <img src="assets/luis-blades-logo.png" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
       </a>
@@ -1163,7 +1421,35 @@ const STR = {
     Spring:'Primavera', Summer:'Verano', Fall:'Otoño', Winter:'Invierno',
     wa_greet:'¡Hola Luis! 👋 Me interesa esta selección de Blades Privé:',
     wa_total:'Total:', wa_delivery:'¿Coordinamos entrega o recogida? 🙌',
-    wa_inq:'¡Hola Luis! Quiero consultar por esta fragancia:', enc_wa:'¡Hola Luis! 👋 Quiero un encargo especial:'
+    wa_inq:'¡Hola Luis! Quiero consultar por esta fragancia:', enc_wa:'¡Hola Luis! 👋 Quiero un encargo especial:',
+    /* v3 — content pass */
+    w_eyebrow:'La guía', w_title:'Tres mundos, un mismo criterio',
+    w_d_b:'Las casas que definieron la elegancia moderna — Dior, Chanel, Hermès. Composiciones probadas por décadas, seguras para cualquier ocasión y siempre reconocibles. El punto de partida perfecto.',
+    w_n_b:'Perfumería de autor en producciones pequeñas — Le Labo, Xerjoff, Amouage. Aromas con carácter propio, para quien ya sabe lo que busca y prefiere llevar algo que casi nadie más tiene.',
+    w_a_b:'La tradición del oud, el azafrán y el ámbar — Lattafa, Rasasi, Afnan. Intensidad y duración fuera de serie a precios que todavía sorprenden. El secreto mejor guardado del catálogo.',
+    cur_eyebrow:'Escogidos a mano', cur_title:'Selección del curador',
+    how_eyebrow:'El proceso', how_title:'Cómo funciona',
+    how1_t:'Elige tu fragancia', how1_b:'Explora el catálogo, filtra por día o noche, y añade a tu selección lo que te llame la atención.',
+    how2_t:'Coordina por WhatsApp', how2_b:'Tu selección se convierte en un mensaje directo a Luis. Sin cuentas, sin pagos en línea, sin complicaciones.',
+    how3_t:'Recibe donde estés', how3_b:'Recogida en San José o envío coordinado a todo el país. El pago se acuerda al confirmar tu pedido.',
+    ed_line:'Un aroma no se ve. Se recuerda.',
+    about_body2:'Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.',
+    about_body3:'Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.',
+    cut_label:'Corte',
+    faq_eyebrow:'Antes de comprar', faq_title:'Preguntas frecuentes',
+    faq_q1:'¿Los perfumes son originales?',
+    faq_a1:'Sí. Cada pieza proviene de distribuidores establecidos y se verifica — lote, empaque y sellado — antes de entregarse. Si algo no nos convence, no se vende.',
+    faq_q2:'¿Cuánto tarda la entrega?',
+    faq_a2:'En San José normalmente coordinamos en 24–48 horas. Para el resto del país, el envío se coordina por encomienda o Correos y suele tomar de 2 a 4 días hábiles.',
+    faq_q3:'¿Cómo se paga?',
+    faq_a3:'Efectivo o SINPE Móvil al recibir en San José; para envíos, SINPE o transferencia antes del despacho. Todo se acuerda por WhatsApp — nunca pagos en línea.',
+    faq_q4:'¿Qué pasa si algo está agotado?',
+    faq_a4:'Las fragancias agotadas se marcan en el catálogo. Si te interesa una, escríbenos — muchas veces podemos conseguirla como encargo, con precio y tiempo confirmados antes de que te comprometas.',
+    faq_q5:'¿Pueden conseguir algo que no está en el catálogo?',
+    faq_a5:'Sí — para eso existe el servicio de encargos. Creed, Roja, ediciones limitadas o árabes difíciles de encontrar: dinos qué buscas y lo rastreamos por ti.',
+    fg_contact:'Contacto', fg_wa_note:'WhatsApp — pedidos y encargos',
+    fg_hours:'Respuesta usual en horas hábiles · San José, CR',
+    fg_cats:'Categorías', fg_explore:'Explorar'
   },
   en:{
     nav_collection:'Collection', nav_orders:'Special Orders', nav_about:'About Luis',
@@ -1203,7 +1489,35 @@ const STR = {
     Spring:'Spring', Summer:'Summer', Fall:'Fall', Winter:'Winter',
     wa_greet:'Hi Luis! 👋 I’m interested in this Blades Privé selection:',
     wa_total:'Total:', wa_delivery:'Can we arrange delivery or pickup? 🙌',
-    wa_inq:'Hi Luis! I’d like to inquire about this fragrance:', enc_wa:'Hi Luis! 👋 I’d like a special order:'
+    wa_inq:'Hi Luis! I’d like to inquire about this fragrance:', enc_wa:'Hi Luis! 👋 I’d like a special order:',
+    /* v3 — content pass */
+    w_eyebrow:'The guide', w_title:'Three worlds, one standard',
+    w_d_b:'The houses that defined modern elegance — Dior, Chanel, Hermès. Compositions proven over decades, safe for any occasion and always recognisable. The perfect starting point.',
+    w_n_b:'Artisan perfumery in small productions — Le Labo, Xerjoff, Amouage. Scents with a character of their own, for those who know what they want and prefer to wear something almost no one else has.',
+    w_a_b:'The tradition of oud, saffron and amber — Lattafa, Rasasi, Afnan. Extraordinary intensity and longevity at prices that still surprise. The best-kept secret in the catalogue.',
+    cur_eyebrow:'Handpicked', cur_title:'The curator’s picks',
+    how_eyebrow:'The process', how_title:'How it works',
+    how1_t:'Choose your fragrance', how1_b:'Browse the catalogue, filter by day or night, and add whatever catches your attention to your selection.',
+    how2_t:'Arrange it on WhatsApp', how2_b:'Your selection becomes a direct message to Luis. No accounts, no online payments, no friction.',
+    how3_t:'Receive it anywhere', how3_b:'Pickup in San José or coordinated delivery nationwide. Payment is agreed when you confirm your order.',
+    ed_line:'A scent isn’t seen. It’s remembered.',
+    about_body2:'Years behind the chair build something money can’t buy: trust. The same clients who trust Luis with their image every two weeks were the first to ask about the fragrances he wore.',
+    about_body3:'Blades Privé was born from that question. It isn’t just another shop — it’s a personal answer: a short, hand-curated selection from someone who knows that style is finished by scent.',
+    cut_label:'Cut',
+    faq_eyebrow:'Before you buy', faq_title:'Frequently asked questions',
+    faq_q1:'Are the fragrances original?',
+    faq_a1:'Yes. Every piece comes from established distributors and is verified — batch, packaging and seal — before it’s handed over. If anything fails to convince us, it isn’t sold.',
+    faq_q2:'How long does delivery take?',
+    faq_a2:'In San José we usually coordinate within 24–48 hours. For the rest of the country, shipping is arranged by courier or Correos and typically takes 2–4 business days.',
+    faq_q3:'How do I pay?',
+    faq_a3:'Cash or SINPE Móvil on delivery in San José; for shipments, SINPE or bank transfer before dispatch. Everything is agreed on WhatsApp — never online payments.',
+    faq_q4:'What if something is sold out?',
+    faq_a4:'Sold-out fragrances stay marked in the catalogue. If one interests you, write to us — we can often source it as a special order, with price and timing confirmed before you commit.',
+    faq_q5:'Can you source something not in the catalogue?',
+    faq_a5:'Yes — that’s exactly what the special-orders service is for. Creed, Roja, limited editions or hard-to-find Arabics: tell us what you’re after and we’ll track it down.',
+    fg_contact:'Contact', fg_wa_note:'WhatsApp — orders and sourcing',
+    fg_hours:'We usually reply during business hours · San José, CR',
+    fg_cats:'Categories', fg_explore:'Explore'
   }
 };
 const NOTE_ES = {Bergamot:'Bergamota',Lemon:'Limón',Grapefruit:'Toronja',Mint:'Menta','Pink Pepper':'Pimienta Rosa','Black Pepper':'Pimienta Negra',Pepper:'Pimienta',Cardamom:'Cardamomo',Cinnamon:'Canela',Nutmeg:'Nuez Moscada',Lavender:'Lavanda',Geranium:'Geranio',Sage:'Salvia','Clary Sage':'Salvia Sclarea',Rosemary:'Romero',Jasmine:'Jazmín',Rose:'Rosa',Violet:'Violeta',Iris:'Iris',Orris:'Raíz de Iris','Ylang-Ylang':'Ylang-Ylang',Neroli:'Neroli','Orange Blossom':'Flor de Azahar',Gardenia:'Gardenia',Peony:'Peonía',Tuberose:'Nardo',Vanilla:'Vainilla','Tonka Bean':'Haba Tonka',Amber:'Ámbar',Amberwood:'Madera de Ámbar',Ambroxan:'Ambroxan',Ambrette:'Ambreta',Sandalwood:'Sándalo',Cedar:'Cedro',Patchouli:'Pachulí',Vetiver:'Vetiver',Oakmoss:'Musgo de Roble',Moss:'Musgo',Musk:'Almizcle',Leather:'Cuero',Oud:'Oud',Incense:'Incienso',Tobacco:'Tabaco','Tobacco Leaf':'Hoja de Tabaco',Honey:'Miel',Rum:'Ron',Cognac:'Coñac',Praline:'Praliné','Dark Chocolate':'Chocolate Negro',Chocolate:'Chocolate',Dates:'Dátiles',Saffron:'Azafrán',Licorice:'Regaliz',Apple:'Manzana','Green Apple':'Manzana Verde',Pear:'Pera',Pineapple:'Piña',Peach:'Durazno',Lychee:'Lichi',Raspberry:'Frambuesa',Blackcurrant:'Grosella Negra',Mandarin:'Mandarina','Bitter Orange':'Naranja Amarga',Orange:'Naranja','Marine Notes':'Notas Marinas','Juniper Berries':'Bayas de Enebro','Pine Needles':'Agujas de Pino',Truffle:'Trufa',Ginger:'Jengibre',Myrtle:'Mirto',Benzoin:'Benjuí',Styrax:'Estoraque',Labdanum:'Labdano','Guaiac Wood':'Madera de Guayaco',Cashmeran:'Cashmeran',Cumin:'Comino',Aldehydes:'Aldehídos','Iso E Super':'Iso E Super',Flint:'Pedernal',Oak:'Roble',Spices:'Especias','Spicy Notes':'Notas Especiadas','Fruity Notes':'Notas Frutales',Rosewood:'Palo de Rosa',Lily:'Lirio',Lotus:'Loto'};
@@ -1212,7 +1526,7 @@ const NOTE_ES = {Bergamot:'Bergamota',Lemon:'Limón',Grapefruit:'Toronja',Mint:'
    PERFUME CATALOG — 30 products (fallback) · placeholder silhouette
    =================================================================== */
 const PERFUMES = [
-{id:1,brand:'Dior',name:'Sauvage Elixir',category:'Designer',price_crc:85000,family:'Oriental',intensity:5,longevity:5,sillage:4,is_bestseller:true,in_stock:true,occasions:['Night','Formal','Date','Casual'],seasons:['Fall','Winter'],top_notes:['Cinnamon','Nutmeg','Cardamom','Grapefruit'],heart_notes:['Lavender','Licorice'],base_notes:['Amber','Sandalwood','Patchouli','Vetiver'],description_es:'Una descarga concentrada de especias y lavanda envuelta en un ámbar oscuro como licor. Pegado a la piel deja una estela densa que permanece mucho después de irte.',description_en:'A concentrated surge of spice and lavender wrapped in liquor-dark amber. Worn close, it leaves a dense trail that lingers long after you leave.',image_url:''},
+{id:1,brand:'Dior',name:'Sauvage Elixir',category:'Designer',price_crc:85000,family:'Oriental',intensity:5,longevity:5,sillage:4,is_bestseller:true,in_stock:true,is_featured:true,featured_note_es:'El que nunca falla — potencia y elegancia en un solo gesto.',featured_note_en:'The one that never misses — power and elegance in a single gesture.',occasions:['Night','Formal','Date','Casual'],seasons:['Fall','Winter'],top_notes:['Cinnamon','Nutmeg','Cardamom','Grapefruit'],heart_notes:['Lavender','Licorice'],base_notes:['Amber','Sandalwood','Patchouli','Vetiver'],description_es:'Una descarga concentrada de especias y lavanda envuelta en un ámbar oscuro como licor. Pegado a la piel deja una estela densa que permanece mucho después de irte.',description_en:'A concentrated surge of spice and lavender wrapped in liquor-dark amber. Worn close, it leaves a dense trail that lingers long after you leave.',image_url:''},
 {id:2,brand:'Chanel',name:'Bleu de Chanel EDP',category:'Designer',price_crc:90000,family:'Woody',intensity:4,longevity:4,sillage:4,is_bestseller:true,in_stock:true,occasions:['Office','Formal','Day','Night'],seasons:['Spring','Fall','Winter'],top_notes:['Grapefruit','Lemon','Mint','Pink Pepper'],heart_notes:['Ginger','Nutmeg','Jasmine'],base_notes:['Incense','Vetiver','Cedar','Sandalwood'],description_es:'El equilibrio hecho perfume: cítricos brillantes que ceden a un fondo de incienso y maderas secas. Versátil, limpio y eternamente elegante.',description_en:'Balance made fragrance: bright citrus giving way to incense and dry woods. Versatile, clean and eternally elegant.',image_url:''},
 {id:3,brand:'Tom Ford',name:'Black Orchid',category:'Designer',price_crc:110000,family:'Oriental',intensity:5,longevity:5,sillage:5,is_bestseller:false,in_stock:true,occasions:['Night','Formal','Date'],seasons:['Fall','Winter'],top_notes:['Truffle','Gardenia','Blackcurrant','Bergamot'],heart_notes:['Orchid','Spices','Lotus'],base_notes:['Patchouli','Vanilla','Incense','Dark Chocolate'],description_es:'Opulento y deliberadamente provocador: trufa, chocolate negro y orquídea sobre pachulí. No pide permiso para ser recordado.',description_en:'Opulent and deliberately provocative: truffle, dark chocolate and orchid over patchouli. It asks no permission to be remembered.',image_url:''},
 {id:4,brand:'Yves Saint Laurent',name:'La Nuit de L’Homme',category:'Designer',price_crc:75000,family:'Woody',intensity:3,longevity:3,sillage:3,is_bestseller:false,in_stock:true,occasions:['Date','Night','Casual'],seasons:['Spring','Fall'],top_notes:['Cardamom'],heart_notes:['Lavender','Bergamot','Cedar'],base_notes:['Cumin','Vetiver'],description_es:'Cardamomo cremoso y cedro suave con un toque cálido y seductor. Discreto pero magnético — la fragancia de cita por excelencia.',description_en:'Creamy cardamom and soft cedar with a warm, seductive touch. Understated yet magnetic — the date fragrance par excellence.',image_url:''},
@@ -1224,15 +1538,15 @@ const PERFUMES = [
 {id:10,brand:'Hermès',name:'Terre d’Hermès Parfum',category:'Designer',price_crc:95000,family:'Woody',intensity:4,longevity:5,sillage:4,is_bestseller:false,in_stock:true,occasions:['Office','Formal','Day'],seasons:['Fall','Winter','Spring'],top_notes:['Orange','Grapefruit'],heart_notes:['Pepper','Geranium'],base_notes:['Vetiver','Cedar','Patchouli','Flint'],description_es:'Cítricos minerales y pimienta sobre un vetiver terroso y pedernal. Una obra maestra de elegancia masculina — la tierra hecha perfume.',description_en:'Mineral citrus and pepper over earthy vetiver and flint. A masterpiece of masculine elegance — the earth made perfume.',image_url:''},
 {id:11,brand:'Maison Margiela',name:'Replica Jazz Club',category:'Niche',price_crc:120000,family:'Oriental',intensity:4,longevity:4,sillage:3,is_bestseller:false,in_stock:true,occasions:['Night','Casual','Date'],seasons:['Fall','Winter'],top_notes:['Pink Pepper','Lemon','Neroli'],heart_notes:['Rum','Clary Sage','Vetiver'],base_notes:['Tobacco Leaf','Vanilla','Styrax'],description_es:'Ron, tabaco y vainilla que evocan un bar de whisky con luz tenue. Cálido, acogedor y profundamente nostálgico.',description_en:'Rum, tobacco and vanilla evoking a dimly lit whiskey bar. Warm, cosy and deeply nostalgic.',image_url:''},
 {id:12,brand:'Byredo',name:'Gypsy Water',category:'Niche',price_crc:130000,family:'Woody',intensity:3,longevity:3,sillage:3,is_bestseller:false,in_stock:true,occasions:['Day','Casual','Office'],seasons:['Spring','Summer'],top_notes:['Bergamot','Lemon','Pepper','Juniper Berries'],heart_notes:['Incense','Pine Needles','Orris'],base_notes:['Amber','Vanilla','Sandalwood'],description_es:'Bosque de pinos y humo suave sobre una base de vainilla y sándalo. Bohemio y limpio — la libertad embotellada.',description_en:'Pine forest and soft smoke over a vanilla-sandalwood base. Bohemian and clean — freedom in a bottle.',image_url:''},
-{id:13,brand:'Le Labo',name:'Santal 33',category:'Niche',price_crc:145000,family:'Woody',intensity:4,longevity:4,sillage:4,is_bestseller:true,in_stock:true,occasions:['Casual','Office','Day','Night'],seasons:['Fall','Winter','Spring'],top_notes:['Cardamom','Iris','Violet'],heart_notes:['Ambroxan','Sandalwood'],base_notes:['Cedar','Leather','Musk'],description_es:'Sándalo cremoso y cuero ahumado con un toque de cardamomo. Icónico, andrógino e inconfundible — el aroma de toda una era.',description_en:'Creamy sandalwood and smoky leather with a hint of cardamom. Iconic, androgynous and unmistakable — the scent of an era.',image_url:''},
+{id:13,brand:'Le Labo',name:'Santal 33',category:'Niche',price_crc:145000,family:'Woody',intensity:4,longevity:4,sillage:4,is_bestseller:true,in_stock:true,is_featured:true,featured_note_es:'Un icono moderno: sándalo cremoso que se vuelve tu segunda piel.',featured_note_en:'A modern icon: creamy sandalwood that becomes a second skin.',occasions:['Casual','Office','Day','Night'],seasons:['Fall','Winter','Spring'],top_notes:['Cardamom','Iris','Violet'],heart_notes:['Ambroxan','Sandalwood'],base_notes:['Cedar','Leather','Musk'],description_es:'Sándalo cremoso y cuero ahumado con un toque de cardamomo. Icónico, andrógino e inconfundible — el aroma de toda una era.',description_en:'Creamy sandalwood and smoky leather with a hint of cardamom. Iconic, androgynous and unmistakable — the scent of an era.',image_url:''},
 {id:14,brand:'Initio',name:'Oud for Greatness',category:'Niche',price_crc:160000,family:'Woody',intensity:5,longevity:5,sillage:5,is_bestseller:false,in_stock:true,occasions:['Night','Formal','Date'],seasons:['Fall','Winter'],top_notes:['Saffron','Nutmeg'],heart_notes:['Oud','Patchouli'],base_notes:['Musk','Sandalwood'],description_es:'Azafrán especiado y oud poderoso elevados a una potencia monumental. Una declaración de presencia que no admite réplica.',description_en:'Spiced saffron and powerful oud raised to monumental strength. A statement of presence that brooks no rival.',image_url:''},
-{id:15,brand:'Parfums de Marly',name:'Layton',category:'Niche',price_crc:140000,family:'Oriental',intensity:4,longevity:5,sillage:4,is_bestseller:true,in_stock:true,occasions:['Night','Formal','Date','Office'],seasons:['Fall','Winter','Spring'],top_notes:['Apple','Bergamot','Mandarin','Lavender'],heart_notes:['Geranium','Violet','Jasmine','Cardamom'],base_notes:['Vanilla','Sandalwood','Guaiac Wood','Pepper'],description_es:'Manzana y lavanda sobre una base cremosa de vainilla y especias. Versátil hasta lo absurdo y de proyección imponente.',description_en:'Apple and lavender over a creamy base of vanilla and spice. Absurdly versatile with imposing projection.',image_url:''},
+{id:15,brand:'Parfums de Marly',name:'Layton',category:'Niche',price_crc:140000,family:'Oriental',intensity:4,longevity:5,sillage:4,is_bestseller:true,in_stock:true,is_featured:true,featured_note_es:'El niche más versátil del catálogo — oficina, cita o noche.',featured_note_en:'The most versatile niche in the catalogue — office, date or night.',occasions:['Night','Formal','Date','Office'],seasons:['Fall','Winter','Spring'],top_notes:['Apple','Bergamot','Mandarin','Lavender'],heart_notes:['Geranium','Violet','Jasmine','Cardamom'],base_notes:['Vanilla','Sandalwood','Guaiac Wood','Pepper'],description_es:'Manzana y lavanda sobre una base cremosa de vainilla y especias. Versátil hasta lo absurdo y de proyección imponente.',description_en:'Apple and lavender over a creamy base of vanilla and spice. Absurdly versatile with imposing projection.',image_url:''},
 {id:16,brand:'Xerjoff',name:'Naxos',category:'Niche',price_crc:155000,family:'Gourmand',intensity:5,longevity:5,sillage:5,is_bestseller:true,in_stock:true,occasions:['Night','Formal','Date'],seasons:['Fall','Winter'],top_notes:['Bergamot','Lavender','Clary Sage'],heart_notes:['Honey','Cinnamon','Jasmine','Tobacco'],base_notes:['Vanilla','Tonka Bean','Cashmeran'],description_es:'Miel y tabaco fundidos en una fougère dorada y adictiva. Lujo siciliano que envuelve como terciopelo caliente.',description_en:'Honey and tobacco fused into a golden, addictive fougère. Sicilian luxury that wraps around you like warm velvet.',image_url:''},
 {id:17,brand:'Mancera',name:'Red Tobacco',category:'Niche',price_crc:125000,family:'Oriental',intensity:5,longevity:5,sillage:5,is_bestseller:false,in_stock:true,occasions:['Night','Formal'],seasons:['Fall','Winter'],top_notes:['Saffron','Spicy Notes'],heart_notes:['Oud','Cinnamon','Nutmeg','Tobacco'],base_notes:['Amber','Vanilla','Musk','Patchouli'],description_es:'Especias incendiarias, tabaco y oud en una bomba de proyección sin tregua. Para quien quiere que su entrada se sienta antes de verse.',description_en:'Fiery spices, tobacco and oud in a relentless projection bomb. For those who want their entrance felt before it is seen.',image_url:''},
 {id:18,brand:'Kilian',name:'Angels’ Share',category:'Niche',price_crc:150000,family:'Gourmand',intensity:4,longevity:4,sillage:4,is_bestseller:false,in_stock:true,occasions:['Night','Date','Formal'],seasons:['Fall','Winter'],top_notes:['Cognac'],heart_notes:['Cinnamon','Tonka Bean','Praline'],base_notes:['Oak','Vanilla','Sandalwood'],description_es:'Coñac, praliné y roble como un postre servido junto a una chimenea. Goloso, cálido y embriagadoramente elegante.',description_en:'Cognac, praline and oak like a dessert served by a fireplace. Gourmand, warm and intoxicatingly elegant.',image_url:''},
 {id:19,brand:'Amouage',name:'Reflection Man',category:'Niche',price_crc:165000,family:'Floral',intensity:4,longevity:4,sillage:4,is_bestseller:false,in_stock:true,occasions:['Office','Formal','Day','Night'],seasons:['Spring','Summer','Fall'],top_notes:['Rosemary','Pink Pepper','Bergamot'],heart_notes:['Jasmine','Neroli','Ylang-Ylang'],base_notes:['Cedar','Sandalwood','Vetiver'],description_es:'Un floral masculino luminoso: jazmín y neroli sobre maderas cremosas. Refinamiento omaní puro, sereno y aristocrático.',description_en:'A luminous masculine floral: jasmine and neroli over creamy woods. Pure Omani refinement — serene and aristocratic.',image_url:''},
 {id:20,brand:'Ex Nihilo',name:'Fleur Narcotique',category:'Niche',price_crc:135000,family:'Floral',intensity:3,longevity:4,sillage:4,is_bestseller:false,in_stock:true,occasions:['Date','Casual','Day','Night'],seasons:['Spring','Summer'],top_notes:['Bergamot','Peach','Lychee'],heart_notes:['Peony','Orange Blossom','Jasmine'],base_notes:['Musk','Moss'],description_es:'Durazno y peonía sobre un musgo luminoso — floral frutal y adictivo. Unisex, magnético y perfecto para acercarse.',description_en:'Peach and peony over a luminous moss — fruity-floral and addictive. Unisex, magnetic and perfect up close.',image_url:''},
-{id:21,brand:'Lattafa',name:'Khamrah',category:'Arabic',price_crc:45000,family:'Gourmand',intensity:5,longevity:5,sillage:4,is_bestseller:true,in_stock:true,occasions:['Night','Casual','Formal'],seasons:['Fall','Winter'],top_notes:['Cinnamon','Nutmeg','Bergamot'],heart_notes:['Dates','Praline','Tuberose'],base_notes:['Vanilla','Tonka Bean','Benzoin','Amberwood'],description_es:'Dátiles, canela y vainilla como un postre árabe especiado. Cálido, dulce y sorprendentemente refinado para su precio.',description_en:'Dates, cinnamon and vanilla like a spiced Arabian dessert. Warm, sweet and surprisingly refined for the price.',image_url:''},
+{id:21,brand:'Lattafa',name:'Khamrah',category:'Arabic',price_crc:45000,family:'Gourmand',intensity:5,longevity:5,sillage:4,is_bestseller:true,in_stock:true,is_featured:true,featured_note_es:'Dulzura árabe especiada que rinde el doble de lo que cuesta.',featured_note_en:'Spiced Arabian sweetness that performs twice its price.',occasions:['Night','Casual','Formal'],seasons:['Fall','Winter'],top_notes:['Cinnamon','Nutmeg','Bergamot'],heart_notes:['Dates','Praline','Tuberose'],base_notes:['Vanilla','Tonka Bean','Benzoin','Amberwood'],description_es:'Dátiles, canela y vainilla como un postre árabe especiado. Cálido, dulce y sorprendentemente refinado para su precio.',description_en:'Dates, cinnamon and vanilla like a spiced Arabian dessert. Warm, sweet and surprisingly refined for the price.',image_url:''},
 {id:22,brand:'Rasasi',name:'La Yuqawam',category:'Arabic',price_crc:50000,family:'Woody',intensity:4,longevity:5,sillage:4,is_bestseller:false,in_stock:true,occasions:['Night','Formal','Date'],seasons:['Fall','Winter'],top_notes:['Bergamot','Apple','Cardamom'],heart_notes:['Rose','Patchouli','Cinnamon'],base_notes:['Leather','Oud','Amber','Sandalwood'],description_es:'Cuero y oud con un corazón frutal y especiado — opulencia inspirada en lo irresistible. Duración descomunal y carácter de sobra.',description_en:'Leather and oud with a fruity, spiced heart — opulence inspired by the irresistible. Towering longevity and character to spare.',image_url:''},
 {id:23,brand:'Swiss Arabian',name:'Shaghaf Oud',category:'Arabic',price_crc:55000,family:'Oriental',intensity:5,longevity:5,sillage:4,is_bestseller:false,in_stock:true,occasions:['Night','Formal','Date'],seasons:['Fall','Winter'],top_notes:['Saffron','Raspberry'],heart_notes:['Rose','Oud','Honey'],base_notes:['Amber','Praline','Musk'],description_es:'Rosa y oud endulzados con frambuesa y praliné. Una joya golosa y oriental que se siente mucho más cara de lo que es.',description_en:'Rose and oud sweetened with raspberry and praline. A gourmand oriental gem that feels far more expensive than it is.',image_url:''},
 {id:24,brand:'Ajmal',name:'Dahn Al Oudh',category:'Arabic',price_crc:60000,family:'Woody',intensity:5,longevity:5,sillage:5,is_bestseller:false,in_stock:true,occasions:['Night','Formal'],seasons:['Fall','Winter'],top_notes:['Oud'],heart_notes:['Rose','Spices'],base_notes:['Musk','Amber'],description_es:'Oud puro y animal en su expresión más tradicional. Intenso, terroso y profundamente árabe — no apto para tímidos.',description_en:'Pure, animalic oud in its most traditional expression. Intense, earthy and deeply Arabian — not for the timid.',image_url:''},
@@ -1289,34 +1603,65 @@ const luisPhotos = [
 ];
 
 /* -------------------------------------------------------------------
-   VIDEO COMPRESSION — read before adding real clips:
-   • Keep each clip SHORT (3–8s). It loops, so motion matters, not length.
-   • Export .mp4 (H.264), 720p, target UNDER 3 MB per clip.
-   • Free tool: HandBrake (handbrake.fr) → preset "Fast 720p30",
-     tick "Web Optimized", or drop bitrate to ~2–3 Mbps.
-   • Small files keep the page fast; clips lazy-load + autoplay on scroll.
+   SUS CORTES — gallery grid. Each slot takes an image URL, or a .mp4 URL
+   (compressed H.264, 720p, <3MB — HandBrake "Fast 720p30" + Web Optimized),
+   or '' for the intentional placeholder treatment.
    ------------------------------------------------------------------- */
-// REPLACE: paste real video file URLs (compressed .mp4, ideally <3MB each) once Andrew uploads Luis's clips.
-const luisCutVideos = [
-  '', // clip 1
-  '', // clip 2
-  '', // clip 3
-  ''  // clip 4
+// REPLACE: paste real photo/clip URLs of Luis's barbershop work here.
+const luisCuts = [
+  '', // corte 1
+  '', // corte 2
+  '', // corte 3
+  '', // corte 4
+  '', // corte 5
+  ''  // corte 6
 ];
 
 const PH_PHOTO=()=>`<div class="car-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3 7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3z"/><circle cx="12" cy="12.5" r="3.5"/></svg><span>${S.lang==='es'?'Foto':'Photo'}</span></div>`;
-const PH_VIDEO=()=>`<div class="car-ph cut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.4 16 12l-6 3.6z" fill="currentColor" stroke="none"/></svg><span>Clip</span></div>`;
 
 function renderCarousels(){
   const pt=$('#photoTrack');
   if(pt) pt.innerHTML=luisPhotos.map((u,i)=> u
     ? `<div class="car-item"><img src="${u}" alt="Luis Blades ${i+1}" loading="lazy"></div>`
     : `<div class="car-item">${PH_PHOTO()}</div>`).join('');
-  const ct=$('#cutsTrack');
-  if(ct) ct.innerHTML=luisCutVideos.map((u,i)=> u
-    ? `<div class="car-item" data-video><video muted loop playsinline preload="metadata" data-src="${u}"></video><button class="car-unmute" data-unmute aria-label="Sonido"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9.5a3.5 3.5 0 0 1 0 5"/><path d="M19 7a7 7 0 0 1 0 10"/></svg></button></div>`
-    : `<div class="car-item">${PH_VIDEO()}</div>`).join('');
-  setupCarousels(); lazyVideos();
+  setupCarousels(); renderCuts();
+}
+
+/* barbershop gallery — image-forward cells, razor-mark placeholder when empty */
+function renderCuts(){
+  const g=$('#cutsGrid'); if(!g) return;
+  g.innerHTML=luisCuts.map((u,i)=>{
+    const n=String(i+1).padStart(2,'0');
+    if(!u) return `<div class="cut-cell"><div class="cut-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20 20 4l-2.2-2.2L4 15.6z"/><path d="m13.4 8.4 2.2 2.2"/></svg><span>${tr('cut_label')} ${n}</span></div></div>`;
+    if(/\.mp4($|\?)/i.test(u)) return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
+    return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
+  }).join('');
+  lazyVideos();
+}
+
+/* CURATOR PICKS — is_featured products (bestsellers as fallback), why-line per pick */
+function renderFeatured(){
+  const host=$('#featured'); if(!host) return;
+  let picks=S.products.filter(p=>p.is_featured);
+  if(!picks.length) picks=S.products.filter(p=>p.is_bestseller);
+  picks=picks.slice(0,4);
+  if(!picks.length){ host.closest('.curator').style.display='none'; return; }
+  host.innerHTML=picks.map(p=>{
+    const note=(S.lang==='es'?p.featured_note_es:p.featured_note_en)||'';
+    return `<div class="feat-card" data-id="${p.id}" role="button" tabindex="0" aria-label="${p.brand} ${p.name}">
+      <div class="feat-media">${imgFor(p)}</div>
+      <div class="feat-label">
+        <span class="fl-cat">${tr(p.category)} · ${tr(p.family)}</span>
+        <span class="fl-name">${p.brand} — ${p.name}</span>
+        ${note?`<p class="fl-note">${note}</p>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  $$('#featured .feat-card').forEach(c=>{
+    const open=()=>openModal(+c.dataset.id);
+    c.addEventListener('click',open);
+    c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+  });
 }
 
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
@@ -1337,7 +1682,7 @@ function setupCarousels(){
 
 /* lazy-load + autoplay videos only when scrolled into view */
 function lazyVideos(){
-  const items=$$('#cutsTrack .car-item[data-video]'); if(!items.length||!('IntersectionObserver'in window))return;
+  const items=$$('#cutsGrid [data-video]'); if(!items.length||!('IntersectionObserver'in window))return;
   const io=new IntersectionObserver(es=>{ es.forEach(en=>{ const v=en.target.querySelector('video'); if(!v)return;
     if(en.isIntersecting){                                  // >= 50% in view
       if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }   // lazy: load only now
@@ -1477,7 +1822,7 @@ function openModal(id){
 }
 function closeModal(){ $('#modal').classList.remove('show'); if(!$('#cart').classList.contains('show'))$('#overlay').classList.remove('show'); document.body.style.overflow=''; }
 function meterRow(label,val){ return `<div class="meter-row"><span class="ml">${label}</span><div class="meter-track"><span class="fill" data-w="${val/5*100}"></span></div></div>`; }
-function noteTier(label,arr){ return `<div class="pyr-tier"><div class="t">${label}</div><div class="note-tags">${arr.map(n=>`<span>${trNote(n)}</span>`).join('')}</div></div>`; }
+function noteTier(label,arr){ return `<div class="pyr-tier"><div class="t">${label}</div><span class="pyr-bar" aria-hidden="true"></span><div class="note-tags">${arr.map(n=>`<span>${trNote(n)}</span>`).join('')}</div></div>`; }
 function renderModal(){
   const p=S.modalP; if(!p)return;
   const faved=S.favs.includes(p.id);
@@ -1582,7 +1927,7 @@ function openCart(){ $('#cart').classList.add('show'); $('#overlay').classList.a
 const waLink=t=>`https://wa.me/${S.whatsapp}?text=${encodeURIComponent(t)}`;
 function checkout(){ if(!S.cart.length)return; let m=tr('wa_greet')+'\n\n'; S.cart.forEach(it=>{ m+=`• ${it.brand} ${it.name} (${it.vol}ml) ×${it.qty} — ${fmt(it.price*it.qty)}\n`; }); m+=`\n${tr('wa_total')} ${fmt(cartTotal())}\n\n${tr('wa_delivery')}`; window.open(waLink(m),'_blank'); }
 function inquireWA(p){ window.open(waLink(`${tr('wa_inq')}\n\n${p.brand} ${p.name} — ${S.modalVol}ml · ${fmt(priceFor(p,S.modalVol))}`),'_blank'); }
-function refreshWA(){ const base=waLink(S.lang==='es'?'¡Hola Luis! Quiero información sobre Blades Privé 🙌':'Hi Luis! I’d like info about Blades Privé 🙌'); $('#floatWa').href=base; }
+function refreshWA(){ const base=waLink(S.lang==='es'?'¡Hola Luis! Quiero información sobre Blades Privé 🙌':'Hi Luis! I’d like info about Blades Privé 🙌'); $('#floatWa').href=base; const fw=$('#footWaLink'); if(fw){ fw.href=base; fw.textContent='+'+S.whatsapp.replace(/^(\d{3})(\d{4})(\d{4})$/,'$1 $2 $3'); } }
 
 /* ===================================================================
    LANGUAGE
@@ -1593,7 +1938,7 @@ function applyLang(lang){
   $$('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(T()[k]!==undefined) el.placeholder=T()[k]; });
   $$('[data-i18n-html]').forEach(el=>{ const k=el.getAttribute('data-i18n-html'); if(T()[k]!==undefined) el.innerHTML=T()[k]; });
   $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
-  refresh(false); updateCart(); refreshWA();
+  refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts();
   if($('#modal').classList.contains('show')) renderModal();
   if($('#admin').classList.contains('show')) renderAdmin();
 }
@@ -1856,6 +2201,13 @@ function setupEvents(){
   $('#toTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   // esc
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeModal(); $('#mmenu').classList.remove('show'); $('#searchbar').classList.remove('open'); if($('#admin').classList.contains('show'))closeAdmin(); } });
+  // footer category quick-links → activate matching filter pill + scroll to catalog
+  $$('[data-cat-link]').forEach(a=>a.addEventListener('click',e=>{
+    e.preventDefault();
+    const pill=$(`#filterBar .pill[data-filter="${a.dataset.catLink}"]`);
+    if(pill) pill.click();
+    document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+  }));
   // admin triggers
   let clk=0,tm; $('#footLogo').addEventListener('click',e=>{ e.preventDefault(); clk++; clearTimeout(tm); tm=setTimeout(()=>clk=0,600); if(clk>=3){ clk=0; openAdmin(); } else if(clk===1){ /* allow normal nav after delay */ setTimeout(()=>{ if(clk===1){ location.hash='#top'; clk=0; } },280); } });
   window.addEventListener('hashchange',()=>{ if(location.hash==='#admin')openAdmin(); });
@@ -1891,6 +2243,9 @@ function initAnim(){
       .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
   }
   if(window.ScrollTrigger){
+    // CÓMO FUNCIONA — numbered steps scale/fade in, staggered .15s, once only
+    gsap.from('.how-step',{opacity:0,y:26,scale:.94,duration:.6,ease:'power3.out',stagger:.15,
+      scrollTrigger:{trigger:'.how-steps',start:'top 82%',once:true}});
     // SIGNATURE — "sillage": leaving the hero, PRIVÉ drifts apart and dissolves like scent.
     // Scrub-tied, transform/opacity only (compositor-safe on mid-range Android).
     gsap.to('.hero h1 .hl',{x:i=>(i-2)*(isMob()?16:44),ease:'none',immediateRender:false,
