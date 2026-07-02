@@ -1,4 +1,4 @@
-# Netlify configuration for Blades Privé
-# Single static index.html at the repo root — no build step, just publish root.
+# Netlify site is retired — it now only 301-redirects to production on Vercel.
+# (Production deploys from GitHub -> Vercel; see https://bladesprive.vercel.app)
 [build]
-  publish = "."
+  publish = "netlify-redirect"
