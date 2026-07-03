@@ -19,3 +19,6 @@ Thumbs.db
 
 # Local audit artifacts — never deploy
 lighthouse-*.json
+
+# v9 audit screenshots — local only
+_audit_v9/

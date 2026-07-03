@@ -986,12 +986,8 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   .eye-text{margin-left:-52px;position:relative;z-index:2}   /* magazine overlap */
 }
 
-/* ---- filmstrip mode (desktop pin only) ---- */
-@media(min-width:900px){
-  .carousel.film{overflow:hidden}
-  .carousel.film .car-track{overflow:visible;cursor:default;padding-bottom:6px}
-  .carousel.film .car-nav{display:none}
-}
+/* (v9: filmstrip pin removed — Luis photos are a native scroll-snap carousel at
+   all widths; the old .carousel.film override is gone with it) */
 
 /* ---- celeste presence: link underlines, CTA glow ---- */
 .nav-links a::after{background:var(--celeste);height:2px}
@@ -1148,6 +1144,43 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 </head>
 
 <body>
+<!-- ===================================================================================
+     STRUCTURAL MAP  (living doc — keep in sync when sections/mechanics change; v9)
+     DOM order = visual order top→bottom. "pin" = GSAP ScrollTrigger pin (adds a
+     pinSpacer to page height). refreshPriority is set in PAGE ORDER so ScrollTrigger.sort()
+     + refresh() measure top→bottom. Page height is STABLE (~15.8k desktop) — verified.
+
+     FIXED / FLOATING (out of flow):
+       .nav          z200 fixed top      | #mmenu z260 fixed (off-canvas until open)
+       .overlay z300 | .drawer/#cart z320 | .modal z340 | .admin z500 (all fixed, hidden)
+       .float-wa z180 fixed br | .to-top z180 fixed bl | .toast z400 fixed
+
+     IN-FLOW SECTIONS (id · numeral · scroll mechanic · pin?):
+       header.hero      01   HERO EXIT: pin(+38/55%, pinSpacing:FALSE→no spacer) scrub, prio -60
+                             ::before "B" watermark z0 · content z1
+       #worlds          02   WORD-BUILD: pin .worlds-head(+55/95%) scrub, prio -50 · z3 (rides
+                             over hero) · ::after grain z10 · blocks cascade once
+       #finder          –    scent quiz — reveal only (no pin); #finderBox ResizeObserved
+       #catalog         03   CURATOR CROSSFADE: pin .curator(+260%) scrub, prio -40, DESKTOP≥900 ONLY
+                             (mobile = stacked cards, no pin). #grid ResizeObserved.
+                             contains daynight + filter-bar + grid + load-more
+       #how             04   REVEAL ONCE (v9: NO PIN — was a fragile parent-pin; removed).
+                             numerals stroke-draw + connector + steps rise
+       #encargos        05   reveal · ::after "?" watermark z0
+       .ed-break        –    INK PLATE 1 · scrub (bottle drift + light sweep), NO pin
+       #about           06   EL MISMO OJO · logo fade-in + text stagger (once), NO pin
+       .celeste-rule    –    hairline draws once
+       #luis            07   Luis photos = NATIVE scroll-snap carousel (v9: NO PIN — was the
+                             "filmstrip" pin whose fixed content bled over #how; removed).
+                             + "Sus Cortes" #cutsGrid (CORTE placeholders)
+       #faq             08   INK PLATE 2 · reveal (native <details> accordion)
+       footer
+
+     ACTIVE PINS (v9): hero(-60), worlds(-50), curator(-40 desktop only). how & filmstrip
+     pins were REMOVED in v9 to stop interdependent-spacer collisions. Reveals use CSS
+     animation-timeline where supported, else GSAP once-triggers. Layout-settle: queueRefresh()
+     (debounced, re-entrancy-guarded) on fonts.ready / img decode / load / #grid+#finderBox resize.
+     =================================================================================== -->
 <script>/* mark JS available so we can pre-hide animated bits without FOUC; reduced-motion CSS overrides this.
    LCP guard: if GSAP hasn't arrived within 2.2s (slow 4G), un-hide the hero so content paints — initAnim skips the intro in that case. */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('anim');setTimeout(function(){if(!window.__bpAnim)document.documentElement.classList.remove('anim');},2200);}}catch(e){}})();</script>
 
@@ -2599,27 +2632,13 @@ function buildCuratorCross(){
   });
 }
 
-/* Mechanic 5 — FILMSTRIP: pin the photo stage, translate the track horizontally
-   as the user scrolls vertically. DESKTOP ONLY — mobile keeps the native
-   horizontal scroll-snap carousel. gsap.matchMedia() reverts the pin + track
-   transform automatically when dropping below 900px or under reduced motion. */
-let mmFilm=null;
-function buildFilm(){
-  if(!window.gsap||!window.ScrollTrigger) return;
-  if(mmFilm){ mmFilm.revert(); mmFilm=null; }
-  const stage=$('#photoStage'), track=$('#photoTrack'); if(!stage||!track) return;
-  mmFilm=gsap.matchMedia();
-  mmFilm.add({desk:'(min-width: 900px)',reduce:'(prefers-reduced-motion: reduce)'},ctx=>{
-    if(ctx.conditions.reduce||!ctx.conditions.desk) return;
-    stage.classList.add('film');
-    const dist=()=>Math.max(0,track.scrollWidth-stage.clientWidth);
-    if(dist()<60){ stage.classList.remove('film'); return; }
-    gsap.to(track,{x:()=>-dist(),ease:'none',
-      scrollTrigger:{trigger:stage,start:'top 18%',end:()=>'+='+dist(),pin:true,scrub:.4,
-        anticipatePin:1,invalidateOnRefresh:true,refreshPriority:-10}});
-    return ()=>stage.classList.remove('film');
-  });
-}
+/* Mechanic 5 — LUIS PHOTOS: native horizontal scroll-snap carousel at ALL widths
+   (arrows via setupCarousels). v9: the previous pin+horizontal-scrub "filmstrip"
+   pinned #photoStage (section 07) but, because its start was computed against an
+   unstable multi-pin page height, its fixed content bled OVER #how (section 04).
+   Removing this pin eliminates that collision AND one interdependent pin-spacer.
+   No pin here now — nothing to build; the CSS carousel already works. */
+function buildFilm(){ /* intentionally empty — native carousel, no pin (see note above) */ }
 
 /* Mechanic 6 — EL MISMO OJO: stroke-draw scrub on desktop, blade-wipe on mobile.
    gsap.matchMedia() swaps the mechanic live when 860px is crossed (orientation
@@ -2650,42 +2669,25 @@ function buildEye(){
   });
 }
 
-/* Mechanic 4 (v5) — CÓMO FUNCIONA: short pin; active step at full size while others
-   dim/shrink; each numeral stroke-draws + elastic-bounces on first activation;
-   connector fill sweeps celeste→gold with progress. Visual states are primed on
-   ENTER (not at build) so the resting page never shows dimmed text. */
+/* Mechanic 4 — CÓMO FUNCIONA: once-triggered reveal, NO PIN (v9).
+   The prior version pinned the PARENT '.how .wrap' while triggering on the child
+   '.how-steps' — a fragile pattern whose pinSpacing offset (a) added ~1 viewport
+   of blank runway before the heading and (b) was one more interdependent spacer
+   in the stack. This robust reveal keeps the craft (connector draws, numerals
+   stroke-draw + ink in, steps rise staggered) and ends every step FULL + readable.
+   Reduced-motion / no-JS: steps stay visible, numerals show the CSS ghost. */
 function buildHow(){
   if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
   const steps=$$('.how-step'); if(steps.length<3) return;
-  const m=isMob(), fill=$('.how-line-fill');
-  const texts=steps.map(s=>s.querySelector('.hs-t'));
-  let active=-1, primed=false;
-  // dimmed = smaller + AA-compliant gray text (never sub-4.5:1 opacity fades)
-  const DIM='#6E6E6E', FULLH='#000000', FULLP='#1A1A1A';
-  const copy=s=>s.querySelectorAll('h3,p');
-  const prime=()=>{ if(primed)return; primed=true;
-    gsap.set(steps,{scale:.9,transformOrigin:m?'left top':'50% 20%'});
-    steps.forEach(s=>gsap.set(copy(s),{color:DIM}));
-    gsap.set(texts,{opacity:.4,fillOpacity:0,stroke:'#1A1A1A',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420});
-  };
-  const activate=i=>{ if(i===active)return; active=i;
-    steps.forEach((s,j)=>{
-      gsap.to(s,{scale:j===i?1:.9,duration:j===i?.7:.4,
-        ease:j===i?'elastic.out(1,.55)':'power2.out',overwrite:'auto'});
-      const els=copy(s);
-      gsap.to(els[0],{color:j===i?FULLH:DIM,duration:.35,overwrite:'auto'});
-      gsap.to(els[1],{color:j===i?FULLP:DIM,duration:.35,overwrite:'auto'});
-      gsap.to(texts[j],{opacity:j===i?1:.4,duration:.35,overwrite:'auto'});
-    });
-    gsap.to(texts[i],{strokeDashoffset:0,duration:.7,ease:'power2.inOut',overwrite:'auto'});
-    gsap.to(texts[i],{fillOpacity:.15,duration:.45,delay:.4,overwrite:'auto'});
-  };
-  gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 72%':'top 60%',
-    end:m?'+=85%':'+=110%',pin:'.how .wrap',scrub:.3,anticipatePin:1,refreshPriority:-30,
-    onEnter:prime,onEnterBack:prime,
-    onUpdate:st=>{ prime(); activate(Math.min(2,Math.floor(st.progress*3)));
-      if(fill) gsap.set(fill,m?{scaleY:st.progress}:{scaleX:st.progress}); }}})
-    .to({},{duration:1});
+  const m=isMob(), fill=$('.how-line-fill'), texts=steps.map(s=>s.querySelector('.hs-t'));
+  gsap.set(steps,{opacity:0,y:m?24:30});
+  gsap.set(texts,{fillOpacity:0,stroke:'#1A1A1A',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420});
+  if(fill) gsap.set(fill,m?{scaleY:0}:{scaleX:0});
+  const tl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 82%':'top 74%',once:true}});
+  if(fill) tl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
+  tl.to(steps,{opacity:1,y:0,duration:.6,ease:'power3.out',stagger:.16},.1)
+    .to(texts,{strokeDashoffset:0,duration:.7,ease:'power2.inOut',stagger:.16},.15)
+    .to(texts,{fillOpacity:.15,duration:.5,stagger:.16,clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.45);
 }
 
 /* ---- layout-settle refresh (one shared utility) ----
@@ -2694,16 +2696,22 @@ function buildHow(){
    edits, Supabase-sourced products) all shift layout AFTER that. Rather than
    per-mechanic checks (the matchMedia contexts stay as-is), we re-measure
    everything with a debounced ScrollTrigger.refresh() whenever layout settles. */
-let _rq=null;
-function queueRefresh(){ if(!window.ScrollTrigger) return; clearTimeout(_rq); _rq=setTimeout(()=>{ ScrollTrigger.sort(); ScrollTrigger.refresh(); },150); }
+let _rq=null,_refreshing=false;
+function queueRefresh(){ if(!window.ScrollTrigger||_refreshing) return; clearTimeout(_rq);
+  _rq=setTimeout(()=>{ _refreshing=true; ScrollTrigger.sort(); ScrollTrigger.refresh();
+    setTimeout(()=>{_refreshing=false;},80);   // ignore RO echoes that refresh() itself provokes
+  },150); }
 function armSettleRefresh(){
   if(!window.ScrollTrigger) return;
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(queueRefresh);
   Promise.allSettled($$('img[src]').map(im=>im.decode?im.decode():Promise.resolve())).then(queueRefresh);
   window.addEventListener('load',queueRefresh,{once:true});
-  if('ResizeObserver'in window){        // ANY grid/strip/finder height change re-measures everything
+  // Observe ONLY content-driven heights (grid, finder). NOT #featured — its height is
+  // set BY the curator pin, so observing it made refresh()→resize→refresh feedback that
+  // left every downstream pin measured against a mid-flux, inconsistent page height (v9).
+  if('ResizeObserver'in window){
     const ro=new ResizeObserver(queueRefresh);
-    ['#grid','#featured','#finderBox'].forEach(sel=>{ const el=$(sel); if(el) ro.observe(el); });
+    ['#grid','#finderBox'].forEach(sel=>{ const el=$(sel); if(el) ro.observe(el); });
   }
 }
 
