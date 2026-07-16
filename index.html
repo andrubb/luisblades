@@ -1140,6 +1140,84 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 .ed-line::after{height:2px;width:96px;opacity:.85}
 #faq .faq-list{border-top:2px solid rgba(250,248,245,.9)}
 #faq .faq-list details:last-child{border-bottom:2px solid rgba(250,248,245,.9)}
+
+/* ===================================================================
+   V11 — COMPOSITION PASS. Three principles, applied page-wide.
+   No new colours: palette is exactly as established.
+   1. HIERARCHY  — one oversized headline vs. small quiet support text.
+                   Desktop maxima grow; mobile minima UNCHANGED (parity).
+   2. RHYTHM     — ONE reveal family. Every quiet entrance (headers,
+                   paragraphs, cards, blocks) = expo-out curve + one rise
+                   distance + one stagger. Scrubs stay linear. Signature
+                   moments keep their character.
+   3. SPACING    — group tight WITHIN a block, separate hard BETWEEN
+                   blocks. Density is organised, not reduced.
+   =================================================================== */
+:root{
+  --ease-rise:cubic-bezier(.16,1,.3,1);   /* expo-out — THE reveal curve (CSS twin of GSAP expo.out) */
+  --rise:44px;                            /* THE reveal distance */
+  --rise-stagger:.12s;
+}
+@media(max-width:760px){ :root{--rise:28px} }
+
+/* ---- 1 · HIERARCHY: push the big, quiet the small ---- */
+/* desktop maxima only — every mobile min is untouched, so 375 parity holds */
+.struct-h,.shead .struct-h{font-size:clamp(2.05rem,8.4vw,5.6rem)}   /* 67 → 90px desktop */
+.shead h2{font-size:clamp(2.1rem,7.6vw,4.6rem)}                      /* 54 → 74px  (Cormorant voice) */
+.cur-title{font-size:clamp(1.7rem,6.4vw,4rem)!important}             /* 51 → 64px */
+.finder .struct-h{font-size:clamp(1.7rem,6.6vw,4.2rem)}              /* 51 → 67px */
+.cuts-head h3{font-size:clamp(1.7rem,5.4vw,3.1rem)}                  /* 40 → 50px */
+/* …and the supporting voice recedes, widening the gap */
+.shead p{font-size:.92rem;max-width:48ch}
+.world .w-b{font-size:1.06rem}
+.eyebrow{font-size:.6rem}
+
+/* ---- 3 · SPACING: tight groups, generous separation ---- */
+.section{padding:clamp(88px,14vw,180px) 0}      /* BETWEEN blocks: 140 → 180px desktop */
+.shead{gap:14px;margin-bottom:clamp(52px,7vw,96px)}  /* header parts tight; header→content wide */
+.worlds-grid{gap:clamp(38px,5vw,30px)}
+@media(min-width:760px){.worlds-grid{gap:clamp(30px,4.4vw,64px)}}
+
+/* ---- 2 · RHYTHM: one family for every quiet reveal ---- */
+@supports (animation-timeline: view()){
+  .reveal{animation-timing-function:var(--ease-rise)}
+  .struct-h{animation-timing-function:var(--ease-rise)}
+}
+@keyframes reveal-rise{from{opacity:0;translate:0 var(--rise)}to{opacity:1;translate:0 0}}
+@keyframes struct-in{from{opacity:0;translate:0 var(--rise);scale:.96}to{opacity:1;translate:0 0;scale:1}}
+
+/* ---- INK PLATE 3 · CÓMO FUNCIONA (process, not merchandise → safe to darken).
+       Rhythm is now: light → INK(how) → light → INK(ed-break) → light → INK(faq) → light ---- */
+.how{background:var(--ink);border-top:2px solid var(--silver);border-bottom:2px solid var(--silver)}
+#how::before{color:var(--ivory);opacity:.5}
+#how .shead .line{background:rgba(192,192,194,.45)}
+#how .eyebrow{color:rgba(250,248,245,.62)}        /* 9:1 on ink */
+#how .struct-h{color:var(--ivory)}                /* 17.9:1 */
+.how-step h3{color:var(--ivory)}                  /* 17.9:1 */
+.how-step p{color:#CFCAC2}                        /* 11.4:1 */
+.how .hs-t{fill:var(--ivory)}                     /* ghost numerals read on ink */
+
+/* ---- STATS: real counts, oversized numerals vs. hairline labels (Principle 1 in miniature) ---- */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,3vw,30px);
+  margin-top:clamp(56px,8vw,90px);padding-top:clamp(30px,4vw,44px);border-top:1px solid #000}
+.stat{text-align:left}
+.stat .n{font-family:var(--font-struct);font-weight:900;line-height:.9;color:#000;
+  font-size:clamp(2.6rem,9vw,5rem);letter-spacing:-.03em;font-variant-numeric:tabular-nums;display:block}
+.stat .l{font-family:var(--font-body);font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--muted);margin-top:12px;display:block}
+@media(max-width:420px){ .stat .l{letter-spacing:.16em} }
+
+/* ---- CORRECTION REVEAL — the draft is struck through, the true line settles.
+       Quiet by design: one hairline rule, no bounce. ---- */
+.corr{display:inline-block;position:relative}
+/* draft is absolute + opacity 0 by DEFAULT: no-JS / reduced-motion shows only the true
+   headline, and the draft can never affect layout. JS opts it in. */
+.corr-draft{position:absolute;left:50%;top:0;translate:-50% 0;white-space:nowrap;
+  color:rgba(250,248,245,.45);opacity:0;pointer-events:none}
+.corr-strike{position:absolute;left:-.03em;right:-.03em;top:53%;height:3px;display:block;
+  background:var(--celeste);transform:scaleX(0);transform-origin:left center}
+.corr-true{display:inline-block}
+@media(prefers-reduced-motion:reduce){ .corr-draft{display:none} }
 </style>
 </head>
 
@@ -1283,6 +1361,7 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
         <p class="w-b" data-i18n="w_a_b">La tradición del oud, el azafrán y el ámbar — Lattafa, Rasasi, Afnan. Intensidad y duración fuera de serie a precios que todavía sorprenden. El secreto mejor guardado del catálogo.</p>
       </div>
     </div>
+    <div class="stats reveal" id="stats"></div>
   </div>
 </section>
 
@@ -1691,6 +1770,8 @@ const STR = {
     fg_contact:'Contacto', fg_wa_note:'WhatsApp — pedidos y encargos',
     fg_hours:'Respuesta usual en horas hábiles · San José, CR',
     fg_cats:'Categorías', fg_explore:'Explorar',
+    st_frag:'Fragancias', st_worlds:'Mundos', st_cur:'Del curador',
+    how_draft:'Cómo se compra',
     /* v5 — scent finder */
     fq_eyebrow:'Dos preguntas', fq_title:'Encontrá tu aroma',
     fq_q1:'¿Para qué momento lo buscás?',
@@ -1766,6 +1847,8 @@ const STR = {
     fg_contact:'Contact', fg_wa_note:'WhatsApp — orders and sourcing',
     fg_hours:'We usually reply during business hours · San José, CR',
     fg_cats:'Categories', fg_explore:'Explore',
+    st_frag:'Fragrances', st_worlds:'Worlds', st_cur:'Curator picks',
+    how_draft:'How you buy',
     /* v5 — scent finder */
     fq_eyebrow:'Two questions', fq_title:'Find your scent',
     fq_q1:'What moment is it for?',
@@ -1965,7 +2048,7 @@ function renderFinder(){
     $('#fqView').addEventListener('click',()=>openModal(p.id));
     $('#fqAgain').addEventListener('click',()=>{FQ.step=0;FQ.occ=null;FQ.int=null;renderFinder();});
     if(window.gsap&&!reduceMotion()){
-      gsap.from('#fqResult',{scale:.92,opacity:0,duration:.65,ease:'elastic.out(1,.6)'});   // celebration = the elastic pop
+      gsap.from('#fqResult',{scale:.94,opacity:0,duration:.75,ease:FX.ease});   // celebration, on-family (no elastic)
     }
   }
   $$('#finderBox .fq-opt').forEach(b=>b.addEventListener('click',()=>{
@@ -1973,7 +2056,65 @@ function renderFinder(){
     renderFinder();
   }));
   const bk=$('#fqBack'); if(bk) bk.addEventListener('click',()=>{FQ.step=0;renderFinder();});
+  if(window.gsap&&!reduceMotion()&&FQ.step===0){
+    gsap.from('#finderBox .fq-opt',{y:FX.rise()*.4,opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.item});
+  }
   queueRefresh();   // finder box height varies per step
+}
+
+/* ===================================================================
+   STATS — real numbers only, derived from the live catalog every render.
+   Oversized numeral vs. hairline label = Principle 1 in miniature.
+   =================================================================== */
+function renderStats(){
+  const host=$('#stats'); if(!host) return;
+  const P=S.products||[];
+  const rows=[
+    [P.length,                                   tr('st_frag')],
+    [new Set(P.map(p=>p.category)).size,         tr('st_worlds')],
+    [P.filter(p=>p.is_featured).length,          tr('st_cur')]
+  ];
+  host.innerHTML=rows.map(([v,l])=>
+    `<div class="stat"><span class="n" data-to="${v}">${v}</span><span class="l">${l}</span></div>`).join('');
+  if(window.__fxReady) buildStats();
+}
+/* count-up, non-pin, once. Reduced-motion/no-JS: the true number is already in the DOM. */
+let statsTl=null;
+function buildStats(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  const host=$('#stats'); if(!host) return;
+  if(statsTl){ if(statsTl.scrollTrigger) statsTl.scrollTrigger.kill(); statsTl.kill(); statsTl=null; }
+  const nums=$$('#stats .n');
+  statsTl=gsap.timeline({scrollTrigger:{trigger:host,start:'top 84%',once:true}});
+  nums.forEach((el,i)=>{
+    const to=+el.dataset.to||0, o={v:0};
+    statsTl.to(o,{v:to,duration:1.1,ease:FX.ease,snap:{v:1},
+      onUpdate:()=>{el.textContent=Math.round(o.v);}}, i*FX.block);
+  });
+}
+
+/* ===================================================================
+   CORRECTION REVEAL — one headline only ("Cómo funciona").
+   The draft states the wrong model (a shop you buy from), a hairline
+   strikes it, and the true line settles: this isn't a checkout, it's a
+   conversation. Quiet by design — no bounce, family curve, non-pin.
+   Rebuilt on language switch because applyLang rewrites the text.
+   =================================================================== */
+let corrTl=null;
+function buildHowTitle(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  const h=$('#how .struct-h'); if(!h) return;
+  if(corrTl){ if(corrTl.scrollTrigger) corrTl.scrollTrigger.kill(); corrTl.kill(); corrTl=null; }
+  const truth=(h.textContent||'').trim(); if(!truth) return;
+  h.innerHTML='<span class="corr"><span class="corr-draft" aria-hidden="true">'+tr('how_draft')+
+              '<i class="corr-strike"></i></span><span class="corr-true">'+truth+'</span></span>';
+  const d=h.querySelector('.corr-draft'), st=h.querySelector('.corr-strike'), t=h.querySelector('.corr-true');
+  corrTl=gsap.timeline({scrollTrigger:{trigger:'#how .shead',start:'top 80%',once:true}});
+  corrTl.set(t,{opacity:0})
+    .to(d,{opacity:1,duration:.4,ease:FX.ease})
+    .to(st,{scaleX:1,duration:.5,ease:'power2.inOut'},'+=.15')
+    .to(d,{opacity:0,y:-8,duration:.4,ease:FX.ease},'+=.25')
+    .fromTo(t,{opacity:0,y:12},{opacity:1,y:0,duration:FX.dur,ease:FX.ease},'-=.15');
 }
 
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
@@ -2066,7 +2207,7 @@ function renderGrid(animate,fast){
   if(animate&&window.gsap&&!reduceMotion()){
     const m=isMob(); const cards=$$('#grid .card');
     cards.forEach(c=>c.style.willChange='transform,opacity');
-    gsap.from(cards,{y:m?20:24,opacity:0,duration:fast?(m?.2:.3):(m?.4:.6),stagger:fast?(m?.04:.03):(m?.08:.05),ease:'power2.out',clearProps:'all',onComplete:()=>cards.forEach(c=>c.style.willChange='')});
+    gsap.from(cards,{y:m?20:24,opacity:0,duration:fast?(m?.25:.35):FX.dur,stagger:fast?FX.item*.6:FX.item,ease:FX.ease,clearProps:'all',onComplete:()=>cards.forEach(c=>c.style.willChange='')});
   }
   queueRefresh();   // grid height changed — sections below moved
 }
@@ -2085,7 +2226,7 @@ function _appendCards(){
   const added=[...frag.children];
   added.forEach(el=>grid.appendChild(el));
   bindCards();
-  if(window.gsap&&!reduceMotion()){ added.forEach(c=>c.style.willChange='transform,opacity'); gsap.from(added,{y:isMob()?20:24,opacity:0,duration:isMob()?.4:.6,stagger:.06,ease:'power2.out',clearProps:'all',onComplete:()=>added.forEach(c=>c.style.willChange='')}); }
+  if(window.gsap&&!reduceMotion()){ added.forEach(c=>c.style.willChange='transform,opacity'); gsap.from(added,{y:isMob()?20:24,opacity:0,duration:FX.dur,stagger:FX.item,ease:FX.ease,clearProps:'all',onComplete:()=>added.forEach(c=>c.style.willChange='')}); }
   if(list.length<=S.visible) $('#loadMore').style.display='none';
   $('#loadCount').textContent=tr('showing_n').replace('{a}',Math.min(S.visible,list.length)).replace('{b}',list.length);
   queueRefresh();
@@ -2199,7 +2340,7 @@ function renderModal(){
   $('#modalAdd').addEventListener('click',()=>{ if(p.in_stock){ addToCart(p.id,S.modalVol,S.modalQty); closeModal(); } });
   $('#modalInq').addEventListener('click',()=>inquireWA(p));
   $('#modalFav').addEventListener('click',()=>toggleFav(p.id));
-  if(window.gsap) gsap.from('#modalCard .modal-body > *',{y:14,opacity:0,duration:.5,stagger:.025,ease:'power2.out',clearProps:'all'});
+  if(window.gsap) gsap.from('#modalCard .modal-body > *',{y:14,opacity:0,duration:.5,stagger:FX.item*.5,ease:FX.ease,clearProps:'all'});
 }
 
 /* ===================================================================
@@ -2253,9 +2394,9 @@ function applyLang(lang){
   $$('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(T()[k]!==undefined) el.placeholder=T()[k]; });
   $$('[data-i18n-html]').forEach(el=>{ const k=el.getAttribute('data-i18n-html'); if(T()[k]!==undefined) el.innerHTML=T()[k]; });
   $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
-  refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts(); renderFinder(); refreshHours();
-  // scroll FX bound to re-rendered/re-worded DOM must rebuild (worlds title respan, curator cards)
-  if(window.__fxReady){ buildWorlds(); buildCuratorCross(); }
+  refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts(); renderFinder(); refreshHours(); renderStats();
+  // scroll FX bound to re-rendered/re-worded DOM must rebuild (worlds respan, correction headline)
+  if(window.__fxReady){ buildWorlds(); buildCuratorCross(); buildHowTitle(); }
   if($('#modal').classList.contains('show')) renderModal();
   if($('#admin').classList.contains('show')) renderAdmin();
 }
@@ -2571,7 +2712,15 @@ function reflow(){
   gsap.to('#grid .card',{opacity:0,y:8,duration:m?.15:.26,stagger:m?.008:.015,ease:'power1.in',
     onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
-/* ---------------- v4 scroll choreography — 5 distinct mechanics ---------------- */
+/* ---------------- v4 scroll choreography — distinct mechanics ---------------- */
+/* v11 — THE REVEAL FAMILY. Every quiet entrance on the page uses these and nothing
+   else, so scrolling reads as one rhythm instead of a patchwork:
+     ease    = expo.out           (CSS twin: --ease-rise cubic-bezier(.16,1,.3,1))
+     rise    = 28 mobile / 44 desktop  (CSS twin: --rise)
+     stagger = .12 between BLOCKS, .05 between ITEMS inside one list/grid
+   Scrubs stay ease:'none' (linear is correct when scroll IS the clock). Signature
+   moments keep their character but borrow this curve for their entrance beats. */
+const FX={ease:'expo.out', dur:.7, block:.12, item:.05, rise:()=>isMob()?28:44};
 let worldsTl=null;
 
 /* Mechanic 1 — HERO EXIT: short pinned handoff. Sillage drift + scale-down/fade
@@ -2633,17 +2782,17 @@ function buildEye(){
     if(ctx.conditions.desk){
       // DESKTOP — the wordmark is a raster asset: stroke-draw doesn't apply sensibly,
       // so it gets a clean fade/scale-in (simplicity over forcing an effect), text follows
-      gsap.from('.eye-logo',{opacity:0,scale:.94,duration:.9,ease:'power3.out',
+      gsap.from('.eye-logo',{opacity:0,scale:.94,duration:.9,ease:FX.ease,
         scrollTrigger:{trigger:eg,start:'top 70%',once:true,refreshPriority:-20}});
-      gsap.from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1,
+      gsap.from('.eye-text > *',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block,
         scrollTrigger:{trigger:eg,start:'top 48%',once:true}});
     } else {
       // MOBILE — diagonal blade-wipe with celeste tint
       const tl=gsap.timeline({scrollTrigger:{trigger:eg,start:'top 72%',once:true}});
       tl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
           {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
-        .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:'power2.out'},'-=.35')
-        .from('.eye-text > *',{y:24,opacity:0,duration:.55,ease:'power3.out',stagger:.1},'-=.5');
+        .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:FX.ease},'-=.35')
+        .from('.eye-text > *',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},'-=.5');
     }
   });
 }
@@ -2659,14 +2808,15 @@ function buildHow(){
   if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
   const steps=$$('.how-step'); if(steps.length<3) return;
   const m=isMob(), fill=$('.how-line-fill'), texts=steps.map(s=>s.querySelector('.hs-t'));
-  gsap.set(steps,{opacity:0,y:m?24:30});
-  gsap.set(texts,{fillOpacity:0,stroke:'#1A1A1A',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420});
+  gsap.set(steps,{opacity:0,y:FX.rise()});
+  /* ink plate (v11): the numerals stroke in ivory, not near-black */
+  gsap.set(texts,{fillOpacity:0,stroke:'#FAF8F5',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420});
   if(fill) gsap.set(fill,m?{scaleY:0}:{scaleX:0});
   const tl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 82%':'top 74%',once:true}});
   if(fill) tl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
-  tl.to(steps,{opacity:1,y:0,duration:.6,ease:'power3.out',stagger:.16},.1)
-    .to(texts,{strokeDashoffset:0,duration:.7,ease:'power2.inOut',stagger:.16},.15)
-    .to(texts,{fillOpacity:.15,duration:.5,stagger:.16,clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.45);
+  tl.to(steps,{opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},.1)
+    .to(texts,{strokeDashoffset:0,duration:.7,ease:'power2.inOut',stagger:FX.block},.15)
+    .to(texts,{fillOpacity:.16,duration:.5,stagger:FX.block,clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.45);
 }
 
 /* ---- layout-settle refresh (one shared utility) ----
@@ -2737,11 +2887,13 @@ function initAnim(){
         .fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none'},0);
     }
     // TRES MUNDOS blocks — cascade in after the title unpins
-    gsap.from('.worlds-grid .world',{opacity:0,y:m?24:40,duration:.65,ease:'power3.out',stagger:.14,
+    gsap.from('.worlds-grid .world',{opacity:0,y:FX.rise(),duration:FX.dur,ease:FX.ease,stagger:FX.block,
       scrollTrigger:{trigger:'.worlds-grid',start:'top 85%',once:true}});
     buildWorlds();
     buildCuratorCross();
     buildFilm();
+    buildHowTitle();   // correction reveal (non-pin)
+    buildStats();      // count-up (non-pin)
     window.__fxReady=true;
     ScrollTrigger.sort();   // creation order ≠ page order (how builds before curator) — sort by refreshPriority
     queueRefresh();
@@ -2751,9 +2903,9 @@ function initAnim(){
   // GSAP ScrollTrigger only as the fallback for older engines.
   const cssReveal=(typeof CSS!=='undefined')&&CSS.supports('animation-timeline: view()');
   if(window.ScrollTrigger&&!cssReveal){
-    const ry=m?35:60, rd=m?.55:.9, rs=m?'top 88%':'top 84%';
+    const ry=FX.rise(), rd=FX.dur, rs=m?'top 88%':'top 84%';
     $$('.reveal').forEach(el=>{
-      gsap.from(el,{y:ry,opacity:0,duration:rd,ease:'power3.out',
+      gsap.from(el,{y:ry,opacity:0,duration:rd,ease:FX.ease,
         scrollTrigger:{trigger:el,start:rs,once:true},
         onStart:()=>{el.style.willChange='transform,opacity';},
         onComplete:()=>{el.style.willChange='';}});
