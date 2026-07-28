@@ -1255,6 +1255,14 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 .drawer,.modal{visibility:hidden;pointer-events:none}
 .drawer.show,.modal.show{visibility:visible;pointer-events:auto}
 .drawer{transition:transform .35s cubic-bezier(.16,1,.3,1),visibility .35s}
+/* v15 hardening: because the drawer is inset by the frame, a plain translateY(100%)
+   still leaves exactly --fw-tb of it inside the viewport (measured: 12px at every
+   tested viewport height, 760/812/900). visibility:hidden stops it painting when
+   idle, but visibility transitions over 350ms, so that sliver is briefly paintable
+   DURING the close animation. Translate past the frame too, so the closed drawer is
+   geometrically outside the viewport and no bleed is possible in any state. */
+.drawer:not(.show){transform:translateY(calc(100% + var(--fw-tb)))}
+@media(min-width:560px){ .drawer:not(.show){transform:translateX(calc(100% + var(--fw-lr)))} }
 
 /* contain both panels within the black frame */
 .drawer{top:var(--fw-tb);bottom:var(--fw-tb);right:var(--fw-lr);left:var(--fw-lr);width:auto;
