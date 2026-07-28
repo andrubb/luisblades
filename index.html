@@ -1152,7 +1152,12 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   --fw-tb:22px;   /* top/bottom */
   --frame:#0B0B0B;
 }
-@media(max-width:899px){ :root{--fw-lr:9px; --fw-tb:15px} }   /* mobile-appropriate, not desktop-scaled */
+/* MOBILE (v14): was 9px sides / 15px top+bottom with a 15px inner radius, which
+   mimicked the handset's own bezel — it read as a screen-protector artifact
+   ("extraño"), not as architecture, and the uneven thin bars looked accidental.
+   Now a UNIFORM 12px mat with a tight 5px inner radius: unmistakably a printed
+   border rather than a device edge, and still only 6.4% of a 375px screen. */
+@media(max-width:899px){ :root{--fw-lr:12px; --fw-tb:12px} }
 
 html{background:var(--frame)}
 body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
@@ -1161,6 +1166,7 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
   border:var(--fw-tb) solid var(--frame);
   border-left-width:var(--fw-lr);border-right-width:var(--fw-lr);
   border-radius:calc(var(--fw-lr) + 15px)}
+@media(max-width:899px){ .frame{border-radius:calc(var(--fw-lr) + 5px)} }
 
 /* fixed furniture must live INSIDE the frame, never under it */
 .nav{top:var(--fw-tb);left:var(--fw-lr);right:var(--fw-lr)}
@@ -1230,6 +1236,70 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 .hero-particles i:nth-child(8){left:66%;top:40%;animation-duration:35s;animation-delay:-7s}
 .hero-particles i:nth-child(9){left:92%;top:66%;animation-duration:22s;animation-delay:-16s}
 @media(prefers-reduced-motion:reduce){ .hero-particles{display:none} }
+
+/* ===================================================================
+   V14 — OVERLAY CONTAINMENT (cart-drawer bleed fix)
+
+   BUG: the drawer was hidden by transform ALONE while staying
+   visibility:visible. A fixed element sized top:0/bottom:0 is measured
+   against the *small* viewport; when a mobile browser's toolbar retracts
+   the visual viewport grows, so translateY(100%) no longer clears the
+   screen and the drawer's ivory header ("Tu selección / N artículos")
+   peeks over whatever is below — most obvious over the dark plates
+   (Cómo funciona, Un aroma no se ve).
+   FIX 1: hide it for real when closed (visibility + pointer-events), so a
+   partial bleed-through state cannot exist at any viewport height.
+   FIX 2: open panels sit INSIDE the frame, so the architecture survives
+   instead of the panel covering the frame edge-to-edge.
+   =================================================================== */
+.drawer,.modal{visibility:hidden;pointer-events:none}
+.drawer.show,.modal.show{visibility:visible;pointer-events:auto}
+.drawer{transition:transform .35s cubic-bezier(.16,1,.3,1),visibility .35s}
+
+/* contain both panels within the black frame */
+.drawer{top:var(--fw-tb);bottom:var(--fw-tb);right:var(--fw-lr);left:var(--fw-lr);width:auto;
+  border-radius:14px;overflow:hidden}
+@media(min-width:560px){
+  .drawer{left:auto;width:min(420px,calc(100vw - (2 * var(--fw-lr))))}
+}
+.modal{top:var(--fw-tb);bottom:var(--fw-tb);right:var(--fw-lr);left:var(--fw-lr);
+  width:auto;height:auto}
+@media(max-width:767px){ .modal-card{border-radius:14px} }
+
+/* ===================================================================
+   V14 — HERO BECOMES A DARK BRAND PLATE
+   Reversing my earlier "frame alone" call: the client reported "too white"
+   twice, so the frame alone did not land. This follows the page's OWN
+   established logic rather than inventing a new one — dark for mood/brand
+   moments (Un aroma no se ve, FAQ), light for shopping. The hero carries no
+   merchandise, so it is a pure brand moment and belongs on ink. The catalog,
+   curator picks and every product surface stay old-white and shoppable.
+   Old-white remains the page's dominant ground; it is not abandoned.
+   =================================================================== */
+.hero{background:var(--ink)}
+.hero h1{color:var(--ivory)}
+.hero .sub{color:var(--ivory)}
+.hero .tagline{color:#CFCAC2}                       /* 11.4:1 on ink */
+.hero .hero-eyebrow{color:rgba(250,248,245,.66)}    /* 9.6:1 on ink */
+.hero .sec-num{color:var(--ivory);opacity:.42}
+.hero .scroll-cue small{color:#B9B4AC}              /* 8.4:1 on ink */
+.hero .scroll-cue .chev{color:#B9B4AC}
+.hero .tagline::after{background:var(--silver);opacity:.7}
+.hero::before{color:var(--ivory);opacity:.035}      /* B watermark, now light-on-dark */
+/* CTA must carry on ink: ivory outline, not the dusty-blue used on ivory */
+.hero .cta .btn{border-color:var(--ivory);color:var(--ivory)}
+.hero .cta .btn:hover{background:var(--ivory);border-color:var(--ivory);color:var(--ink)}
+
+/* nav rides transparent over the dark hero, then returns to frosted ivory on scroll */
+.nav:not(.scrolled){background:transparent;border-bottom-color:transparent}
+.nav:not(.scrolled) .nav-links a,
+.nav:not(.scrolled) .icon-btn,
+.nav:not(.scrolled) .lang button{color:rgba(250,248,245,.82)}
+.nav:not(.scrolled) .lang button.on{color:var(--ivory)}
+.nav:not(.scrolled) .lang .sep{color:rgba(250,248,245,.45)}
+/* logo is black artwork on alpha; brightness(0)+invert(1) forces it to pure ivory
+   regardless of the source pixels, keeping the alpha edges clean */
+.nav:not(.scrolled) .logo img{mix-blend-mode:normal;filter:brightness(0) invert(1)}
 
 /* ---- SILVER, readable steel (not a 1px hint) ---- */
 .ed-break{border-top:2px solid var(--silver);border-bottom:2px solid var(--silver)}
@@ -3615,19 +3685,30 @@ function buildEye(){
    in the stack. This robust reveal keeps the craft (connector draws, numerals
    stroke-draw + ink in, steps rise staggered) and ends every step FULL + readable.
    Reduced-motion / no-JS: steps stay visible, numerals show the CSS ghost. */
+let howTl=null;
 function buildHow(){
   if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
   const steps=$$('.how-step'); if(steps.length<3) return;
+  if(howTl){ if(howTl.scrollTrigger) howTl.scrollTrigger.kill(); howTl.kill(); howTl=null; }
   const m=isMob(), fill=$('.how-line-fill'), texts=steps.map(s=>s.querySelector('.hs-t'));
-  gsap.set(steps,{opacity:0,y:FX.rise()});
-  /* ink plate (v11): the numerals stroke in ivory, not near-black */
-  gsap.set(texts,{fillOpacity:0,stroke:'#FAF8F5',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420});
+
+  /* v14 FAIL-SAFE: the previous build hid the steps with gsap.set(opacity:0) up
+     front, so if the trigger never fired (a refresh landing its start past the
+     section, a fast jump-scroll) the whole section stayed INVISIBLE — the
+     "doesn't render correctly while scrolling" report. Now the section's default
+     state is fully visible and the reveal is a .from() that enhances it, per the
+     rule that a reveal must never gate content visibility. Worst case = no
+     animation, never a blank section. */
+  gsap.set(steps,{clearProps:'opacity,transform'});
+  gsap.set(texts,{clearProps:'all'});
   if(fill) gsap.set(fill,m?{scaleY:0}:{scaleX:0});
-  const tl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 82%':'top 74%',once:true}});
-  if(fill) tl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
-  tl.to(steps,{opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},.1)
-    .to(texts,{strokeDashoffset:0,duration:.7,ease:'power2.inOut',stagger:FX.block},.15)
-    .to(texts,{fillOpacity:.16,duration:.5,stagger:FX.block,clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.45);
+
+  howTl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 88%':'top 82%',once:true}});
+  if(fill) howTl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
+  howTl.from(steps,{opacity:0,y:FX.rise(),duration:FX.dur,ease:FX.ease,stagger:FX.block},.1)
+       .from(texts,{fillOpacity:0,stroke:'#FAF8F5',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420,
+              duration:.7,ease:'power2.inOut',stagger:FX.block,
+              clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.15);
 }
 
 /* ---- layout-settle refresh (one shared utility) ----
@@ -3722,13 +3803,27 @@ function initAnim(){
         onComplete:()=>{el.style.willChange='';}});
     });
   }
-  // MAGNETIC CTA — cursor-follow strictly on hover-capable fine pointers, never simulated on touch
+  // MAGNETIC CTA — cursor-follow strictly on hover-capable fine pointers, never simulated on touch.
+  // v14 PERF: this is the page's only desktop-gated pointer handler and it was the desktop-lag
+  // source — it ran gsap.to() on EVERY mousemove (60 events took live tweens 14 -> 43) and did a
+  // getBoundingClientRect() layout read per event. Now: one reusable quickTo per axis (no tween
+  // churn) and the rect is cached on enter/resize/scroll instead of read per move.
   if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     const cta=document.querySelector('.hero .cta .btn');
     if(cta){
-      cta.addEventListener('mousemove',e=>{const r=cta.getBoundingClientRect();
-        gsap.to(cta,{x:((e.clientX-r.left)/r.width-.5)*14,y:((e.clientY-r.top)/r.height-.5)*8,duration:.35,ease:'power2.out'});});
-      cta.addEventListener('mouseleave',()=>gsap.to(cta,{x:0,y:0,duration:.55,ease:'elastic.out(1,.5)'}));
+      const xTo=gsap.quickTo(cta,'x',{duration:.35,ease:'power2.out'});
+      const yTo=gsap.quickTo(cta,'y',{duration:.35,ease:'power2.out'});
+      let r=null;
+      const measure=()=>{ r=cta.getBoundingClientRect(); };
+      cta.addEventListener('mouseenter',measure);
+      window.addEventListener('resize',()=>{r=null;},{passive:true});
+      window.addEventListener('scroll',()=>{r=null;},{passive:true});
+      cta.addEventListener('mousemove',e=>{
+        if(!r) measure();
+        xTo(((e.clientX-r.left)/r.width-.5)*14);
+        yTo(((e.clientY-r.top)/r.height-.5)*8);
+      });
+      cta.addEventListener('mouseleave',()=>{ xTo(0); yTo(0); });
     }
   }
 }
