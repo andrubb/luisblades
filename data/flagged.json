@@ -1,0 +1,386 @@
+{
+ "flagged": [
+  {
+   "line": "Giorgio beverly hills giorgio blue 90ml lady",
+   "brand": "Giorgio Beverly Hills",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Giorgio Beverly Hills Red pour homme edt 100ml Men",
+   "brand": "Giorgio Beverly Hills",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Giorgio Beverly Hills wings edt 90ml",
+   "brand": "Giorgio Beverly Hills",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "giorgio beverly hills yellow edt 90ml lady",
+   "brand": "Giorgio Beverly Hills",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Monti Irish Leather edp Memo 200ml men",
+   "brand": "Monti",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Monti Italian Leather edp Memo 200ml men",
+   "brand": "Monti",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Hermes Terre D Hermes Eau Givree Edp 100ml Men",
+   "brand": "Hermes",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Hermes Terre D hermes Edt 200ml Men",
+   "brand": "Hermes",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Hermes Un Jardin En Mediterranee Edt 100ml Lady",
+   "brand": "Hermes",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "hermes voyage edp 100 ml men",
+   "brand": "Hermes",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Hermes Voyage D Hermes refillable edt 100ml man",
+   "brand": "Hermes",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "bora bora edp 100 ml lady",
+   "brand": "Bora Bora",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "bora bora hombre edt 100 ml man",
+   "brand": "Bora Bora",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Born in France Crystal Tears EDP 100ml Lady",
+   "brand": "Born in France",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Born in France Graal EDP 100ml Unisex",
+   "brand": "Born in France",
+   "reason": "brand not in category mapping — needs manual category"
+  },
+  {
+   "line": "Boxer Cristiano Ronaldo CR7",
+   "brand": "Cristiano Ronaldo",
+   "reason": "no size and no concentration — unidentifiable SKU"
+  },
+  {
+   "line": "Parfum dis-lui blanche paris edp 100 ml lady",
+   "reason": "no recognizable brand"
+  },
+  {
+   "line": "Parfum dis-lui sport pour homme edp 100 ml",
+   "reason": "no recognizable brand"
+  },
+  {
+   "line": "Parfum double heart paris edp 100 ml lady",
+   "reason": "no recognizable brand"
+  },
+  {
+   "line": "Parfum hi demand paris pour homme edp 100 ml",
+   "reason": "no recognizable brand"
+  },
+  {
+   "line": "Parfum his majesty pour homme edp 100 ml",
+   "reason": "no recognizable brand"
+  },
+  {
+   "line": "Parfum white point edp 100 ml lady",
+   "reason": "no recognizable brand"
+  }
+ ],
+ "dupes": [
+  {
+   "key": "Giorgio Armani|si intense|EDP|100|Lady",
+   "lines": [
+    "Giorgio Armani Si Edp Intense 100ml Lady",
+    "Giorgio Armani Si Intense edp 100ml lady"
+   ]
+  },
+  {
+   "key": "Burberry|brit|EDP|100|Lady",
+   "lines": [
+    "Burberry brit edp 100 ml lady",
+    "burberry brit for her edp 100ml"
+   ]
+  },
+  {
+   "key": "Armaf|club de nuit intense|EDP|30|Men",
+   "lines": [
+    "Armaf Club De Nuit Intense Edp 30ml Man",
+    "Armaf Club De Nuit Intense Man Edp 30ml"
+   ]
+  }
+ ],
+ "near": [
+  {
+   "base": "Giorgio Armani|acqua di gio|100",
+   "variants": [
+    "Giorgio Armani Acqua Di Gio edt 100ml lady",
+    "giorgio armani acqua di gio hombre edt 100ml"
+   ]
+  },
+  {
+   "base": "Giorgio Armani|armani code|75",
+   "variants": [
+    "giorgio armani armani code edp 75ml mujer",
+    "Giorgio Armani armani code edt 75 ml men"
+   ]
+  },
+  {
+   "base": "Givenchy|ange ou demon le secret|100",
+   "variants": [
+    "Givenchy ange ou demon le secret edp 100 ml lady",
+    "Givenchy Ange ou demon le secret edt 100ml lady"
+   ]
+  },
+  {
+   "base": "Givenchy|irresistible|80",
+   "variants": [
+    "Givenchy irresistible edp 80ml lady",
+    "Givenchy Irresistible Edt 80ml Lady"
+   ]
+  },
+  {
+   "base": "Chanel|chance|100",
+   "variants": [
+    "chanel chance edp 100 ml lady",
+    "chanel chance edt 100 ml lady"
+   ]
+  },
+  {
+   "base": "Dolce & Gabbana|light blue|200",
+   "variants": [
+    "Dolce & gabbana light blue edt pour homme 200 ml",
+    "Dolce & Gabbana light blue mujer edt 200ml"
+   ]
+  },
+  {
+   "base": "Hugo Boss|bottled|100",
+   "variants": [
+    "hugo boss bottled EDP 100ml men",
+    "hugo boss bottled edt 100 ml man"
+   ]
+  },
+  {
+   "base": "Paco Rabanne|olympea|80",
+   "variants": [
+    "Paco rabanne olympea edp 80 ml lady",
+    "Paco Rabanne Olympea Parfum 80ml Lady"
+   ]
+  },
+  {
+   "base": "Paco Rabanne|phantom|100",
+   "variants": [
+    "Paco Rabanne Phantom Edt 100ml Man",
+    "Paco Rabanne Phantom Parfum 100ml Man"
+   ]
+  },
+  {
+   "base": "Burberry|brit for him|100",
+   "variants": [
+    "burberry brit for him edt 100 ml man",
+    "burberry brit for him edt 100ml"
+   ]
+  },
+  {
+   "base": "Creed|aventus|100",
+   "variants": [
+    "Creed aventus cologne edp 100ml",
+    "creed aventus edp 100 ml men"
+   ]
+  },
+  {
+   "base": "Creed|viking|100",
+   "variants": [
+    "Creed viking 100ml",
+    "Creed Viking Cologne Edp 100ml Men"
+   ]
+  },
+  {
+   "base": "Armaf|club de nuit lionheart|100",
+   "variants": [
+    "Armaf Club De Nuit Lionheart Edp 100ml Lady",
+    "Armaf Club De Nuit Lionheart Edp 100ml Man"
+   ]
+  },
+  {
+   "base": "Ralph Lauren|polo red|125",
+   "variants": [
+    "ralph lauren polo red hombre edt 125ml",
+    "Ralph Lauren Polo Red edp 125ml man"
+   ]
+  },
+  {
+   "base": "Carolina Herrera|pasion|100",
+   "variants": [
+    "Carolina Herrera pasion edp 100 ml lady",
+    "Carolina Herrera pasion edp 100 ml men"
+   ]
+  },
+  {
+   "base": "Jo Milano|game of spades rouge|100",
+   "variants": [
+    "Jo Milano Game of Spades Rouge Extrait de Parfum 100ml Unisex",
+    "Jo Milano Game Of Spades Rouge Parfum 100ml Unisex"
+   ]
+  },
+  {
+   "base": "Gucci|guilty|90",
+   "variants": [
+    "Gucci guilty edt 90 ml lady",
+    "Gucci Guilty Pour Femme Edp 90ml Lady",
+    "gucci guilty pour homme edt 90ml"
+   ]
+  },
+  {
+   "base": "Gucci|guilty|60",
+   "variants": [
+    "Gucci Guilty Pour Femme Elixir De Parfum 60ml Lady",
+    "Gucci Guilty Pour Homme Elixir De Parfum 60ml men"
+   ]
+  },
+  {
+   "base": "Burberry|london fab|100",
+   "variants": [
+    "Burberry London Fab edp 100ml lady",
+    "Burberry London fab edt 100ml Man"
+   ]
+  },
+  {
+   "base": "Burberry|weekend|100",
+   "variants": [
+    "Burberry Weekend Edp 100ml Lady",
+    "Burberry weekend edt 100 ml man"
+   ]
+  }
+ ],
+ "notes": {
+  "noConc": [
+   "Dior Addict eau fraiche 100ml lady",
+   "Chanel Allure homme sport eau extreme 150ml Man",
+   "Chanel N 5 eau premiere 100ml lady",
+   "mancera wild python 120ml",
+   "Mancera wild rose oud 120ml unisex",
+   "Antonio Banderas Select Diavolo Club for men 100ml",
+   "Hugo Boss Reversed 75ml Men",
+   "Paco rabanne one million elixir 100ml men",
+   "Bubble Bath Princess Belle 300ml Kids",
+   "Bubble Bath Princess Rapunzel 300ml Kids",
+   "Montale black aoud 100 ml men",
+   "Montale Paris white musk 100 ml men",
+   "creed aventus 10 anniversary 100ml",
+   "Creed Aventus for her 75ml",
+   "Creed Erolfa 100ml men",
+   "creed neroli sauvage 100ml",
+   "creed royal mayfair 120ml",
+   "Creed viking 100ml",
+   "Armaf Club de Nuit Intense 105ml men",
+   "Armaf Club De Nuit Intense Concetrated Oil 18ml men",
+   "Armaf Club De Nuit Sillage Concetrated Oil 18ml men",
+   "Paco Rabanne XS Black la edition 100ml Men",
+   "Parfums de Marly Galloway Royal Essence 75ml man",
+   "Parfums de marly pegasus exclusif 75ml men",
+   "Acqua Di Parma Blu Mediterraneo Fico di Amalfi 150ml Unisex",
+   "Al Haramain Amber Oud Bleu 100ml",
+   "Al Haramain Amber Oud Carbon 100ml",
+   "Al Haramain Amber Oud White 100ml Unisex",
+   "Carolina Herrera 212 vip rose red limited edition 80ml lady",
+   "jo malone blackberry & bay 100ml",
+   "Afnan Historic Olmeda 100ml Unisex",
+   "Bvlgari Splendida Patchouli 100ml Lady"
+  ],
+  "noSize": [
+   "Dior pure poison edp lady",
+   "moschino cheap and chic edt mujer"
+  ],
+  "noGender": [
+   "Ralph Lauren Ralphs Club edp 150ml",
+   "Rave Now Rouge EDP 100ml",
+   "dior addict edp 100ml",
+   "Dior homme sport edt 125ml",
+   "Casamorati Flore Dulivo edp 100ml",
+   "Chanel gabrielle essence edp 100 ml",
+   "Chanel Pour Monsieur 50 ml edt",
+   "mancera aoud orchid edp 120ml",
+   "Mancera black intensitive aoud edp 120ml",
+   "Mancera roses jasmine edp 120ml",
+   "mancera wild python 120ml",
+   "Ariana Grande Mood Blush edp 100ml",
+   "Dolce & Gabbana Lily Edt 75ml",
+   "Moschino fresh gold couture edp 100ml",
+   "Homerun Sports - Eau De Toilette 100 Ml",
+   "hugo boss alive edp 80ml",
+   "hugo boss number one edt 125ml",
+   "Paco Rabanne olympea onyx edp collector edition 80ml",
+   "Paco Rabanne One Million Parfum 200ml",
+   "Paco rabanne x black (vieja presentacion) edt 100 ml",
+   "Bond N.9 China Town Edp 100ml",
+   "Bond N.9 Greenwich Village Edp 100ml",
+   "Bond N.9 My New York Edp 100ml",
+   "Bond No.9 The Scent of Peace Natural edp 100ml",
+   "Bond No.9 Wall Street edp 100ml",
+   "Britney Spears Fantasy Electric EDT 100ml",
+   "Britney Spears Fantasy Sheer EDT 100ml",
+   "britney spears festive fantasy edt 100ml",
+   "burberry brit for him edt 100ml",
+   "Montale Aoud Damascus edp 100ml",
+   "Montale Begal Oud EDP 100ml",
+   "montale boise fruite edp 100ml",
+   "montale dark aoud edp 100ml",
+   "montale fruits of the musk edp 100ml",
+   "montale mango manga edp 100ml",
+   "montale musk to musk edp 100ml",
+   "montale royal aoud edp 100ml",
+   "creed aventus 10 anniversary 100ml",
+   "Creed aventus cologne edp 100ml",
+   "creed neroli sauvage 100ml",
+   "creed royal mayfair 120ml",
+   "Creed viking 100ml",
+   "Deo 75G",
+   "Hair Mist 55ml",
+   "Hair Styling 100G",
+   "Prada Luna Rossa edt 150ml",
+   "Parfums De Marly Delina Exclusif parfum vial 1.5 ml",
+   "Parfums De Marly Delina La Rosee edp vial 1.5 ml",
+   "Al Haramain Amber Oud Bleu 100ml",
+   "Al Haramain Amber Oud Carbon 100ml",
+   "Carolina Herrera Bad Boy Cobalt edp 100 ml",
+   "Carolina herrera bad boy edp le parfum 150ml",
+   "carolina herrera bad boy edt 150ml",
+   "jo malone blackberry & bay 100ml",
+   "jo malone golden needle tea cologne 75ml",
+   "Jo Malone Oolong Tea Cologne 75ml"
+  ],
+  "kids": [
+   "Bubble Bath Princess Belle 300ml Kids",
+   "Bubble Bath Princess Rapunzel 300ml Kids"
+  ],
+  "brandAsName": [
+   "Dolce & gabbana edt 100 ml lady",
+   "Homerun Sports - Eau De Toilette 100 Ml",
+   "bora bora edp 100 ml lady",
+   "bora bora hombre edt 100 ml man",
+   "Boston Red Sox EDT 30ML Hombre",
+   "Deo 75G",
+   "Hair Mist 55ml",
+   "Hair Styling 100G"
+  ]
+ }
+}
