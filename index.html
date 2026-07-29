@@ -1162,15 +1162,31 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 html{background:var(--frame)}
 body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 
-.frame{position:fixed;inset:0;z-index:250;pointer-events:none;
-  border:var(--fw-tb) solid var(--frame);
-  border-left-width:var(--fw-lr);border-right-width:var(--fw-lr);
-  border-radius:calc(var(--fw-lr) + 15px)}
-@media(max-width:899px){ .frame{border-radius:calc(var(--fw-lr) + 5px)} }
+/* --fbleed: cuánto sobresale el marco del viewport. Su única función es
+   empujar las curvas exteriores fuera de pantalla para que las 4 esquinas
+   visibles sean rectas y negras. El radio interior no cambia. */
+:root{--fbleed:60px}
+.frame{position:fixed;inset:calc(-1 * var(--fbleed));z-index:250;pointer-events:none;
+  border:calc(var(--fw-tb) + var(--fbleed)) solid var(--frame);
+  border-left-width:calc(var(--fw-lr) + var(--fbleed));
+  border-right-width:calc(var(--fw-lr) + var(--fbleed));
+  border-radius:calc(var(--fw-lr) + 15px + var(--fbleed))}
+@media(max-width:899px){ .frame{border-radius:calc(var(--fw-lr) + 5px + var(--fbleed))} }
 
 /* fixed furniture must live INSIDE the frame, never under it */
 .nav{top:var(--fw-tb);left:var(--fw-lr);right:var(--fw-lr)}
 .mmenu{top:var(--fw-tb);left:var(--fw-lr);right:var(--fw-lr);bottom:var(--fw-tb)}
+/* A1(2): cerrado, el menú se traslada -100% de su PROPIA altura, así que su
+   borde inferior caía justo sobre el borde superior del marco (y=fw-tb) y lo
+   pintaba de crema desde z-index 260. Se traslada más allá del marco y se
+   apaga con visibility para que tampoco pinte mientras cierra. */
+.mmenu{visibility:hidden;pointer-events:none;
+  transition:transform .6s var(--ease), visibility .6s}
+.mmenu.show{visibility:visible;pointer-events:auto}
+.mmenu:not(.show){transform:translateY(calc(-100% - var(--fw-tb) - 4px))}
+@media(prefers-reduced-motion:reduce){
+  .mmenu{transition:none}      /* regla dura 3: sin movimiento, solo aparece/desaparece */
+}
 .float-wa{right:calc(18px + var(--fw-lr));bottom:calc(18px + var(--fw-tb) + env(safe-area-inset-bottom))}
 .to-top{left:calc(18px + var(--fw-lr));bottom:calc(18px + var(--fw-tb) + env(safe-area-inset-bottom))}
 .toast{bottom:calc(26px + var(--fw-tb))}
