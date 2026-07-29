@@ -1148,8 +1148,8 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
    brand mark riding on the frame itself).
    =================================================================== */
 :root{
-  --fw-lr:34px;   /* left/right — the emphasised axis on desktop */
-  --fw-tb:22px;   /* top/bottom */
+  --fw-lr:52px;   /* v16: substantially bolder — unmistakable at a glance */
+  --fw-tb:34px;
   --frame:#0B0B0B;
 }
 /* MOBILE (v14): was 9px sides / 15px top+bottom with a 15px inner radius, which
@@ -1157,7 +1157,7 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
    ("extraño"), not as architecture, and the uneven thin bars looked accidental.
    Now a UNIFORM 12px mat with a tight 5px inner radius: unmistakably a printed
    border rather than a device edge, and still only 6.4% of a 375px screen. */
-@media(max-width:899px){ :root{--fw-lr:12px; --fw-tb:12px} }
+@media(max-width:899px){ :root{--fw-lr:18px; --fw-tb:18px} }
 
 html{background:var(--frame)}
 body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
@@ -1284,30 +1284,11 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
    curator picks and every product surface stay old-white and shoppable.
    Old-white remains the page's dominant ground; it is not abandoned.
    =================================================================== */
-.hero{background:var(--ink)}
-.hero h1{color:var(--ivory)}
-.hero .sub{color:var(--ivory)}
-.hero .tagline{color:#CFCAC2}                       /* 11.4:1 on ink */
-.hero .hero-eyebrow{color:rgba(250,248,245,.66)}    /* 9.6:1 on ink */
-.hero .sec-num{color:var(--ivory);opacity:.42}
-.hero .scroll-cue small{color:#B9B4AC}              /* 8.4:1 on ink */
-.hero .scroll-cue .chev{color:#B9B4AC}
-.hero .tagline::after{background:var(--silver);opacity:.7}
-.hero::before{color:var(--ivory);opacity:.035}      /* B watermark, now light-on-dark */
-/* CTA must carry on ink: ivory outline, not the dusty-blue used on ivory */
-.hero .cta .btn{border-color:var(--ivory);color:var(--ivory)}
-.hero .cta .btn:hover{background:var(--ivory);border-color:var(--ivory);color:var(--ink)}
-
-/* nav rides transparent over the dark hero, then returns to frosted ivory on scroll */
-.nav:not(.scrolled){background:transparent;border-bottom-color:transparent}
-.nav:not(.scrolled) .nav-links a,
-.nav:not(.scrolled) .icon-btn,
-.nav:not(.scrolled) .lang button{color:rgba(250,248,245,.82)}
-.nav:not(.scrolled) .lang button.on{color:var(--ivory)}
-.nav:not(.scrolled) .lang .sep{color:rgba(250,248,245,.45)}
-/* logo is black artwork on alpha; brightness(0)+invert(1) forces it to pure ivory
-   regardless of the source pixels, keeping the alpha edges clean */
-.nav:not(.scrolled) .logo img{mix-blend-mode:normal;filter:brightness(0) invert(1)}
+/* v16: hero is OLD-WHITE. Final. The black now comes from the frame + real
+   black architecture (slabs, bands, rules) rather than from inverting the brand.
+   Must be OPAQUE: the hero is pinned with pinSpacing:false, so the rest of the
+   document scrolls underneath it and a transparent plate would let it show through. */
+.hero{background:var(--bg)}
 
 /* ---- SILVER, readable steel (not a 1px hint) ---- */
 .ed-break{border-top:2px solid var(--silver);border-bottom:2px solid var(--silver)}
@@ -1393,6 +1374,116 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
   background:var(--celeste);transform:scaleX(0);transform-origin:left center}
 .corr-true{display:inline-block}
 @media(prefers-reduced-motion:reduce){ .corr-draft{display:none} }
+
+/* ===================================================================
+   v16 · BLACK ARCHITECTURE
+   The hero is old-white and stays old-white (final). The authority in
+   the page therefore has to come from real black structure, not from
+   inverting the brand: a frame that reads as a printed plate edge,
+   ink thresholds between sections, and solid black section markers.
+   Loaded last so it wins the cascade over earlier passes.
+   =================================================================== */
+
+/* ---- 1 · THE HERO→WORLDS HANDOFF (fixes the hard-edged white rectangle)
+   Cause: .hero is pinned with pinSpacing:false, so the page scrolls
+   underneath it, and .worlds is an opaque block with z-index:3 that
+   slid up over the hero as a bare rectangle with no leading edge.
+   Fix, as design rather than patch: .worlds now arrives with its own
+   ink threshold — a solid black band that crosses the hero first and
+   closes it. The handoff becomes an authored moment, and the edge is
+   black-on-white by intent instead of white-on-white by accident. */
+.worlds{isolation:isolate}
+/* (the ink band itself is .thr-mark below — never ::before, which already
+   belongs to the #id section-numeral system at the top of this stylesheet) */
+.worlds > *{position:relative;z-index:1}
+.worlds{padding-top:calc(var(--thr,clamp(74px,10vw,132px)) + clamp(52px,8vw,104px))}
+/* the threshold carries the section index, ivory on ink — a printed plate mark.
+   On its OWN element: .worlds::after is already the film-grain overlay. */
+.thr-mark{position:absolute;left:0;right:0;top:0;z-index:2;pointer-events:none;
+  height:var(--thr,clamp(74px,10vw,132px));background:var(--frame);
+  display:flex;align-items:center;padding-left:var(--pad);
+  font-family:var(--font-struct);font-weight:800;font-size:clamp(10px,1.4vw,12px);
+  letter-spacing:.34em;color:rgba(250,248,245,.78)}
+.thr-mark::before{content:"02 — SELECCIÓN"}
+html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
+/* the band carries the index, so the default "02" numeral is redundant here */
+#worlds::before{display:none}
+
+/* ---- 2 · SECTION MARKERS become solid black slabs, not faint numerals ---- */
+.sec-num{font-family:var(--font-struct);font-weight:900;font-size:12px;letter-spacing:.2em;
+  color:var(--ivory);opacity:1;background:var(--frame);
+  padding:9px 13px 8px;display:inline-block;line-height:1}
+/* the slab is a real block now, not a faint numeral — it needs its own
+   band. Measured collision before this: slab (38,94)-(85,123) sat on top of the
+   eyebrow (32,104)-(245,120). The eyebrow moves below it. */
+.hero .sec-num{top:calc(var(--nav-h) + 10px)}
+.hero .hero-eyebrow{margin-top:46px}
+@media(min-width:900px){ .hero .hero-eyebrow{margin-top:0} }
+
+/* ---- 3 · SECTION HEADINGS get a heavy black rule — structure you can see ---- */
+.shead{position:relative}
+.shead .eyebrow{position:relative;padding-bottom:14px}
+.shead .eyebrow::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:56px;height:4px;background:var(--frame)}
+.ink .shead .eyebrow::after{background:var(--ivory)}
+
+/* ---- 4 · CATALOGUE gains a black masthead rule so the grid sits under
+     something solid instead of floating on white ---- */
+#catalog .catalog-meta{border-top:3px solid var(--frame);padding-top:14px}
+
+/* ---- 5 · THE PHOTOGRAPH ----
+   One licensed image (Pexels 12146871, Rendy Ramdani, Pexels License:
+   free to use, no attribution required) self-hosted at
+   assets/perfume-placeholder.jpg. Six deterministic variants keep a
+   680-card grid from reading as one image pasted 680 times. */
+/* container-agnostic: the photo fills whatever frame it is given
+   (grid card, curator card, cart line, admin thumb) — scoping it to
+   .card-media left the curator cards rendering at intrinsic size. */
+.ph-img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s var(--ease)}
+@media(hover:hover){ .card:hover .card-media .ph-img{transform:scale(1.04)} }
+/* Tonal shifts alone were invisible at 4/5 on a tall source — two adjacent
+   cards still read as the same picture. The variation is now STRUCTURAL:
+   even variants bleed edge-to-edge, odd variants float the bottle on a
+   ground with air around it. One photograph, two card archetypes. */
+.ph-v0,.ph-v2,.ph-v4{object-fit:cover}
+.ph-v1,.ph-v3,.ph-v5{object-fit:contain;padding:13% 18%;
+  background:radial-gradient(120% 100% at 50% 34%,#fff 0%,#f7f5f2 68%,#efece7 100%)}
+.ph-v0{object-position:50% 34%;filter:saturate(.95)}
+.ph-v1{filter:saturate(.74) brightness(1.02)}
+.ph-v2{object-position:50% 62%;filter:saturate(1) contrast(1.05)}
+.ph-v3{filter:saturate(.5) contrast(1.04)}
+.ph-v4{object-position:50% 48%;filter:saturate(.85) brightness(.97)}
+.ph-v5{filter:grayscale(.85) contrast(1.08)}
+.a-thumb .ph-img{width:100%;height:100%;object-fit:cover}
+
+/* the same photograph as the memory image on the ink plate */
+.ed-photo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(74vw,540px);height:auto;object-fit:contain;pointer-events:none;
+  opacity:.16;filter:grayscale(1) contrast(1.15);
+  -webkit-mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%);
+          mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%)}
+.ed-inner .bottle{opacity:.05}   /* the drawn bottle steps back behind the photo */
+
+/* ---- 6 · MOBILE: thresholds and slabs scale down, never disappear ---- */
+@media(max-width:759px){
+  .thr-mark{letter-spacing:.24em}
+  .shead .eyebrow::after{width:42px;height:3px}
+}
+/* ---- 7 · SECTION NUMERALS — the real ones. Ivory on a solid ink plate,
+     on every section, so the black structure repeats down the whole page
+     instead of appearing once in the hero. ---- */
+#catalog::before,#encargos::before,#about::before,#luis::before{
+  font-family:var(--font-struct);font-weight:900;font-size:12px;letter-spacing:.2em;
+  color:var(--ivory);opacity:1;background:var(--frame);padding:9px 13px 8px;line-height:1}
+/* #how and #faq are ink plates — invert so the mark stays legible there */
+#how::before,#faq::before{
+  font-family:var(--font-struct);font-weight:900;font-size:12px;letter-spacing:.2em;
+  color:var(--frame);opacity:1;background:var(--ivory);padding:9px 13px 8px;line-height:1}
+
+@media(prefers-reduced-motion:reduce){
+  .ph-img{transition:none}
+}
 </style>
 </head>
 
@@ -1520,6 +1611,7 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 <main>
 <!-- ================== 02 · TRES MUNDOS — category guide ================== -->
 <section class="section worlds" id="worlds">
+  <span class="thr-mark" aria-hidden="true"></span>
   <div class="wrap">
     <div class="shead worlds-head">
       <span class="line"></span>
@@ -1679,6 +1771,7 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 <section class="ed-break" aria-label="Blades Privé">
   <div class="wrap ed-inner reveal">
     <span class="ed-sweep" aria-hidden="true"></span>
+    <img class="ed-photo" src="assets/perfume-placeholder.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1177">
     <svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
       <rect x="49" y="9" width="22" height="15" rx="1.5"/>
       <path d="M53 24h14v8h-14z"/>
@@ -2810,7 +2903,16 @@ const BOTTLE = `<svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="cu
 </svg>`;
 
 function toast(msg){const t=$('#toast');$('#toastMsg').textContent=msg;t.classList.add('show');clearTimeout(window._t);window._t=setTimeout(()=>t.classList.remove('show'),2000);}
-function imgFor(p){ return p.image_url ? `<img src="${p.image_url}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">` : BOTTLE; }
+const PH_SRC='assets/perfume-placeholder.jpg';
+/* Pending-photo products share ONE licensed photograph. To stop 680 identical
+   frames reading as a copy-paste wall, each card gets a deterministic tonal +
+   framing variant (0-5) derived from its own id — same asset, different crop
+   and warmth, so the grid still reads as a set of individual objects. */
+function phVariant(p){ const k=String(p.id||p.name||''); let h=0; for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0; return h%6; }
+function imgFor(p){
+  if(p.image_url) return `<img src="${p.image_url}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
+  return `<img class="ph-img ph-v${phVariant(p)}" src="${PH_SRC}" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
+}
 window.__BOTTLE = BOTTLE;
 
 /* ===================================================================
@@ -2998,12 +3100,50 @@ function buildHowTitle(){
   h.innerHTML='<span class="corr"><span class="corr-draft" aria-hidden="true">'+tr('how_draft')+
               '<i class="corr-strike"></i></span><span class="corr-true">'+truth+'</span></span>';
   const d=h.querySelector('.corr-draft'), st=h.querySelector('.corr-strike'), t=h.querySelector('.corr-true');
-  corrTl=gsap.timeline({scrollTrigger:{trigger:'#how .shead',start:'top 80%',once:true}});
+  corrTl=gsap.timeline({scrollTrigger:{trigger:'#how .shead',start:'top 78%',
+    toggleActions:'play none none none',refreshPriority:-100}});
   corrTl.set(t,{opacity:0})
     .to(d,{opacity:1,duration:.4,ease:FX.ease})
     .to(st,{scaleX:1,duration:.5,ease:'power2.inOut'},'+=.15')
     .to(d,{opacity:0,y:-8,duration:.4,ease:FX.ease},'+=.25')
     .fromTo(t,{opacity:0,y:12},{opacity:1,y:0,duration:FX.dur,ease:FX.ease},'-=.15');
+}
+
+/* ===================================================================
+   MECHANIC 7 — CATALOGUE DEVELOPS  (narrative: memory sharpening)
+   The brand line is "a scent isn't seen, it's remembered". Entrances that
+   merely slide say nothing; this one says recall. Cards land desaturated
+   and low-contrast, then resolve to full tone in a short stagger.
+   ScrollTrigger.batch keeps it to one observer regardless of card count,
+   and grayscale/contrast are cheaper to composite than blur.
+   =================================================================== */
+let cardBatch=null;
+function buildCardDevelop(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  if(cardBatch){ cardBatch.forEach(t=>t.kill()); cardBatch=null; }
+  cardBatch=ScrollTrigger.batch('#grid .card:not([data-dev])',{
+    start:'top 92%', once:true, refreshPriority:-90,
+    onEnter:b=>{
+      b.forEach(el=>el.dataset.dev='1');
+      gsap.fromTo(b,{opacity:0,y:FX.rise()*.6},
+        {opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:{each:FX.item,from:'start'},overwrite:true});
+      gsap.fromTo(b.map(el=>el.querySelector('.card-media')||el),
+        {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
+        {filter:'grayscale(0) contrast(1) brightness(1)',duration:.9,ease:'power2.out',
+         stagger:{each:FX.item,from:'start'},clearProps:'filter'});
+    }});
+}
+/* The same treatment on a filter change — the selection RE-develops rather
+   than sliding in again, so the catalogue speaks one language everywhere. */
+function developCards(cards,fast){
+  if(!cards.length||!window.gsap||reduceMotion()) return;
+  cards.forEach(c=>c.dataset.dev='1');
+  gsap.fromTo(cards,{opacity:0,y:fast?10:FX.rise()*.6},
+    {opacity:1,y:0,duration:fast?.3:FX.dur,ease:FX.ease,stagger:fast?FX.item*.6:FX.item,overwrite:true});
+  gsap.fromTo(cards.map(c=>c.querySelector('.card-media')||c),
+    {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
+    {filter:'grayscale(0) contrast(1) brightness(1)',duration:fast?.55:.9,ease:'power2.out',
+     stagger:fast?FX.item*.6:FX.item,clearProps:'filter'});
 }
 
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
@@ -3094,9 +3234,9 @@ function renderGrid(animate,fast){
   $('#loadCount').textContent=tr('showing_n').replace('{a}',slice.length).replace('{b}',list.length);
   updateMeta(slice.length,list.length);
   if(animate&&window.gsap&&!reduceMotion()){
-    const m=isMob(); const cards=$$('#grid .card');
-    cards.forEach(c=>c.style.willChange='transform,opacity');
-    gsap.from(cards,{y:m?20:24,opacity:0,duration:fast?(m?.25:.35):FX.dur,stagger:fast?FX.item*.6:FX.item,ease:FX.ease,clearProps:'all',onComplete:()=>cards.forEach(c=>c.style.willChange='')});
+    developCards($$('#grid .card'),fast);           // filter/search → re-develop
+  } else if(window.ScrollTrigger&&!reduceMotion()){
+    if(typeof buildCardDevelop==='function') buildCardDevelop();  // first paint → arm scroll batch
   }
   queueRefresh();   // grid height changed — sections below moved
 }
@@ -3256,7 +3396,7 @@ function updateCart(){
   if(!S.cart.length){ body.innerHTML=`<div class="cart-empty">${BOTTLE}<p>${tr('cart_empty')}</p><button class="btn" onclick="closeCart();document.getElementById('catalog').scrollIntoView()">${tr('cart_browse')}</button></div>`; foot.style.display='none'; return; }
   foot.style.display='block';
   body.innerHTML=S.cart.map(it=>`<div class="cart-item">
-    <div class="ci-img">${it.image_url?`<img src="${it.image_url}" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
+    <div class="ci-img">${it.image_url?`<img src="${it.image_url}" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
     <div><div class="ci-brand">${it.brand}</div><div class="ci-name">${it.name}</div><div class="ci-vol">${it.vol} ml</div><div class="ci-price">${fmt(it.price)}</div>
       <div class="qty"><button onclick="changeQty('${it.key}',-1)">−</button><span>${it.qty}</span><button onclick="changeQty('${it.key}',1)">+</button></div></div>
     <button class="ci-remove" onclick="removeItem('${it.key}')">${tr('cart_remove')}</button>
@@ -3369,7 +3509,7 @@ function aItemHTML(p){
   const sel=S.adminSel.has(p.id);
   return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
     <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
-    <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
+    <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
     <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
     <div class="a-acts">
       <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -3711,7 +3851,8 @@ function buildHow(){
   gsap.set(texts,{clearProps:'all'});
   if(fill) gsap.set(fill,m?{scaleY:0}:{scaleX:0});
 
-  howTl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 88%':'top 82%',once:true}});
+  howTl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 85%':'top 82%',
+    toggleActions:'play none none none',refreshPriority:-100}});
   if(fill) howTl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
   howTl.from(steps,{opacity:0,y:FX.rise(),duration:FX.dur,ease:FX.ease,stagger:FX.block},.1)
        .from(texts,{fillOpacity:0,stroke:'#FAF8F5',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420,
@@ -3794,6 +3935,7 @@ function initAnim(){
     buildFilm();
     buildHowTitle();   // correction reveal (non-pin)
     buildStats();      // count-up (non-pin)
+    buildCardDevelop();// Mechanic 7 — catalogue "develops" (see below)
     window.__fxReady=true;
     ScrollTrigger.sort();   // creation order ≠ page order (how builds before curator) — sort by refreshPriority
     queueRefresh();

@@ -22,3 +22,6 @@ lighthouse-*.json
 
 # v9 audit screenshots — local only
 _audit_v9/
+_audit_v1?/
+_audit_v??/
+lh-*.json
