@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
 
 <style>
 /* ===================================================================
@@ -1392,6 +1392,84 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 @media(prefers-reduced-motion:reduce){ .corr-draft{display:none} }
 
 /* ===================================================================
+   BLOQUE C · REDISENO DE SECCIONES
+   =================================================================== */
+
+/* ---- C5 · HERO: mas peso tipografico, MISMO layout ----
+   No se toca posicion ni grid. Solo tamano y peso. Los pesos existen de
+   verdad en el <link> (Cormorant italica 600, Jost 600): antes el maximo
+   cargado era italica 400 / Jost 500, asi que pedir 600 habria dado
+   negrita sintetica. */
+.hero .sub{font-weight:600;font-size:clamp(1.3rem,4.6vw,2rem)}
+.hero .tagline{font-weight:400;font-size:.82rem}   /* italica 500 no esta cargada; 400 si */
+.hero .hero-eyebrow{font-weight:600}
+
+/* ---- C6 · CTA: relleno negro solido, hover que invierte ---- */
+.hero .cta .btn-blue{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:var(--ivory);
+  font-weight:500;
+  transition:background .24s ease-out, color .24s ease-out, border-color .24s ease-out;
+}
+.hero .cta .btn-blue:hover,
+.hero .cta .btn-blue:focus-visible{
+  background:transparent;
+  color:var(--ink);
+  border-color:var(--ink);
+}
+@media(prefers-reduced-motion:reduce){
+  .hero .cta .btn-blue{transition:none}
+}
+
+/* ---- C2 · TRES MUNDOS: 3 columnas (decision del usuario), tipografia mayor ----
+   El numeral pasa a outline editorial y se coloca DETRAS del titulo como
+   marca de agua estructural, no como vinnneta. */
+.worlds-grid .world{position:relative;padding-top:clamp(26px,4vw,44px)}
+.worlds-grid .w-n.display-num{
+  position:absolute;top:0;left:-.06em;z-index:0;
+  pointer-events:none;user-select:none;
+  /* estas tres repiten al sistema solo para ganarle a .world .w-n (0,2,0) */
+  font-family:var(--font-struct);font-weight:900;
+  font-size:clamp(3.4rem,11vw,7rem);line-height:.8;letter-spacing:-.03em;
+  margin-bottom:0;text-transform:none;
+  color:transparent;-webkit-text-stroke:1.5px rgba(16,16,16,.26);
+}
+@supports not ((-webkit-text-stroke:1px black)){
+  .worlds-grid .w-n.display-num{color:rgba(16,16,16,.16);-webkit-text-stroke:0}
+}
+.worlds-grid .w-h{position:relative;z-index:1;margin:0 0 .5em}
+.worlds-grid .w-b{position:relative;z-index:1}
+/* palabras partidas por JS para el reveal progresivo */
+.w-word{display:inline-block;will-change:transform,opacity}
+
+/* ---- C4 · EL MISMO OJO: 4 beats con jerarquia distinta ---- */
+.eye-text .beat{margin:0}
+.eye-text .beat-1{margin-bottom:.15em}
+.eye-text .beat-2{color:var(--muted);font-size:1.02rem;line-height:1.66;max-width:52ch}
+.eye-text .beat-3{color:var(--ink);max-width:20ch;margin-top:.35em}
+.eye-text .beat-4{color:var(--ink);max-width:17ch;margin-top:.4em}
+/* el beat 3 se revela con mascara: el estado inicial vive en CSS para que
+   no haya parpadeo antes de que GSAP tome el control */
+.eye-text .beat-3{clip-path:inset(0 0 0 0)}
+@media(prefers-reduced-motion:reduce){
+  .eye-text .beat{clip-path:none!important;opacity:1!important;transform:none!important}
+  .w-word{opacity:1!important;transform:none!important}
+}
+
+/* ---- D1 · entrada a Modo Admin ---- */
+.admin-entry{
+  display:inline-block;margin-top:14px;
+  font-family:var(--font-struct);font-weight:800;font-size:.6rem;
+  letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ivory);background:var(--frame);
+  padding:9px 16px;border-radius:2px;text-decoration:none;
+  transition:opacity .24s ease-out;
+}
+.admin-entry:hover,.admin-entry:focus-visible{opacity:.72}
+@media(prefers-reduced-motion:reduce){ .admin-entry{transition:none} }
+
+/* ===================================================================
    A2 · SISTEMA DE TIPOGRAFIA DISPLAY  (compartido por 05/#worlds y 06/#about)
    ---------------------------------------------------------------
    Decision de fuente, con el dato real del <head>:
@@ -1699,18 +1777,18 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     </div>
     <div class="worlds-grid">
       <div class="world">
-        <span class="w-n">I</span>
-        <h3 class="w-h">Designer</h3>
+        <span class="w-n display-num" aria-hidden="true">I</span>
+        <h3 class="w-h display display-3 display-caps">Designer</h3>
         <p class="w-b" data-i18n="w_d_b">Las casas que definieron la elegancia moderna — Dior, Chanel, Hermès. Composiciones probadas por décadas, seguras para cualquier ocasión y siempre reconocibles. El punto de partida perfecto.</p>
       </div>
       <div class="world">
-        <span class="w-n">II</span>
-        <h3 class="w-h">Niche</h3>
+        <span class="w-n display-num" aria-hidden="true">II</span>
+        <h3 class="w-h display display-3 display-caps">Niche</h3>
         <p class="w-b" data-i18n="w_n_b">Perfumería de autor en producciones pequeñas — Le Labo, Xerjoff, Amouage. Aromas con carácter propio, para quien ya sabe lo que busca y prefiere llevar algo que casi nadie más tiene.</p>
       </div>
       <div class="world">
-        <span class="w-n">III</span>
-        <h3 class="w-h" data-i18n="f_arabic">Árabe</h3>
+        <span class="w-n display-num" aria-hidden="true">III</span>
+        <h3 class="w-h display display-3 display-caps" data-i18n="f_arabic">Árabe</h3>
         <p class="w-b" data-i18n="w_a_b">La tradición del oud, el azafrán y el ámbar — Lattafa, Rasasi, Afnan. Intensidad y duración fuera de serie a precios que todavía sorprenden. El secreto mejor guardado del catálogo.</p>
       </div>
     </div>
@@ -2067,10 +2145,10 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       </div>
       <div class="eye-text">
         <span class="eyebrow" data-i18n="about_eyebrow">El mismo ojo</span>
-        <p class="about-quote" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
-        <p class="about-body" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
-        <p class="about-body" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
-        <p class="about-body" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
+        <p class="about-quote beat beat-1" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
+        <p class="about-body beat beat-2" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
+        <p class="about-body beat beat-3 display display-3" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
+        <p class="about-body beat beat-4 display display-2" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
       <div class="about-soc">
         <a class="soc" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
         <a class="soc" id="tiktok2" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.2 1.7 3.9 3.8 4.2v2.6c-1.3.1-2.6-.3-3.8-1v6.2A5.5 5.5 0 1 1 10.5 9.6v2.8a2.8 2.8 0 1 0 2 2.7V3H16Z"/></svg></a>
@@ -2176,6 +2254,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       </div>
       <div class="foot-bottom">
         <small>© <span id="yr"></span> Blades Privé · <span data-i18n="foot_made">Hecho en Costa Rica</span></small>
+        <a href="#admin" class="admin-entry" id="adminEntry" data-i18n="admin_entry">Modo Admin</a>
         <div class="lang"><button data-lang="es" class="on">ES</button><span class="sep">/</span><button data-lang="en">EN</button></div>
       </div>
     </div>
@@ -2272,7 +2351,7 @@ const STR = {
     enc_submit:'Enviar solicitud', enc_toast:'Solicitud lista — abriendo WhatsApp',
     about_eyebrow:'El mismo ojo', about_quote:'El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em>',
     about_body:'Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.',
-    foot_made:'Hecho en Costa Rica',
+    foot_made:'Hecho en Costa Rica', admin_entry:'Modo Admin',
     man_eyebrow:'El Hombre Detrás', man_title:'Luis Blades', man_sub:'El barbero y curador detrás de cada elección.',
     cuts_eyebrow:'Su oficio', cuts_title:'Sus Cortes',
     cart_title:'Tu selección', cart_items:'artículos', cart_subtotal:'Subtotal',
@@ -2349,7 +2428,7 @@ const STR = {
     enc_submit:'Send request', enc_toast:'Request ready — opening WhatsApp',
     about_eyebrow:'The same eye', about_quote:'The same eye that perfects every cut <em>curated this selection.</em>',
     about_body:'Luis works as a barber at Gents Barbershop, San José — where precision is the standard and every client leaves looking their best. That same judgement, that same obsession with detail, chose every fragrance in Blades Privé.',
-    foot_made:'Made in Costa Rica',
+    foot_made:'Made in Costa Rica', admin_entry:'Admin Mode',
     man_eyebrow:'The Man Behind It', man_title:'Luis Blades', man_sub:'The barber and curator behind every choice.',
     cuts_eyebrow:'His craft', cuts_title:'His Cuts',
     cart_title:'Your selection', cart_items:'items', cart_subtotal:'Subtotal',
@@ -3418,6 +3497,88 @@ function developCards(cards,fast){
      stagger:fast?FX.item*.6:FX.item,clearProps:'filter'});
 }
 
+/* ===================================================================
+   BLOQUE C — MECANICAS DE SCROLL
+   Ninguna usa pin: el presupuesto (3) ya esta en 2 (hero + worlds shead).
+   Todas salen por la puerta de reduceMotion().
+   =================================================================== */
+
+/* C1 — QUIZ (#finder). Entrada simple fade + translateY con stagger, y
+   toggleActions play/reverse como pide el brief: al volver hacia arriba
+   la seccion se "recoge", reforzando que es un interludio y no contenido
+   permanente. */
+let finderTl=null;
+function buildFinderIn(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  const host=$('#finder'); if(!host) return;
+  if(finderTl){ if(finderTl.scrollTrigger) finderTl.scrollTrigger.kill(); finderTl.kill(); }
+  const items=$$('#finderBox > *');
+  if(!items.length) return;
+  finderTl=gsap.timeline({scrollTrigger:{trigger:host,start:'top 78%',
+    toggleActions:'play none none reverse',refreshPriority:-80}});
+  finderTl.from(items,{opacity:0,y:isMob()?24:34,duration:FX.dur,ease:FX.ease,stagger:.12});
+}
+
+/* C2 — TRES MUNDOS. Numeral en outline que sube, y titulo partido por
+   palabras que entra progresivamente. Se parte a mano en vez de con
+   SplitText porque ese plugin no esta disponible en el CDN gratuito;
+   el efecto es el mismo y no agrega peso. */
+function splitWords(el){
+  if(!el || el.dataset.split) return [];
+  const txt=(el.textContent||'').trim(); if(!txt) return [];
+  el.dataset.split='1';
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // los titulos de #worlds son de una sola palabra: ahi el stagger tiene que
+  // ser por letra o no se percibe nada.
+  const partes = /\s/.test(txt) ? txt.split(/\s+/) : [...txt];
+  el.innerHTML = partes.map(p=>'<span class="w-word">'+esc(p)+'</span>')
+                       .join(/\s/.test(txt) ? ' ' : '');
+  // la palabra completa sigue siendo legible para lectores de pantalla
+  el.setAttribute('aria-label',txt);
+  return [...el.querySelectorAll('.w-word')];
+}
+let worldsTypeTls=[];
+function buildWorldsType(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  worldsTypeTls.forEach(t=>{ if(t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+  worldsTypeTls=[];
+  $$('.worlds-grid .world').forEach((w,i)=>{
+    const num=w.querySelector('.w-n'), head=w.querySelector('.w-h'), body=w.querySelector('.w-b');
+    const words=splitWords(head);
+    const tl=gsap.timeline({scrollTrigger:{trigger:w,start:'top 84%',
+      toggleActions:'play none none reverse',refreshPriority:-80}});
+    if(num)   tl.from(num,{opacity:0,y:26,duration:.7,ease:FX.ease},0);
+    if(words.length) tl.from(words,{opacity:0,y:22,duration:.5,ease:FX.ease,stagger:.055},.12);
+    if(body)  tl.from(body,{opacity:0,y:16,duration:FX.dur,ease:FX.ease},.28);
+    worldsTypeTls.push(tl);
+  });
+}
+
+/* C4 — EL MISMO OJO. Cuatro beats, cuatro mecanicas DISTINTAS, para que el
+   scroll no repita el mismo gesto cuatro veces:
+     beat 1 (apertura)   fade + slide desde abajo
+     beat 2 (contexto)   entra desde el costado
+     beat 3 (confianza)  revelado por mascara clip-path
+     beat 4 (cierre)     scale-in, el mas grande de los cuatro
+   Sin pin, solo opacidad/transform/clip-path. */
+let beatTls=[];
+function buildBeats(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  beatTls.forEach(t=>{ if(t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+  beatTls=[];
+  const mk=(sel,vars)=>{
+    const el=$(sel); if(!el) return;
+    beatTls.push(gsap.from(el,Object.assign({
+      scrollTrigger:{trigger:el,start:'top 86%',toggleActions:'play none none none',refreshPriority:-80},
+      ease:FX.ease, duration:FX.dur
+    },vars)));
+  };
+  mk('.eye-text .beat-1',{opacity:0,y:isMob()?26:38});
+  mk('.eye-text .beat-2',{opacity:0,x:isMob()?-22:-56});
+  mk('.eye-text .beat-3',{clipPath:'inset(0 100% 0 0)',duration:.95,ease:'power3.inOut'});
+  mk('.eye-text .beat-4',{opacity:0,scale:.9,transformOrigin:'left center',duration:.85});
+}
+
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
 function setupCarousels(){
   $$('.car-track').forEach(track=>{
@@ -4089,7 +4250,7 @@ function buildEye(){
       // so it gets a clean fade/scale-in (simplicity over forcing an effect), text follows
       gsap.from('.eye-logo',{opacity:0,scale:.94,duration:.9,ease:FX.ease,
         scrollTrigger:{trigger:eg,start:'top 70%',once:true,refreshPriority:-20}});
-      gsap.from('.eye-text > *',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block,
+      gsap.from('.eye-text > *:not(.beat)',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block,
         scrollTrigger:{trigger:eg,start:'top 48%',once:true}});
     } else {
       // MOBILE — diagonal blade-wipe with celeste tint
@@ -4097,7 +4258,7 @@ function buildEye(){
       tl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
           {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
         .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:FX.ease},'-=.35')
-        .from('.eye-text > *',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},'-=.5');
+        .from('.eye-text > *:not(.beat)',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},'-=.5');
     }
   });
 }
@@ -4212,6 +4373,9 @@ function initAnim(){
     buildHowTitle();   // correction reveal (non-pin)
     buildStats();      // count-up (non-pin)
     buildCardDevelop();// Mechanic 7 — catalogue "develops" (see below)
+    buildFinderIn();   // C1 — entrada del quiz
+    buildWorldsType(); // C2 — numerales + reveal palabra a palabra
+    buildBeats();      // C4 — 4 beats, 4 mecanicas distintas
     window.__fxReady=true;
     ScrollTrigger.sort();   // creation order ≠ page order (how builds before curator) — sort by refreshPriority
     queueRefresh();
