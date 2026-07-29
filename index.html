@@ -1392,6 +1392,69 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 @media(prefers-reduced-motion:reduce){ .corr-draft{display:none} }
 
 /* ===================================================================
+   A2 · SISTEMA DE TIPOGRAFIA DISPLAY  (compartido por 05/#worlds y 06/#about)
+   ---------------------------------------------------------------
+   Decision de fuente, con el dato real del <head>:
+   Cormorant Garamond NO esta cargada hasta 700 — solo 300/400/500 y
+   italicas 300/400. Nunca puede dar el "grueso y negro" pedido.
+   Archivo 800/900 ya se carga desde la pasada v3 como --font-struct,
+   asi que el peso negro sale de ahi y NO se agrega una tercera fuente
+   (cero coste de red adicional). Cormorant se conserva exactamente
+   para lo que sirve: italicas y acentos pequenos, via .display-accent.
+
+   Una sola escala reemplaza los tamanos ad-hoc por seccion. Antes cada
+   bloque inventaba su clamp(): .about-quote lo declaraba tres veces
+   (lineas ~251, ~683, ~981) con valores distintos.
+   =================================================================== */
+:root{
+  --display-1:clamp(2.6rem,7.6vw,4.4rem);   /* cierre / el mas grande */
+  --display-2:clamp(2.1rem,6vw,3.4rem);     /* statement principal */
+  --display-3:clamp(1.7rem,4.6vw,2.6rem);   /* statement secundario */
+  --display-4:clamp(1.3rem,3.4vw,1.85rem);  /* entradilla */
+}
+.display{
+  font-family:var(--font-struct);
+  font-weight:900;
+  line-height:.98;
+  letter-spacing:-.022em;
+  color:var(--ink);
+  text-wrap:balance;              /* degrada solo si el motor no lo soporta */
+  margin:0;
+}
+.display-1{font-size:var(--display-1);line-height:.94}
+.display-2{font-size:var(--display-2);line-height:.96}
+.display-3{font-size:var(--display-3);line-height:1.02}
+.display-4{font-size:var(--display-4);line-height:1.12;letter-spacing:-.012em}
+
+/* modificadores — se combinan con cualquier tamano */
+.display-caps{text-transform:uppercase;letter-spacing:-.005em}
+.display-ink{color:var(--ivory)}                    /* sobre plancha oscura */
+.ink .display{color:var(--ivory)}                   /* automatico dentro de .ink */
+
+/* la otra voz: Cormorant italica para inflexiones dentro de un display.
+   Es el unico sitio donde Cormorant y Archivo conviven en una misma linea. */
+.display-accent{
+  font-family:var(--font-display);
+  font-style:italic;
+  font-weight:400;
+  text-transform:none;
+  letter-spacing:.005em;
+}
+
+/* numerales editoriales en outline — usados por C2 (#worlds I/II/III) */
+.display-num{
+  font-family:var(--font-struct);font-weight:900;line-height:.8;
+  font-size:clamp(3.4rem,11vw,7rem);
+  color:transparent;
+  -webkit-text-stroke:1.5px rgba(16,16,16,.26);
+  letter-spacing:-.03em;
+}
+.ink .display-num{-webkit-text-stroke-color:rgba(250,248,245,.3)}
+@supports not ((-webkit-text-stroke:1px black)){
+  .display-num{color:rgba(16,16,16,.16);-webkit-text-stroke:0}
+}
+
+/* ===================================================================
    v16 · BLACK ARCHITECTURE
    The hero is old-white and stays old-white (final). The authority in
    the page therefore has to come from real black structure, not from
