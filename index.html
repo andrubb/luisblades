@@ -1961,9 +1961,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
         </div>
         <div class="fg-col">
           <h3 class="fg-h" data-i18n="fg_cats">Categorías</h3>
-          <a href="#catalog" data-cat-link="Designer">Designer</a>
-          <a href="#catalog" data-cat-link="Niche">Niche</a>
-          <a href="#catalog" data-cat-link="Arabic" data-i18n="f_arabic">Árabe</a>
+          <a href="?cat=Designer#catalog" data-cat-link="Designer">Designer</a>
+          <a href="?cat=Niche#catalog" data-cat-link="Niche">Niche</a>
+          <a href="?cat=Arabic#catalog" data-cat-link="Arabic" data-i18n="f_arabic">Árabe</a>
         </div>
         <div class="fg-col">
           <h3 class="fg-h" data-i18n="fg_explore">Explorar</h3>
@@ -1995,7 +1995,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <aside class="drawer" id="cart" aria-label="Carrito">
   <div class="drawer-head">
     <div><h3 data-i18n="cart_title">Tu selección</h3><div class="n"><span id="cartN">0</span> <span data-i18n="cart_items">artículos</span></div></div>
-    <button class="icon-btn" id="cartClose" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <button class="icon-btn" id="cartClose" aria-label="Cerrar carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   </div>
   <div class="drawer-body" id="cartBody"></div>
   <div class="drawer-foot" id="cartFoot" style="display:none">
@@ -3805,9 +3805,13 @@ function setupEvents(){
   // footer category quick-links → activate matching filter pill + scroll to catalog
   $$('[data-cat-link]').forEach(a=>a.addEventListener('click',e=>{
     e.preventDefault();
-    const pill=$(`#filterBar .pill[data-filter="${a.dataset.catLink}"]`);
+    const cat=a.dataset.catLink;
+    const pill=$(`#filterBar .pill[data-filter="${cat}"]`);
     if(pill) pill.click();
-    document.getElementById('catalog').scrollIntoView({behavior:'smooth'});
+    // B4: la categoria queda en la URL para poder compartir/recargar el filtro
+    try{ history.replaceState(null,'', '?cat='+encodeURIComponent(cat)+'#catalog'); }catch(_){}
+    document.getElementById('catalog').scrollIntoView(
+      {behavior: reduceMotion() ? 'auto' : 'smooth'});   // regla dura 3
   }));
   // admin triggers
   let clk=0,tm; $('#footLogo').addEventListener('click',e=>{ e.preventDefault(); clk++; clearTimeout(tm); tm=setTimeout(()=>clk=0,600); if(clk>=3){ clk=0; openAdmin(); } else if(clk===1){ /* allow normal nav after delay */ setTimeout(()=>{ if(clk===1){ location.hash='#top'; clk=0; } },280); } });
@@ -4067,7 +4071,21 @@ async function init(){
   updateFavUI();
   renderCarousels();     // Luis photos + cuts (placeholders until real media added)
   initAnim();
+  applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
   if(location.hash==='#admin') openAdmin();
+}
+/* B4 — si la URL trae ?cat=, aplicar ese filtro al aterrizar.
+   Se valida contra las pills existentes: una categoria inventada se ignora
+   en silencio en vez de dejar el catalogo vacio. */
+function applyCatFromURL(){
+  let cat=null;
+  try{ cat=new URLSearchParams(location.search).get('cat'); }catch(_){ return; }
+  if(!cat) return;
+  const pill=$(`#filterBar .pill[data-filter="${CSS.escape(cat)}"]`);
+  if(!pill) return;                      // categoria desconocida -> no tocar nada
+  pill.click();
+  const target=document.getElementById('catalog');
+  if(target) target.scrollIntoView({behavior:'auto',block:'start'});
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
