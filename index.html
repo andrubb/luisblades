@@ -1148,8 +1148,14 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
    brand mark riding on the frame itself).
    =================================================================== */
 :root{
-  --fw-lr:52px;   /* v16: substantially bolder — unmistakable at a glance */
-  --fw-tb:34px;
+  /* PASO 1: marco simetrico en desktop. Antes 52 lateral / 34 superior-inferior,
+     lo que se leia como un marco mas ancho a los lados. Ahora los 4 lados miden
+     lo mismo. Se iguala HACIA ARRIBA (52) y no hacia abajo (34) para no
+     adelgazar el marco, que la direccion previa pedia explicitamente mas solido.
+     Coste: 36px extra arriba y 36 abajo; .hero ya lo absorbe con
+     min-height:calc(100svh - (2 * var(--fw-tb))). */
+  --fw-lr:52px;
+  --fw-tb:52px;
   --frame:#0B0B0B;
 }
 /* MOBILE (v14): was 9px sides / 15px top+bottom with a 15px inner radius, which
