@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
 
 <style>
 /* ===================================================================
@@ -23,16 +23,18 @@
 
 /* ----------------------------- TOKENS ----------------------------- */
 :root{
-  --bg:#FAF8F5;          /* old white / warm ivory */
+  --bg:#F5F1EA;          /* bone — un paso mas calido que el old-white */
   --surface:#FFFFFF;     /* pure white — cards only */
   --text:#1A1A1A;        /* soft near-black */
   --muted:#8C8C8C;       /* muted gray text */
-  --blue:#5B7C99;        /* dusty elegant blue — accent */
-  --celeste:#AEC6D8;     /* light celeste — hover/details */
+  --blue:#B3762C;        /* AMBAR — el liquido del frasco. La firma.
+                            (el token conserva el nombre historico: son 57
+                            usos y renombrarlos no aporta nada funcional) */
+  --celeste:#E0C9A6;     /* champana claro — hover/detalles */
   --silver:#C0C0C2;      /* metallic gray — dividers, secondary icons */
   --border:#E8E4DD;      /* hairline border */
 
-  --font-display:'Cormorant Garamond', Georgia, serif;
+  --font-display:'Bodoni Moda', 'Didot', Georgia, serif;
   --font-body:'Jost', system-ui, sans-serif;
 
   --maxw:1240px;
@@ -42,6 +44,76 @@
   --shadow-lift:0 2px 4px rgba(26,26,26,.05), 0 18px 40px -16px rgba(91,124,153,.18);
   --shadow-float:0 20px 60px -20px rgba(26,26,26,.20);
   --nav-h:60px;
+
+  /* ============================================================
+     IDENTIDAD · EL FILO Y LA ESTELA
+     Cortar es visible y preciso. Oler es invisible y difuso.
+     La navaja define un borde; el perfume lo disuelve.
+     Todo el sistema visual negocia entre esas dos fuerzas.
+     ============================================================ */
+  --noir:#0B0B0C;          /* el mundo de la navaja — nunca #000 */
+  --noir-2:#141416;        /* plano elevado sobre noir */
+  --amber:#C8873A;         /* el liquido del frasco — LA FIRMA */
+  --amber-hot:#E8A653;     /* ambar iluminado, para bloom */
+  --oxblood:#5C1A1B;       /* el cuero de la silla de barberia */
+  --chrome-1:#F2F4F6;      /* filo de acero: brillo */
+  --chrome-2:#8E979F;      /* filo de acero: cuerpo */
+  --chrome-3:#4A5157;      /* filo de acero: sombra */
+  --bone:#F5F1EA;          /* blanco calido, mas calido que el viejo bg */
+
+  /* jerarquia funcional sobre noir */
+  --on-noir-1:rgba(245,241,234,.96);
+  --on-noir-2:rgba(245,241,234,.62);
+  --on-noir-3:rgba(245,241,234,.38);
+
+  /* curvas propias — nada de ease/linear */
+  --e-expo:cubic-bezier(.16,1,.3,1);        /* salida expo: reveals */
+  --e-quart:cubic-bezier(.25,1,.5,1);       /* salida quart: hovers */
+  --e-cut:cubic-bezier(.87,0,.13,1);        /* expo in-out: EL CORTE */
+  --e-drift:cubic-bezier(.33,.02,.28,1);    /* deriva lenta: LA ESTELA */
+
+  --chrome-edge:linear-gradient(100deg,transparent 0%,var(--chrome-3) 18%,var(--chrome-1) 48%,var(--chrome-2) 60%,transparent 100%);
+}
+
+/* ============================================================
+   VIDRIO LIQUIDO — refraccion real, no solo blur
+   El glass solo se lee sobre fondo VIVIDO (gradiente/foto), nunca
+   sobre color plano: por eso vive sobre el bloom ambar del hero.
+   Tres ingredientes obligatorios: blur 12-30px, hairline interior
+   de 1px y sombra exterior. El feDisplacementMap del SVG agrega la
+   distorsion optica que el blur solo no da.
+   ============================================================ */
+.glass{
+  position:relative;
+  background:linear-gradient(135deg,rgba(245,241,234,.10),rgba(245,241,234,.03) 60%);
+  border:1px solid rgba(245,241,234,.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),      /* hairline superior: el borde del vidrio */
+    inset 0 -1px 0 rgba(0,0,0,.30),
+    0 18px 40px -18px rgba(0,0,0,.75);
+  isolation:isolate;
+}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .glass{
+    -webkit-backdrop-filter:blur(16px) saturate(150%);
+            backdrop-filter:blur(16px) saturate(150%);
+    background:linear-gradient(135deg,rgba(245,241,234,.09),rgba(245,241,234,.02) 60%);
+    /* aislar en su propia capa GPU: sin esto backdrop-filter tira los fps
+       por debajo de 30 en movil */
+    will-change:transform;
+    transform:translateZ(0);
+  }
+}
+/* la refraccion solo en pantallas capaces y con puntero fino: en movil
+   el coste no compensa y el blur ya da la lectura de vidrio */
+@media(min-width:900px){
+  @supports (backdrop-filter:blur(1px)){
+    .glass-refract{-webkit-backdrop-filter:blur(14px) saturate(150%) url(#lg-refract);
+                           backdrop-filter:blur(14px) saturate(150%) url(#lg-refract);}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .glass{will-change:auto}
 }
 
 /* ----------------------------- RESET ------------------------------ */
@@ -709,7 +781,7 @@ footer{border-top:2px solid #000}
 /* ---- tokens: a11y-verified variants of the SAME identity ---- */
 :root{
   --muted:#6E6E6E;          /* was #8C8C8C — now 4.8:1 on old-white */
-  --blue-text:#4E6B85;      /* dusty blue, deep enough for small text (5.3:1) */
+  --blue-text:#8A5518;      /* ambar profundo para texto pequeno — 5.37:1 sobre bone */
   --press:cubic-bezier(.25,.46,.45,.94);   /* quick ease-out for tap feedback */
 }
 
@@ -1646,6 +1718,170 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(prefers-reduced-motion:reduce){
   .ph-img{transition:none}
 }
+
+/* ===================================================================
+   HERO · EL CORTE   (mobile-first)
+   Composicion asimetrica: nada centrado. El tipo sangra fuera del
+   borde derecho, el eje vertical vive en el margen izquierdo, y una
+   hoja de cromo cruza en diagonal. El ambar se filtra por el corte.
+   =================================================================== */
+.hero{
+  background:var(--noir);
+  overflow:hidden;
+  isolation:isolate;
+  align-items:stretch;
+  text-align:left;
+  padding-left:clamp(18px,6vw,40px);
+  padding-right:0;                      /* el tipo sangra por la derecha */
+}
+.hero > *{position:relative;z-index:2}
+
+/* --- LA ESTELA: halos ambar. El unico fondo "vivido" del sitio, y la
+       razon por la que el vidrio del CTA se lee. --- */
+.hero-atmos{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-atmos i{position:absolute;display:block;border-radius:50%;filter:blur(58px);opacity:.55}
+.hero-atmos .at-1{
+  width:76vw;height:76vw;right:-26vw;top:6vh;
+  background:radial-gradient(circle at 40% 40%,var(--amber-hot),var(--amber) 42%,transparent 68%);
+}
+.hero-atmos .at-2{
+  width:58vw;height:58vw;left:-20vw;bottom:4vh;opacity:.42;
+  background:radial-gradient(circle at 60% 40%,var(--oxblood),transparent 66%);
+}
+
+/* --- EL FILO: hairline de cromo en diagonal --- */
+.hero-blade{
+  position:absolute;z-index:1;left:-16%;right:-16%;top:39%;height:2px;
+  background:var(--chrome-edge);
+  transform:rotate(-17deg);
+  transform-origin:left center;
+  pointer-events:none;
+  box-shadow:0 0 18px rgba(242,244,246,.5), 0 0 60px rgba(200,135,58,.35);
+}
+/* segundo filo, mas fino y desfasado: un corte real deja dos bordes */
+.hero-blade::after{
+  content:"";position:absolute;left:6%;right:22%;top:9px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(242,244,246,.32),transparent);
+}
+
+/* --- eje vertical en el margen izquierdo: rompe la simetria --- */
+.hero-rail{
+  position:absolute;z-index:2;left:2px;top:50%;
+  transform:translateY(-50%) rotate(180deg);
+  writing-mode:vertical-rl;
+  font-family:var(--font-struct);font-weight:800;
+  font-size:9px;letter-spacing:.42em;
+  color:var(--on-noir-3);
+  pointer-events:none;user-select:none;
+}
+
+/* --- tipografia: masiva, sangrando, no centrada --- */
+.hero h1{
+  font-family:var(--font-display);
+  font-weight:500;
+  font-size:clamp(5.2rem,30vw,16rem);
+  line-height:.82;
+  letter-spacing:-.045em;
+  color:var(--bone);
+  text-align:left;
+  margin-left:-.06em;                 /* alineacion optica, no matematica */
+  white-space:nowrap;
+  width:max-content;
+  max-width:none;
+}
+.hero h1 .hl{display:inline-block;will-change:transform}
+.hero .sub{
+  font-family:var(--font-display);font-style:italic;font-weight:400;
+  font-size:clamp(1.05rem,4.6vw,1.7rem);
+  color:var(--on-noir-2);
+  margin-top:.9rem;max-width:22ch;text-align:left;
+}
+.hero .hero-eyebrow{
+  color:var(--on-noir-3);font-weight:600;text-align:left;
+  margin-top:44px;              /* despeja el slab 01, medido: colisionaba */
+  padding-left:2px;
+}
+@media(min-width:900px){ .hero .hero-eyebrow{margin-top:0} }
+.hero .tagline{
+  color:var(--on-noir-3);font-family:var(--font-display);font-style:italic;
+  text-transform:none;letter-spacing:.02em;
+}
+.hero .tagline::after{background:var(--chrome-2);opacity:.5}
+.hero .sec-num{background:var(--bone);color:var(--noir)}
+.hero .scroll-cue small,.hero .scroll-cue .chev{color:var(--on-noir-3)}
+.hero .scroll-cue .ln{background:linear-gradient(var(--chrome-2),transparent)}
+.hero::before{color:var(--bone);opacity:.028}     /* marca de agua B */
+.hero-particles i{background:var(--amber-hot);opacity:.5}
+
+/* --- CTA de vidrio liquido sobre el bloom --- */
+.hero .cta .btn{
+  color:var(--bone);
+  border-color:rgba(245,241,234,.22);
+  background:transparent;
+  font-weight:500;
+  letter-spacing:.2em;
+  border-radius:999px;
+  padding:0 1.9em;min-height:52px;
+  transition:transform .5s var(--e-quart), border-color .4s var(--e-quart), color .4s var(--e-quart);
+}
+.hero .cta .btn:hover,.hero .cta .btn:focus-visible{
+  border-color:rgba(245,241,234,.5);
+  transform:translateY(-2px);
+}
+/* el ambar aparece en el borde al pasar el cursor: la estela reacciona */
+.hero .cta .btn::after{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  box-shadow:0 0 0 0 rgba(200,135,58,0);
+  transition:box-shadow .5s var(--e-quart);
+}
+.hero .cta .btn:hover::after{box-shadow:0 0 26px 0 rgba(200,135,58,.45)}
+
+/* --- nav sobre el hero oscuro --- */
+.nav:not(.scrolled){background:transparent;border-bottom-color:transparent}
+.nav:not(.scrolled) .nav-links a,
+.nav:not(.scrolled) .icon-btn,
+.nav:not(.scrolled) .lang button{color:var(--on-noir-2)}
+.nav:not(.scrolled) .lang button.on{color:var(--bone)}
+.nav:not(.scrolled) .logo img{filter:brightness(0) invert(1)}
+
+/* --- el marco necesita un filo interior para no fundirse con el hero --- */
+.frame::after{
+  content:"";position:absolute;inset:-1px;pointer-events:none;
+  border:1px solid rgba(242,244,246,.14);
+  border-radius:inherit;
+}
+
+/* --- estados iniciales de la coreografia (evita parpadeo antes de GSAP) --- */
+.anim .hero-blade{transform:rotate(-17deg) scaleX(0)}
+.anim .hero-atmos i{opacity:0}
+.anim .hero-rail{opacity:0}
+
+@media(prefers-reduced-motion:reduce){
+  .anim .hero-blade{transform:rotate(-17deg) scaleX(1)}
+  .anim .hero-atmos i{opacity:.5}
+  .anim .hero-rail{opacity:1}
+  .hero-atmos i{animation:none!important}
+}
+
+/* --- deriva lenta de la estela: el aroma nunca esta quieto --- */
+@media(prefers-reduced-motion:no-preference){
+  .hero-atmos .at-1{animation:drift-a 19s var(--e-drift) infinite alternate}
+  .hero-atmos .at-2{animation:drift-b 23s var(--e-drift) infinite alternate}
+}
+@keyframes drift-a{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-6vw,4vh,0) scale(1.12)}}
+@keyframes drift-b{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(5vw,-5vh,0) scale(.92)}}
+
+/* --- desktop: la composicion se abre pero sigue sin centrarse --- */
+@media(min-width:900px){
+  .hero h1{font-size:clamp(9rem,19vw,17rem)}
+  .hero .sub{max-width:26ch}
+  .hero-rail{font-size:10px;left:8px}
+  .hero-blade{top:52%;transform:rotate(-7deg)}
+  .anim .hero-blade{transform:rotate(-7deg) scaleX(0)}
+}
+
+/* seleccion de marca */
+::selection{background:var(--amber);color:var(--noir)}
 </style>
 </head>
 
@@ -1757,14 +1993,31 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <span id="top"></span>
 
 <!-- ============================== HERO ============================== -->
+<!-- filtro de refraccion para el vidrio liquido: feTurbulence genera un campo
+     de ruido y feDisplacementMap lo usa para deformar lo que hay detras, que es
+     lo que un blur solo nunca consigue -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <filter id="lg-refract" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.010" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="3" result="ns"/>
+    <feDisplacementMap in="SourceGraphic" in2="ns" scale="26" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
 <header class="hero">
   <span class="sec-num" aria-hidden="true">01</span>
+  <!-- LA ESTELA: dos halos ambar difusos que derivan. El aroma que no se ve. -->
+  <span class="hero-atmos" aria-hidden="true"><i class="at-1"></i><i class="at-2"></i></span>
   <span class="hero-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  <!-- EL FILO: la hoja de cromo que corta la pantalla -->
+  <span class="hero-blade" aria-hidden="true"></span>
+  <!-- ancla asimetrica en el margen izquierdo -->
+  <span class="hero-rail" aria-hidden="true">BLADES PRIVÉ — SAN JOSÉ</span>
   <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Une sélection privée · San José</div>
   <div class="hero-main">
     <h1 aria-label="PRIVÉ"><span class="hl">P</span><span class="hl">R</span><span class="hl">I</span><span class="hl">V</span><span class="hl">É</span></h1>
     <p class="sub" data-i18n="hero_sub">Una selección privada de aroma.</p>
-    <div class="cta"><a href="#catalog" class="btn btn-blue" data-i18n="hero_cta">Explorar la Colección</a></div>
+    <div class="cta"><a href="#catalog" class="btn btn-blue glass glass-refract" data-i18n="hero_cta">Explorar la Colección</a></div>
   </div>
   <p class="tagline">Carved by the blade. Finished by the scent.</p>
   <div class="scroll-cue"><small data-i18n="scroll">Desliza</small><span class="ln"></span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></span></div>
@@ -4342,14 +4595,30 @@ function initAnim(){
     gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
     gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
     const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
-    const tl=gsap.timeline({delay:.12,defaults:{ease:'power3.out'},
+    /* =========================================================
+       EL CORTE — coreografia de entrada.
+       El orden no es decorativo, es la narrativa de la marca:
+         1. el eje se planta         (estructura)
+         2. LA HOJA CORTA la pantalla (el gesto del barbero)
+         3. el ambar se filtra por el corte  (el aroma escapa)
+         4. las letras suben por la herida    (la marca aparece)
+         5. el resto cae en cascada
+       Todas las curvas son propias: expo, nunca power/linear.
+       ========================================================= */
+    const tl=gsap.timeline({delay:.1,defaults:{ease:'expo.out'},
       onComplete:()=>{ clearWC(); buildHeroExit(); }});    // exit pin only once intro settles
-    tl.to('.hero-eyebrow',{opacity:1,duration:m?.5:.7})
-      .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.65:.9,stagger:m?.05:.08},'-=.15')
-      .to('.hero .sub',{opacity:1,y:0,duration:m?.5:.7},'-=.35')
-      .to('.hero .tagline',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
-      .to('.hero .cta',{opacity:1,y:0,duration:m?.5:.7},'-=.4')
-      .to('.scroll-cue',{opacity:1,duration:.6},'-=.25');
+    tl.to('.hero-rail',{opacity:1,duration:.55},0)
+      // EL FILO: expo.inOut da el golpe seco de una navaja, no un deslizamiento
+      .to('.hero-blade',{scaleX:1,duration:m?.8:.95,ease:'expo.inOut'},.10)
+      // LA ESTELA: el ambar tarda mucho mas — el aroma se expande, no aparece
+      .to('.hero-atmos i',{opacity:(i)=>i?.42:.55,duration:1.7,stagger:.14,ease:'power2.out'},.34)
+      .to('.hero-eyebrow',{opacity:1,duration:m?.5:.7},.46)
+      // las letras nacen del corte, con un stagger que se siente escrito a mano
+      .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.75:1,stagger:m?.055:.075},.52)
+      .to('.hero .sub',{opacity:1,y:0,duration:m?.55:.75},'-=.55')
+      .to('.hero .cta',{opacity:1,y:0,duration:m?.55:.75},'-=.45')
+      .to('.hero .tagline',{opacity:1,y:0,duration:m?.55:.75},'-=.5')
+      .to('.scroll-cue',{opacity:1,duration:.6},'-=.3');
   } else {
     buildHeroExit();
   }
