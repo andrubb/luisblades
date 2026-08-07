@@ -39,7 +39,7 @@
 
   --maxw:1240px;
   --pad:clamp(20px, 5vw, 56px);
-  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease:cubic-bezier(.16,1,.3,1);   /* expo out — la curva de la casa */
   --shadow-card:0 1px 2px rgba(26,26,26,.04), 0 4px 16px -8px rgba(26,26,26,.06);
   --shadow-lift:0 2px 4px rgba(26,26,26,.05), 0 18px 40px -16px rgba(91,124,153,.18);
   --shadow-float:0 20px 60px -20px rgba(26,26,26,.20);
@@ -1836,6 +1836,29 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 }
 .hero .cta .btn:hover::after{box-shadow:0 0 26px 0 rgba(200,135,58,.45)}
 
+/* --- la nav pasa a vidrio oscuro SIEMPRE: la pagina ya alterna luz y
+       noir, y una barra crema flotando sobre las planchas oscuras rompia
+       la continuidad. En vidrio oscuro funciona sobre ambos fondos. --- */
+.nav.scrolled{
+  background:rgba(11,11,12,.72);
+  border-bottom:1px solid rgba(242,244,246,.10);
+}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .nav.scrolled{
+    background:rgba(11,11,12,.55);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);
+            backdrop-filter:blur(18px) saturate(160%);
+  }
+}
+.nav.scrolled .nav-links a,
+.nav.scrolled .icon-btn,
+.nav.scrolled .lang button{color:var(--on-noir-2)}
+.nav.scrolled .lang button.on{color:var(--bone)}
+.nav.scrolled .lang .sep{color:rgba(245,241,234,.35)}
+.nav.scrolled .logo img{filter:brightness(0) invert(1)}
+.nav.scrolled .count{background:var(--amber);color:var(--noir)}
+.nav.scrolled .nav-links a:hover{color:var(--amber-hot)}
+
 /* --- nav sobre el hero oscuro --- */
 .nav:not(.scrolled){background:transparent;border-bottom-color:transparent}
 .nav:not(.scrolled) .nav-links a,
@@ -1882,6 +1905,107 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 /* seleccion de marca */
 ::selection{background:var(--amber);color:var(--noir)}
+
+/* ===================================================================
+   PLANCHAS NOIR — el quiz y la historia pasan a fondo oscuro.
+   Son las dos secciones sin mercancia: se pueden oscurecer sin que
+   ningun producto pierda fidelidad de color.
+   =================================================================== */
+
+/* ---- INTERLUDIO: ENCONTRA TU AROMA ---- */
+.finder{
+  background:var(--noir);
+  position:relative;overflow:hidden;
+  border-top:1px solid rgba(242,244,246,.10);
+  border-bottom:1px solid rgba(242,244,246,.10);
+}
+.finder::after{                       /* la estela tambien vive aqui */
+  content:"";position:absolute;z-index:0;pointer-events:none;
+  width:70vw;height:70vw;right:-24vw;top:-16vw;border-radius:50%;
+  background:radial-gradient(circle,var(--amber) 0%,transparent 62%);
+  opacity:.20;filter:blur(52px);
+}
+.finder > *{position:relative;z-index:1}
+.finder .eyebrow{color:rgba(224,201,166,.78)}
+.finder .struct-h,.finder h2{color:var(--bone)}
+.finder .shead .line{background:rgba(242,244,246,.30)}
+.finder .shead p{color:var(--on-noir-2)}
+.finder .fq-q,.finder h3,.finder h4{color:var(--bone)}
+/* la caja era background:var(--surface) = BLANCO. Sobre noir hay que
+   convertirla en vidrio, si no el texto claro cae sobre blanco. */
+.finder .finder-box{
+  background:linear-gradient(140deg,rgba(245,241,234,.08),rgba(245,241,234,.025));
+  border:1px solid rgba(242,244,246,.18);
+  border-bottom-color:rgba(242,244,246,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20), 0 24px 55px -26px rgba(0,0,0,.9);
+  color:var(--on-noir-2);
+}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .finder .finder-box{
+    -webkit-backdrop-filter:blur(14px) saturate(150%);
+            backdrop-filter:blur(14px) saturate(150%);
+    will-change:transform;transform:translateZ(0);
+  }
+}
+.finder .fq-q{color:var(--bone)}
+/* las opciones del quiz: vidrio con borde ambar al pasar */
+.finder .fq-opt,.finder .finder-box button:not(.icon-btn){
+  background:rgba(245,241,234,.05);
+  border:1px solid rgba(242,244,246,.24);
+  color:var(--bone);
+  transition:border-color .4s var(--e-quart), background .4s var(--e-quart), transform .4s var(--e-quart);
+}
+.finder .fq-opt:hover,.finder .fq-opt:focus-visible,
+.finder .finder-box button:not(.icon-btn):hover{
+  border-color:var(--amber);
+  background:rgba(200,135,58,.14);
+  color:var(--bone);
+  transform:translateY(-2px);
+}
+
+/* ---- EL MISMO OJO: la historia, en noir ---- */
+#about{
+  background:var(--noir);
+  position:relative;overflow:hidden;
+  border-top:1px solid rgba(242,244,246,.10);
+  border-bottom:1px solid rgba(242,244,246,.10);
+}
+#about::after{
+  content:"";position:absolute;z-index:0;pointer-events:none;
+  width:78vw;height:78vw;left:-30vw;bottom:-24vw;border-radius:50%;
+  background:radial-gradient(circle,var(--oxblood) 0%,transparent 64%);
+  opacity:.55;filter:blur(60px);
+}
+#about > *{position:relative;z-index:1}
+#about .eyebrow{color:rgba(224,201,166,.80)}
+#about .about-quote{color:var(--bone)}
+#about .about-quote em{color:var(--amber-hot);font-style:italic}
+#about .about-quote::before{color:rgba(242,244,246,.09)}
+#about .about-body{color:var(--on-noir-2)}
+/* los beats 3 y 4 son display: sobre noir van en bone, no en ink */
+#about .eye-text .beat-3,#about .eye-text .beat-4{color:var(--bone)}
+#about .about-handle{color:var(--amber-hot)}
+#about .soc{color:var(--on-noir-2);border-color:rgba(242,244,246,.22)}
+#about .soc:hover{color:var(--amber-hot);border-color:var(--amber)}
+/* el wordmark es arte negro sobre alfa: hay que invertirlo para que exista */
+/* el contenedor del logo era background:var(--surface) = BLANCO SOLIDO, y
+   sobre noir salia como un bloque opaco. Pasa a panel de vidrio. El logo
+   usaba mix-blend-mode:multiply, que solo funciona sobre blanco: al
+   invertirlo hay que devolverlo a normal. */
+#about .eye-visual{
+  background:linear-gradient(140deg,rgba(245,241,234,.07),rgba(245,241,234,.02));
+  border-color:rgba(242,244,246,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 22px 50px -24px rgba(0,0,0,.85);
+}
+#about .eye-logo{filter:brightness(0) invert(1);opacity:.92;mix-blend-mode:normal}
+#about .eye-tint{mix-blend-mode:screen;opacity:.35}
+/* el numeral de seccion y la regla del eyebrow se invierten */
+#about::before{color:var(--bone);background:transparent;opacity:.42}
+#about .shead .eyebrow::after{background:var(--bone)}
+
+@media(prefers-reduced-motion:reduce){
+  .finder::after,#about::after{filter:none;opacity:.12}
+}
 </style>
 </head>
 
@@ -3713,7 +3837,7 @@ function buildHowTitle(){
     toggleActions:'play none none none',refreshPriority:-100}});
   corrTl.set(t,{opacity:0})
     .to(d,{opacity:1,duration:.4,ease:FX.ease})
-    .to(st,{scaleX:1,duration:.5,ease:'power2.inOut'},'+=.15')
+    .to(st,{scaleX:1,duration:.5,ease:'quart.inOut'},'+=.15')
     .to(d,{opacity:0,y:-8,duration:.4,ease:FX.ease},'+=.25')
     .fromTo(t,{opacity:0,y:12},{opacity:1,y:0,duration:FX.dur,ease:FX.ease},'-=.15');
 }
@@ -3738,7 +3862,7 @@ function buildCardDevelop(){
         {opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:{each:FX.item,from:'start'},overwrite:true});
       gsap.fromTo(b.map(el=>el.querySelector('.card-media')||el),
         {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
-        {filter:'grayscale(0) contrast(1) brightness(1)',duration:.9,ease:'power2.out',
+        {filter:'grayscale(0) contrast(1) brightness(1)',duration:.9,ease:'expo.out',
          stagger:{each:FX.item,from:'start'},clearProps:'filter'});
     }});
 }
@@ -3751,7 +3875,7 @@ function developCards(cards,fast){
     {opacity:1,y:0,duration:fast?.3:FX.dur,ease:FX.ease,stagger:fast?FX.item*.6:FX.item,overwrite:true});
   gsap.fromTo(cards.map(c=>c.querySelector('.card-media')||c),
     {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
-    {filter:'grayscale(0) contrast(1) brightness(1)',duration:fast?.55:.9,ease:'power2.out',
+    {filter:'grayscale(0) contrast(1) brightness(1)',duration:fast?.55:.9,ease:'expo.out',
      stagger:fast?FX.item*.6:FX.item,clearProps:'filter'});
 }
 
@@ -3833,7 +3957,7 @@ function buildBeats(){
   };
   mk('.eye-text .beat-1',{opacity:0,y:isMob()?26:38});
   mk('.eye-text .beat-2',{opacity:0,x:isMob()?-22:-56});
-  mk('.eye-text .beat-3',{clipPath:'inset(0 100% 0 0)',duration:.95,ease:'power3.inOut'});
+  mk('.eye-text .beat-3',{clipPath:'inset(0 100% 0 0)',duration:.95,ease:'expo.inOut'});
   mk('.eye-text .beat-4',{opacity:0,scale:.9,transformOrigin:'left center',duration:.85});
 }
 
@@ -4433,7 +4557,7 @@ function reflow(){
   if(!window.gsap||reduceMotion()){ refresh(false); return; }
   const m=isMob();
   gsap.killTweensOf('#grid .card');   // rapid-tap safe: never pile up or leave a half state
-  gsap.to('#grid .card',{opacity:0,y:8,duration:m?.15:.26,stagger:m?.008:.015,ease:'power1.in',
+  gsap.to('#grid .card',{opacity:0,y:8,duration:m?.15:.26,stagger:m?.008:.015,ease:'quart.in',
     onComplete:()=>refresh(true,true)});   // fast re-entrance on filter/day-night/fav switch
 }
 /* ---------------- v4 scroll choreography — distinct mechanics ---------------- */
@@ -4514,7 +4638,7 @@ function buildEye(){
       // MOBILE — diagonal blade-wipe with celeste tint
       const tl=gsap.timeline({scrollTrigger:{trigger:eg,start:'top 72%',once:true}});
       tl.fromTo('.eye-visual',{clipPath:'polygon(0% 0%,0% 0%,-18% 100%,-18% 100%)'},
-          {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'power3.inOut'})
+          {clipPath:'polygon(0% 0%,118% 0%,100% 100%,-18% 100%)',duration:1,ease:'expo.inOut'})
         .fromTo('.eye-tint',{opacity:.45},{opacity:0,duration:.6,ease:FX.ease},'-=.35')
         .from('.eye-text > *:not(.beat)',{y:FX.rise(),opacity:0,duration:FX.dur,ease:FX.ease,stagger:FX.block},'-=.5');
     }
@@ -4548,10 +4672,10 @@ function buildHow(){
 
   howTl=gsap.timeline({scrollTrigger:{trigger:'.how-steps',start:m?'top 85%':'top 82%',
     toggleActions:'play none none none',refreshPriority:-100}});
-  if(fill) howTl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'power2.inOut'},0);
+  if(fill) howTl.to(fill,{[m?'scaleY':'scaleX']:1,duration:1.1,ease:'quart.inOut'},0);
   howTl.from(steps,{opacity:0,y:FX.rise(),duration:FX.dur,ease:FX.ease,stagger:FX.block},.1)
        .from(texts,{fillOpacity:0,stroke:'#FAF8F5',strokeWidth:1.1,strokeDasharray:420,strokeDashoffset:420,
-              duration:.7,ease:'power2.inOut',stagger:FX.block,
+              duration:.7,ease:'quart.inOut',stagger:FX.block,
               clearProps:'stroke,strokeDasharray,strokeDashoffset,strokeWidth'},.15);
 }
 
@@ -4611,7 +4735,7 @@ function initAnim(){
       // EL FILO: expo.inOut da el golpe seco de una navaja, no un deslizamiento
       .to('.hero-blade',{scaleX:1,duration:m?.8:.95,ease:'expo.inOut'},.10)
       // LA ESTELA: el ambar tarda mucho mas — el aroma se expande, no aparece
-      .to('.hero-atmos i',{opacity:(i)=>i?.42:.55,duration:1.7,stagger:.14,ease:'power2.out'},.34)
+      .to('.hero-atmos i',{opacity:(i)=>i?.42:.55,duration:1.7,stagger:.14,ease:'expo.out'},.34)
       .to('.hero-eyebrow',{opacity:1,duration:m?.5:.7},.46)
       // las letras nacen del corte, con un stagger que se siente escrito a mano
       .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.75:1,stagger:m?.055:.075},.52)
@@ -4627,7 +4751,7 @@ function initAnim(){
     buildHow();
     // celeste divider rule (replaces the removed marquee): draws left→right once
     const rule=$('.celeste-rule span');
-    if(rule) gsap.fromTo(rule,{scaleX:0},{scaleX:1,duration:1.1,ease:'power3.inOut',
+    if(rule) gsap.fromTo(rule,{scaleX:0},{scaleX:1,duration:1.1,ease:'expo.inOut',
       scrollTrigger:{trigger:'.celeste-rule',start:'top 88%',once:true}});
     // Mechanic 6 — EL MISMO OJO: gsap.matchMedia-managed (desktop fade-in / mobile wipe)
     buildEye();
@@ -4675,8 +4799,8 @@ function initAnim(){
   if(matchMedia('(hover:hover) and (pointer:fine)').matches){
     const cta=document.querySelector('.hero .cta .btn');
     if(cta){
-      const xTo=gsap.quickTo(cta,'x',{duration:.35,ease:'power2.out'});
-      const yTo=gsap.quickTo(cta,'y',{duration:.35,ease:'power2.out'});
+      const xTo=gsap.quickTo(cta,'x',{duration:.35,ease:'expo.out'});
+      const yTo=gsap.quickTo(cta,'y',{duration:.35,ease:'expo.out'});
       let r=null;
       const measure=()=>{ r=cta.getBoundingClientRect(); };
       cta.addEventListener('mouseenter',measure);
