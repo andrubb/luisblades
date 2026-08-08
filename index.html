@@ -1898,7 +1898,10 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .nav.scrolled .lang button{color:var(--on-noir-2)}
 .nav.scrolled .lang button.on{color:var(--bone)}
 .nav.scrolled .lang .sep{color:rgba(245,241,234,.35)}
-.nav.scrolled .logo img{filter:brightness(0) invert(1)}
+/* el logo base lleva mix-blend-mode:multiply (linea ~726), pensado para
+   fondo claro. Al invertirlo a blanco sobre la nav oscura, multiply lo
+   aniquilaba: blanco x oscuro = oscuro. Hay que devolverlo a normal. */
+.nav.scrolled .logo img{filter:brightness(0) invert(1);mix-blend-mode:normal}
 .nav.scrolled .count{background:var(--amber);color:var(--noir)}
 .nav.scrolled .nav-links a:hover{color:var(--amber-hot)}
 
@@ -1908,7 +1911,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .nav:not(.scrolled) .icon-btn,
 .nav:not(.scrolled) .lang button{color:var(--on-noir-2)}
 .nav:not(.scrolled) .lang button.on{color:var(--bone)}
-.nav:not(.scrolled) .logo img{filter:brightness(0) invert(1)}
+.nav:not(.scrolled) .logo img{filter:brightness(0) invert(1);mix-blend-mode:normal}
 
 /* --- el marco necesita un filo interior para no fundirse con el hero --- */
 .frame::after{
