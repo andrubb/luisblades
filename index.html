@@ -1278,7 +1278,9 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
   border-left-width:calc(var(--fw-lr) + var(--fbleed));
   border-right-width:calc(var(--fw-lr) + var(--fbleed));
   border-radius:calc(var(--fw-lr) + 15px + var(--fbleed))}
-@media(max-width:899px){ .frame{border-radius:calc(var(--fw-lr) + 5px + var(--fbleed))} }
+/* en movil el radio grande hacia que el marco leyera como el bisel de un
+   telefono dentro del telefono. Casi recto: marco impreso, no dispositivo. */
+@media(max-width:899px){ .frame{border-radius:calc(3px + var(--fbleed))} }
 
 /* fixed furniture must live INSIDE the frame, never under it */
 .nav{top:var(--fw-tb);left:var(--fw-lr);right:var(--fw-lr)}
@@ -1768,7 +1770,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 /* --- LA ESTELA: halos ambar. El unico fondo "vivido" del sitio, y la
        razon por la que el vidrio del CTA se lee. --- */
-.hero-atmos{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero-atmos{display:none}   /* reemplazado por .aurora */
 .hero-atmos i{position:absolute;display:block;border-radius:50%;filter:blur(58px);opacity:.55}
 .hero-atmos .at-1{
   width:76vw;height:76vw;right:-26vw;top:6vh;
@@ -1808,7 +1810,10 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 /* --- tipografia: masiva, sangrando, no centrada --- */
 .hero h1{
   font-family:var(--font-display);
-  font-weight:500;
+  /* Bodoni a peso 500 deja los finos casi invisibles en tamanos grandes —
+     la diagonal de la V se partia. Sube a 600 y se fija el eje optico alto. */
+  font-weight:600;
+  font-variation-settings:'opsz' 96;
   font-size:clamp(5.2rem,30vw,16rem);
   line-height:.82;
   letter-spacing:-.045em;
@@ -2059,9 +2064,17 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    -> las letras suben por la herida -> el resto en cascada */
 @media(prefers-reduced-motion:no-preference){
   html.anim .hero-rail{animation:h-fade .55s var(--e-expo) .05s both}
-  html.anim .hero-blade{animation:h-cut .85s var(--e-cut) .10s both}
-  html.anim .hero-atmos .at-1{animation:h-bloom 1.7s var(--e-quart) .34s both, drift-a 19s var(--e-drift) 2s infinite alternate}
-  html.anim .hero-atmos .at-2{animation:h-bloom2 1.7s var(--e-quart) .48s both, drift-b 23s var(--e-drift) 2.2s infinite alternate}
+  /* EL CORTE: las tres cintas se dibujan de izquierda a derecha, desfasadas.
+     El halo primero, el trazo principal encima, y el filo fino cerrando. */
+  html.anim .blade .bl-glow{animation:bl-draw 1.05s var(--e-cut) .10s both}
+  html.anim .blade .bl-main{animation:bl-draw .95s var(--e-cut) .16s both}
+  html.anim .blade .bl-thin{animation:bl-draw .85s var(--e-cut) .30s both}
+  /* LA ESTELA: cada mancha entra a su tiempo y arranca su deriva despues */
+  html.anim .aurora .au-1{animation:au-in 1.9s var(--e-quart) .30s both, au-a 21s var(--e-drift) 2.2s infinite alternate}
+  html.anim .aurora .au-2{animation:au-in2 1.9s var(--e-quart) .42s both, au-b 27s var(--e-drift) 2.4s infinite alternate}
+  html.anim .aurora .au-3{animation:au-in3 2.1s var(--e-quart) .54s both, au-c 24s var(--e-drift) 2.6s infinite alternate}
+  html.anim .aurora .au-4{animation:au-in4 2.1s var(--e-quart) .66s both, au-d 19s var(--e-drift) 2.8s infinite alternate}
+  html.anim .aurora .au-5{animation:au-in5 2.3s var(--e-quart) .22s both, au-e 31s var(--e-drift) 3s infinite alternate}
   html.anim .hero-eyebrow{animation:h-fade .5s var(--e-expo) .46s both}
   html.anim .hero h1 .hl{animation:h-rise .75s var(--e-expo) both}
   html.anim .hero h1 .hl:nth-child(1){animation-delay:.52s}
@@ -2075,17 +2088,206 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   html.anim .scroll-cue{animation:h-fade .6s var(--e-expo) 1s both}
 }
 @keyframes h-fade{from{opacity:0}to{opacity:1}}
-@keyframes h-cut{from{transform:rotate(-17deg) scaleX(0)}to{transform:rotate(-17deg) scaleX(1)}}
-@keyframes h-bloom{from{opacity:0}to{opacity:.55}}
-@keyframes h-bloom2{from{opacity:0}to{opacity:.42}}
+@keyframes bl-draw{from{stroke-dasharray:1;stroke-dashoffset:1}to{stroke-dasharray:1;stroke-dashoffset:0}}
+@keyframes au-in {from{opacity:0}to{opacity:.52}}
+@keyframes au-in2{from{opacity:0}to{opacity:.55}}
+@keyframes au-in3{from{opacity:0}to{opacity:.34}}
+@keyframes au-in4{from{opacity:0}to{opacity:.22}}
+@keyframes au-in5{from{opacity:0}to{opacity:.40}}
 @keyframes h-rise{from{opacity:0;transform:translate3d(0,25px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @keyframes h-rise-s{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 @media(min-width:900px){
-  html.anim .hero-blade{animation-name:h-cut-d}
   html.anim .hero h1 .hl{animation-name:h-rise-d}
 }
-@keyframes h-cut-d{from{transform:rotate(-7deg) scaleX(0)}to{transform:rotate(-7deg) scaleX(1)}}
 @keyframes h-rise-d{from{opacity:0;transform:translate3d(0,40px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+
+/* ===================================================================
+   AURORA — manchas de color con cuerpo, en deriva lenta.
+   Reemplaza los dos halos planos anteriores. Cinco cuerpos con paleta
+   ampliada: ambar, oxblood, teal profundo, champana y ciruela. El teal
+   es el contrapunto frio que evita que el conjunto se vuelva sepia.
+   Todo en transform/opacity: se compone en GPU, no repinta.
+   =================================================================== */
+:root{
+  --teal:#14413F;        /* contrapunto frio del ambar */
+  --plum:#3A2233;        /* profundidad, no llega a morado */
+}
+.aurora{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aurora .au{
+  position:absolute;display:block;border-radius:50%;
+  will-change:transform,opacity;
+  transform:translateZ(0);
+}
+.aurora .au-1{width:88vw;height:88vw;right:-32vw;top:-6vh;
+  background:radial-gradient(circle at 42% 42%,var(--amber-hot) 0%,var(--amber) 34%,transparent 66%);
+  filter:blur(46px);opacity:.52}
+.aurora .au-2{width:66vw;height:66vw;left:-26vw;bottom:2vh;
+  background:radial-gradient(circle at 58% 42%,var(--oxblood) 0%,transparent 64%);
+  filter:blur(52px);opacity:.55}
+.aurora .au-3{width:54vw;height:54vw;left:8vw;top:32vh;
+  background:radial-gradient(circle at 50% 50%,var(--teal) 0%,transparent 62%);
+  filter:blur(58px);opacity:.34}
+.aurora .au-4{width:42vw;height:42vw;right:6vw;bottom:16vh;
+  background:radial-gradient(circle at 50% 50%,var(--celeste) 0%,transparent 60%);
+  filter:blur(50px);opacity:.22}
+.aurora .au-5{width:70vw;height:70vw;left:-14vw;top:-10vh;
+  background:radial-gradient(circle at 50% 50%,var(--plum) 0%,transparent 60%);
+  filter:blur(60px);opacity:.40}
+
+@media(prefers-reduced-motion:no-preference){
+  .aurora .au-1{animation:au-a 21s var(--e-drift) infinite alternate}
+  .aurora .au-2{animation:au-b 27s var(--e-drift) infinite alternate}
+  .aurora .au-3{animation:au-c 24s var(--e-drift) infinite alternate}
+  .aurora .au-4{animation:au-d 19s var(--e-drift) infinite alternate}
+  .aurora .au-5{animation:au-e 31s var(--e-drift) infinite alternate}
+}
+/* recorridos distintos y largos: la deriva se NOTA pero nunca distrae */
+@keyframes au-a{from{transform:translate3d(0,0,0) scale(1)}      to{transform:translate3d(-13vw,9vh,0) scale(1.22)}}
+@keyframes au-b{from{transform:translate3d(0,0,0) scale(1)}      to{transform:translate3d(11vw,-8vh,0) scale(.86)}}
+@keyframes au-c{from{transform:translate3d(0,0,0) scale(.9)}     to{transform:translate3d(9vw,-12vh,0) scale(1.3)}}
+@keyframes au-d{from{transform:translate3d(0,0,0) scale(1.1)}    to{transform:translate3d(-10vw,-7vh,0) scale(.9)}}
+@keyframes au-e{from{transform:translate3d(0,0,0) scale(1)}      to{transform:translate3d(8vw,11vh,0) scale(1.18)}}
+
+/* ---- EL FILO como cinta: cuerpo, curva y brillo ---- */
+.blade{
+  position:absolute;z-index:1;left:-8%;right:-8%;top:24%;
+  width:116%;height:46vh;pointer-events:none;overflow:visible;
+}
+.blade path{vector-effect:non-scaling-stroke}
+@media(min-width:900px){ .blade{top:26%;height:52vh} }
+
+/* estados iniciales de la coreografia */
+.anim .blade .bl-main,.anim .blade .bl-thin,.anim .blade .bl-glow{
+  stroke-dasharray:1;stroke-dashoffset:1;
+}
+.anim .aurora .au{opacity:0}
+
+@media(prefers-reduced-motion:reduce){
+  .aurora .au{animation:none!important}
+  .anim .aurora .au{opacity:.4}
+  .anim .blade path{stroke-dasharray:none;stroke-dashoffset:0}
+}
+
+/* ===================================================================
+   1 · TRES MUNDOS — el numeral dejaba de ser marca de agua y se volvia
+   estorbo: caia justo detras de la palabra y se leia como error.
+   Ahora sube a su propia linea, sobre la regla, con trazo mas grueso.
+   =================================================================== */
+.worlds-grid .world{padding-top:0}
+.worlds-grid .w-n.display-num{
+  position:static;                      /* sale de detras del titulo */
+  display:block;
+  font-size:clamp(2.6rem,8vw,4.4rem);
+  line-height:.9;
+  margin:0 0 .12em;
+  -webkit-text-stroke:2.4px rgba(16,16,16,.42);   /* era 1.5px: se perdia */
+  letter-spacing:.02em;
+}
+@supports not ((-webkit-text-stroke:1px black)){
+  .worlds-grid .w-n.display-num{color:rgba(16,16,16,.3);-webkit-text-stroke:0}
+}
+.worlds-grid .w-h{margin-top:.1em}
+/* una regla fina separa numeral de titulo: estructura, no decoracion */
+.worlds-grid .world::before{
+  content:"";display:block;height:1px;width:100%;
+  background:linear-gradient(90deg,rgba(16,16,16,.34),transparent 70%);
+  margin-bottom:clamp(14px,2.4vw,22px);
+}
+/* la seccion clara tambien respira color: aurora muy tenue sobre el bone */
+.worlds{position:relative;overflow:hidden}
+.aurora-soft .au{filter:blur(70px)}
+.worlds .aurora-soft{opacity:.30}
+.worlds .aurora-soft .au{mix-blend-mode:multiply}
+
+/* ===================================================================
+   2 · TRANSICION DE SECCION — el paso de bone a noir era un corte seco
+   con una linea. Ahora hay una zona de degradado que funde ambos planos,
+   arriba y abajo, y el corte desaparece.
+   =================================================================== */
+.finder,#about{border-top:0;border-bottom:0}
+.finder::before,#about::before{
+  content:"";position:absolute;left:0;right:0;top:0;
+  height:clamp(90px,16vh,190px);z-index:2;pointer-events:none;
+  background:linear-gradient(to bottom,var(--bg) 0%,rgba(11,11,12,.55) 58%,var(--noir) 100%);
+}
+.finder::after{
+  /* el ::after ya llevaba el halo; se reconvierte en el fundido inferior */
+  content:"";position:absolute;left:0;right:0;bottom:0;top:auto;
+  width:auto;height:clamp(90px,16vh,190px);border-radius:0;
+  background:linear-gradient(to top,var(--bg) 0%,rgba(11,11,12,.55) 58%,var(--noir) 100%);
+  opacity:1;filter:none;z-index:2;pointer-events:none;
+}
+#about::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;top:auto;
+  width:auto;height:clamp(90px,16vh,190px);border-radius:0;
+  background:linear-gradient(to top,var(--bg) 0%,rgba(11,11,12,.55) 58%,var(--noir) 100%);
+  opacity:1;filter:none;z-index:2;pointer-events:none;
+}
+/* el contenido necesita despejar las zonas de fundido */
+.finder .wrap,#about .wrap{position:relative;z-index:3;
+  padding-top:clamp(70px,12vh,150px);padding-bottom:clamp(70px,12vh,150px)}
+
+/* ===================================================================
+   3 · BOTONES DEL QUIZ — tenian cero diseno y cero respuesta.
+   Ahora: vidrio, barrido de ambar al pasar, y hundido real al pulsar.
+   =================================================================== */
+.finder .fq-opt{
+  position:relative;overflow:hidden;border-radius:999px;
+  min-height:56px;font-weight:500;
+  transition:border-color .45s var(--e-quart), color .45s var(--e-quart),
+             transform .5s var(--e-quart), box-shadow .5s var(--e-quart);
+}
+.finder .fq-opt::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg,transparent,rgba(200,135,58,.45),transparent);
+  transform:translateX(-110%);
+  transition:transform .7s var(--e-quart);
+}
+.finder .fq-opt:hover::before,.finder .fq-opt:focus-visible::before{transform:translateX(110%)}
+.finder .fq-opt:hover,.finder .fq-opt:focus-visible{
+  border-color:var(--amber);color:var(--bone);
+  transform:translateY(-3px);
+  box-shadow:0 14px 34px -14px rgba(200,135,58,.55);
+}
+.finder .fq-opt:active{transform:translateY(0) scale(.985)}
+
+/* ===================================================================
+   4 · EL MISMO OJO — rediseno completo.
+   Problema: tres tipografias distintas conviviendo, el ultimo parrafo
+   enorme y las entradas con aire de PowerPoint.
+   Decision: UNA sola voz — Bodoni — en toda la seccion. La jerarquia la
+   dan tamano, color y medida de linea, no cambiar de fuente tres veces.
+   =================================================================== */
+#about .eye-text .beat{
+  font-family:var(--font-display);
+  font-weight:400;
+  letter-spacing:0;
+  text-transform:none;
+}
+#about .eye-text .beat-2{
+  font-size:clamp(1rem,2.9vw,1.12rem);
+  line-height:1.75;color:var(--on-noir-2);max-width:46ch;
+}
+#about .eye-text .beat-3{
+  font-size:clamp(1.35rem,4.2vw,1.85rem);
+  line-height:1.45;color:var(--bone);max-width:34ch;
+  font-weight:500;margin-top:1.1em;
+}
+#about .eye-text .beat-4{
+  font-size:clamp(1.5rem,4.8vw,2.15rem);
+  line-height:1.38;color:var(--bone);max-width:32ch;
+  font-weight:500;margin-top:1em;font-style:italic;
+}
+/* la frase de cierre se remata en ambar: el unico acento de color del bloque */
+#about .eye-text .beat-4 em,#about .eye-text .beat-4 b{color:var(--amber-hot);font-style:italic;font-weight:500}
+#about .eye-text{gap:14px}
+#about .eye-visual{border-radius:14px}
+@media(min-width:900px){
+  #about .eye-text .beat-2{max-width:52ch}
+  #about .eye-text .beat-3{max-width:38ch}
+  #about .eye-text .beat-4{max-width:34ch}
+}
+#about .aurora-soft{opacity:.75}
 </style>
 </head>
 
@@ -2210,11 +2412,39 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 <header class="hero">
   <span class="sec-num" aria-hidden="true">01</span>
-  <!-- LA ESTELA: dos halos ambar difusos que derivan. El aroma que no se ve. -->
-  <span class="hero-atmos" aria-hidden="true"><i class="at-1"></i><i class="at-2"></i></span>
+  <!-- LA ESTELA: aurora de manchas. Cinco cuerpos de color que derivan lento.
+       No son adorno: son el aroma que no se ve, ocupando el aire. -->
+  <span class="aurora" aria-hidden="true">
+    <i class="au au-1"></i><i class="au au-2"></i><i class="au au-3"></i>
+    <i class="au au-4"></i><i class="au au-5"></i>
+  </span>
   <span class="hero-particles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-  <!-- EL FILO: la hoja de cromo que corta la pantalla -->
-  <span class="hero-blade" aria-hidden="true"></span>
+  <!-- EL FILO: ya no una linea recta de 2px sino una CINTA con cuerpo que
+       ondula. Trazo grueso con degradado de cromo, difuminado, y una segunda
+       cinta mas fina desfasada: un corte real deja dos bordes. -->
+  <svg class="blade" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="bl-g" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#F2F4F6" stop-opacity="0"/>
+        <stop offset="22%"  stop-color="#F2F4F6" stop-opacity=".85"/>
+        <stop offset="48%"  stop-color="#FFFFFF" stop-opacity="1"/>
+        <stop offset="72%"  stop-color="#C8873A" stop-opacity=".9"/>
+        <stop offset="100%" stop-color="#C8873A" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="bl-soft" x="-30%" y="-200%" width="160%" height="500%">
+        <feGaussianBlur stdDeviation="2.2"/>
+      </filter>
+      <filter id="bl-glow" x="-30%" y="-400%" width="160%" height="900%">
+        <feGaussianBlur stdDeviation="9"/>
+      </filter>
+    </defs>
+    <path class="bl-glow" pathLength="1" d="M-20,190 C90,150 150,120 250,92 S360,58 420,44" fill="none"
+          stroke="url(#bl-g)" stroke-width="14" filter="url(#bl-glow)" opacity=".55"/>
+    <path class="bl-main" pathLength="1" d="M-20,190 C90,150 150,120 250,92 S360,58 420,44" fill="none"
+          stroke="url(#bl-g)" stroke-width="3.2" filter="url(#bl-soft)" stroke-linecap="round"/>
+    <path class="bl-thin" pathLength="1" d="M-20,205 C95,168 155,138 255,110 S362,76 420,62" fill="none"
+          stroke="url(#bl-g)" stroke-width="1.1" opacity=".5" stroke-linecap="round"/>
+  </svg>
   <!-- ancla asimetrica en el margen izquierdo -->
   <span class="hero-rail" aria-hidden="true">BLADES PRIVÉ — SAN JOSÉ</span>
   <div class="hero-eyebrow eyebrow" data-i18n="hero_eyebrow">Une sélection privée · San José</div>
@@ -2260,6 +2490,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 <!-- ================== ENCONTRÁ TU AROMA — scent finder (interlude, no numeral) ================== -->
 <section class="section finder" id="finder">
+  <span class="aurora aurora-soft" aria-hidden="true">
+    <i class="au au-1"></i><i class="au au-3"></i><i class="au au-5"></i>
+  </span>
   <div class="wrap">
     <div class="shead reveal">
       <span class="line"></span>
@@ -2598,6 +2831,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 <!-- ============================ 06 · ABOUT ============================ -->
 <section class="section" id="about">
+  <span class="aurora aurora-soft" aria-hidden="true">
+    <i class="au au-2"></i><i class="au au-3"></i><i class="au au-5"></i>
+  </span>
   <div class="wrap">
     <div class="eye-grid">
       <div class="eye-visual" aria-hidden="true">
