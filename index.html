@@ -8,14 +8,40 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' text-anchor='middle' fill='%231A1A1A'%3EB%3C/text%3E%3C/svg%3E">
 <meta name="description" content="Blades Privé — una selección privada de fragancias Designer, Niche y Árabes. Carved by the blade. Finished by the scent." />
 
-<!-- ===================== FONTS ===================== -->
+<!-- ===================== FONTS =====================
+     Bodoni Moda esta AUTOALOJADA y precargada. Motivo medido: con la
+     fuente en Google el LCP se reseteaba de ~1.0s a ~4.0s cuando entraba
+     el swap — el area de tinta del elemento crecia de 15576 a 20944 con
+     el MISMO rect, la firma inconfundible de un cambio de tipografia.
+     Desde nuestro origen y con preload, el swap ocurre antes de que el
+     LCP se asiente. Jost y Archivo siguen en Google: no son el LCP. -->
+<link rel="preload" as="font" type="font/woff2" crossorigin
+      href="assets/fonts/bodoni-latin-normal.woff2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..700&family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
 
 <style>
+/* ---- Bodoni Moda autoalojada (ver nota de LCP arriba) ---- */
+@font-face{font-family:'Bodoni Moda';font-style:italic;
+  font-weight:400 700;font-display:swap;
+  src:url(assets/fonts/bodoni-latin-ext-italic.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Bodoni Moda';font-style:italic;
+  font-weight:400 700;font-display:swap;
+  src:url(assets/fonts/bodoni-latin-italic.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Bodoni Moda';font-style:normal;
+  font-weight:400 900;font-display:swap;
+  src:url(assets/fonts/bodoni-latin-ext-normal.woff2) format('woff2');
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+@font-face{font-family:'Bodoni Moda';font-style:normal;
+  font-weight:400 900;font-display:swap;
+  src:url(assets/fonts/bodoni-latin-normal.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+
 /* ===================================================================
    BLADES PRIVÉ — minimalist editorial fragrance house
    Mobile-first. Warm off-white. Hairline serif. Dusty blue accents.
@@ -714,7 +740,11 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 .hero-eyebrow,.hero h1,.hero .sub,.hero .tagline,.hero .cta{position:relative;z-index:1}
 .hero .tagline::after{content:"";display:block;width:min(440px,72vw);height:1px;background:#000;margin:26px auto 0}
 .hero .cta .btn:hover{background:#000;border-color:#000;color:#fff}
-.hero::before{content:"B";position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:0;font-family:var(--font-display);font-weight:500;font-size:30vw;line-height:1;color:#000;opacity:.03;pointer-events:none}
+.hero::before{content:"B";position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:0;
+  /* serif del SISTEMA a proposito: es decorativa al 3% de opacidad y con la
+     webfont reflowaba al hacer swap, reseteando el LCP a 4.8s (medido). */
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:500;font-size:30vw;line-height:1;color:#000;opacity:.03;pointer-events:none}
 .hero::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:1px;height:80px;background:#000;opacity:.2;z-index:0}
 
 /* ---- SECTION NUMERALS (luxury magazine pagination) ---- */
@@ -1810,7 +1840,13 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .hero .sec-num{background:var(--bone);color:var(--noir)}
 .hero .scroll-cue small,.hero .scroll-cue .chev{color:var(--on-noir-3)}
 .hero .scroll-cue .ln{background:linear-gradient(var(--chrome-2),transparent)}
-.hero::before{color:var(--bone);opacity:.028}     /* marca de agua B */
+/* MARCA DE AGUA "B" ELIMINADA DEL HERO — decision de rendimiento medida.
+   Era el elemento LCP (HEADER.hero::before, rect 102x156) y su area de
+   tinta crecia de 15576 a 20944 al entrar la webfont, reseteando el LCP
+   de 1.3s a 5.1s. Es decoracion al 3% de opacidad: no aporta nada que
+   justifique 4 segundos. El hero ya tiene la hoja, el bloom y el titular.
+   Se conserva en el resto de secciones donde no es el elemento LCP. */
+.hero::before{content:none}
 .hero-particles i{background:var(--amber-hot);opacity:.5}
 
 /* --- CTA de vidrio liquido sobre el bloom --- */
@@ -1843,11 +1879,18 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   background:rgba(11,11,12,.72);
   border-bottom:1px solid rgba(242,244,246,.10);
 }
-@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .nav.scrolled{
-    background:rgba(11,11,12,.55);
-    -webkit-backdrop-filter:blur(18px) saturate(160%);
-            backdrop-filter:blur(18px) saturate(160%);
+/* El backdrop-filter de la nav es fijo y repinta en CADA frame de scroll.
+   Medido en movil con CPU 4x: 70 de 580 frames por encima de 32ms.
+   En >=900px se conserva el vidrio; en movil la nav queda casi opaca,
+   que a .92 de alfa se ve practicamente igual y no cuesta repintado. */
+.nav.scrolled{background:rgba(11,11,12,.92)}
+@media(min-width:900px){
+  @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .nav.scrolled{
+      background:rgba(11,11,12,.55);
+      -webkit-backdrop-filter:blur(18px) saturate(160%);
+              backdrop-filter:blur(18px) saturate(160%);
+    }
   }
 }
 .nav.scrolled .nav-links a,
@@ -2006,6 +2049,40 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(prefers-reduced-motion:reduce){
   .finder::after,#about::after{filter:none;opacity:.12}
 }
+
+/* ---- COREOGRAFIA DEL HERO EN CSS (ver nota de LCP mas abajo en el JS) ----
+   Mismo orden narrativo que tenia en GSAP:
+   el eje se planta -> LA HOJA CORTA -> el ambar se filtra por el corte
+   -> las letras suben por la herida -> el resto en cascada */
+@media(prefers-reduced-motion:no-preference){
+  html.anim .hero-rail{animation:h-fade .55s var(--e-expo) .05s both}
+  html.anim .hero-blade{animation:h-cut .85s var(--e-cut) .10s both}
+  html.anim .hero-atmos .at-1{animation:h-bloom 1.7s var(--e-quart) .34s both, drift-a 19s var(--e-drift) 2s infinite alternate}
+  html.anim .hero-atmos .at-2{animation:h-bloom2 1.7s var(--e-quart) .48s both, drift-b 23s var(--e-drift) 2.2s infinite alternate}
+  html.anim .hero-eyebrow{animation:h-fade .5s var(--e-expo) .46s both}
+  html.anim .hero h1 .hl{animation:h-rise .75s var(--e-expo) both}
+  html.anim .hero h1 .hl:nth-child(1){animation-delay:.52s}
+  html.anim .hero h1 .hl:nth-child(2){animation-delay:.575s}
+  html.anim .hero h1 .hl:nth-child(3){animation-delay:.63s}
+  html.anim .hero h1 .hl:nth-child(4){animation-delay:.685s}
+  html.anim .hero h1 .hl:nth-child(5){animation-delay:.74s}
+  html.anim .hero .sub{animation:h-rise-s .75s var(--e-expo) .72s both}
+  html.anim .hero .cta{animation:h-rise-s .75s var(--e-expo) .82s both}
+  html.anim .hero .tagline{animation:h-rise-s .75s var(--e-expo) .78s both}
+  html.anim .scroll-cue{animation:h-fade .6s var(--e-expo) 1s both}
+}
+@keyframes h-fade{from{opacity:0}to{opacity:1}}
+@keyframes h-cut{from{transform:rotate(-17deg) scaleX(0)}to{transform:rotate(-17deg) scaleX(1)}}
+@keyframes h-bloom{from{opacity:0}to{opacity:.55}}
+@keyframes h-bloom2{from{opacity:0}to{opacity:.42}}
+@keyframes h-rise{from{opacity:0;transform:translate3d(0,25px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes h-rise-s{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@media(min-width:900px){
+  html.anim .hero-blade{animation-name:h-cut-d}
+  html.anim .hero h1 .hl{animation-name:h-rise-d}
+}
+@keyframes h-cut-d{from{transform:rotate(-7deg) scaleX(0)}to{transform:rotate(-7deg) scaleX(1)}}
+@keyframes h-rise-d{from{opacity:0;transform:translate3d(0,40px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
 </style>
 </head>
 
@@ -2674,8 +2751,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 <!-- ============================ SCRIPTS ============================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 /* ===================================================================
    BLADES PRIVÉ — application logic
@@ -4711,41 +4788,13 @@ function initAnim(){
   if(reduceMotion()||!window.gsap){ html.classList.remove('anim'); return; }
   if(window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
   const m=isMob();
-  // If the 2.2s LCP guard already un-hid the hero (slow network), skip the intro — no double reveal
-  if(html.classList.contains('anim')){
-    // HERO — one orchestrated page-load reveal (letters rise + stagger)
-    const heroEls='.hero h1 .hl,.hero .sub,.hero .tagline,.hero .cta';
-    gsap.set(heroEls,{willChange:'transform'});
-    gsap.set('.hero h1 .hl',{y:m?25:40});                 // headline rise: 25 mobile / 40 desktop
-    gsap.set('.hero .sub,.hero .tagline,.hero .cta',{y:14});
-    const clearWC=()=>$$(heroEls).forEach(e=>e.style.willChange='');
-    /* =========================================================
-       EL CORTE — coreografia de entrada.
-       El orden no es decorativo, es la narrativa de la marca:
-         1. el eje se planta         (estructura)
-         2. LA HOJA CORTA la pantalla (el gesto del barbero)
-         3. el ambar se filtra por el corte  (el aroma escapa)
-         4. las letras suben por la herida    (la marca aparece)
-         5. el resto cae en cascada
-       Todas las curvas son propias: expo, nunca power/linear.
-       ========================================================= */
-    const tl=gsap.timeline({delay:.1,defaults:{ease:'expo.out'},
-      onComplete:()=>{ clearWC(); buildHeroExit(); }});    // exit pin only once intro settles
-    tl.to('.hero-rail',{opacity:1,duration:.55},0)
-      // EL FILO: expo.inOut da el golpe seco de una navaja, no un deslizamiento
-      .to('.hero-blade',{scaleX:1,duration:m?.8:.95,ease:'expo.inOut'},.10)
-      // LA ESTELA: el ambar tarda mucho mas — el aroma se expande, no aparece
-      .to('.hero-atmos i',{opacity:(i)=>i?.42:.55,duration:1.7,stagger:.14,ease:'expo.out'},.34)
-      .to('.hero-eyebrow',{opacity:1,duration:m?.5:.7},.46)
-      // las letras nacen del corte, con un stagger que se siente escrito a mano
-      .to('.hero h1 .hl',{opacity:1,y:0,duration:m?.75:1,stagger:m?.055:.075},.52)
-      .to('.hero .sub',{opacity:1,y:0,duration:m?.55:.75},'-=.55')
-      .to('.hero .cta',{opacity:1,y:0,duration:m?.55:.75},'-=.45')
-      .to('.hero .tagline',{opacity:1,y:0,duration:m?.55:.75},'-=.5')
-      .to('.scroll-cue',{opacity:1,duration:.6},'-=.3');
-  } else {
-    buildHeroExit();
-  }
+  /* La intro del hero ahora la hace CSS (ver "COREOGRAFIA DEL HERO EN CSS"
+     en el stylesheet). Aqui GSAP ya no revela nada: solo engancha el pin de
+     salida cuando la coreografia CSS termino (1.7s).
+     Antes esto costaba 5.1s de LCP porque el h1 esperaba a que bajara
+     gsap.min.js de un CDN para volverse visible. */
+  gsap.delayedCall(1.7, buildHeroExit);
+
   if(window.ScrollTrigger){
     // Mechanic 4 — CÓMO FUNCIONA: pinned active-step sequence (elevated in v5)
     buildHow();
