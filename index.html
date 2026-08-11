@@ -1264,7 +1264,11 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
    ("extraño"), not as architecture, and the uneven thin bars looked accidental.
    Now a UNIFORM 12px mat with a tight 5px inner radius: unmistakably a printed
    border rather than a device edge, and still only 6.4% of a 375px screen. */
-@media(max-width:899px){ :root{--fw-lr:18px; --fw-tb:18px} }
+/* MOVIL SIN MARCO. El marco negro con esquinas redondeadas creaba un
+   telefono dentro del telefono y comia pantalla. A 0 se desactiva y toda
+   la aritmetica de insets que dependia de estas variables (nav, drawer,
+   modal, barra de app, flotantes) queda resuelta sin tocar esas reglas. */
+@media(max-width:899px){ :root{--fw-lr:0px; --fw-tb:0px} }
 
 html{background:var(--frame)}
 body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
@@ -1924,6 +1928,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   border:1px solid rgba(242,244,246,.14);
   border-radius:inherit;
 }
+@media(max-width:899px){ .frame,.frame::after{display:none} }
 
 /* --- estados iniciales de la coreografia (evita parpadeo antes de GSAP) --- */
 .anim .hero-blade{transform:rotate(-17deg) scaleX(0)}
@@ -2480,6 +2485,65 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
              radial-gradient(60% 50% at 6% 92%,rgba(92,26,27,.10),transparent 64%);
 }
 .encargos > *{position:relative;z-index:1}
+
+/* ===================================================================
+   MARCAS DE REGISTRO — el borde nuevo.
+   Sustituye al marco en movil. Cuatro escuadras finas en las esquinas,
+   como las marcas de corte de una plancha de imprenta: enmarcan la
+   composicion sin encerrarla ni robar pantalla. Ambar, que es el unico
+   color que se lee igual sobre bone y sobre noir.
+   =================================================================== */
+.regmarks{position:fixed;inset:0;z-index:249;pointer-events:none}
+.rm{position:absolute;width:26px;height:26px;opacity:.85}
+.rm::before,.rm::after{content:"";position:absolute;
+  background:linear-gradient(var(--amber),var(--amber));
+  box-shadow:0 0 8px rgba(200,135,58,.55);}
+.rm::before{width:100%;height:1.5px}        /* brazo horizontal */
+.rm::after{width:1.5px;height:100%}         /* brazo vertical  */
+/* enmarcan el AREA DE CONTENIDO, no el borde bruto de la pantalla:
+   por debajo de la nav y por encima de la barra de aplicacion */
+.rm-tl{top:calc(var(--nav-h) + 14px);left:14px}
+.rm-tl::before{top:0;left:0} .rm-tl::after{top:0;left:0}
+.rm-tr{top:calc(var(--nav-h) + 14px);right:14px}
+.rm-tr::before{top:0;right:0} .rm-tr::after{top:0;right:0}
+.rm-bl{bottom:14px;left:14px}
+.rm-bl::before{bottom:0;left:0} .rm-bl::after{bottom:0;left:0}
+.rm-br{bottom:14px;right:14px}
+.rm-br::before{bottom:0;right:0} .rm-br::after{bottom:0;right:0}
+@media(max-width:899px){
+  .rm-bl,.rm-br{bottom:calc(90px + env(safe-area-inset-bottom))}
+}
+/* en desktop ya existe el marco: las marcas se retiran para no duplicar */
+@media(min-width:900px){ .regmarks{display:none} }
+
+/* entrada: las escuadras se dibujan, no aparecen */
+@media(prefers-reduced-motion:no-preference){
+  html.anim .rm::before{animation:rm-h .7s var(--e-expo) 1.15s both}
+  html.anim .rm::after {animation:rm-v .7s var(--e-expo) 1.25s both}
+}
+@keyframes rm-h{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes rm-v{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.rm-tl::before,.rm-bl::before{transform-origin:left center}
+.rm-tr::before,.rm-br::before{transform-origin:right center}
+.rm-tl::after,.rm-tr::after{transform-origin:center top}
+.rm-bl::after,.rm-br::after{transform-origin:center bottom}
+
+/* ===================================================================
+   AIRE LATERAL EN MOVIL — segundo intento.
+   El primero usaba padding en body + margenes negativos por seccion y
+   ROMPIO el layout: PRIVE quedaba cortado, el eje vertical pisaba el
+   texto y asomaba una franja del fondo por la derecha.
+   A sangre completa es ademas lo correcto para una aplicacion: el aire
+   se da DENTRO de cada seccion, no empujando la seccion entera.
+   =================================================================== */
+@media(max-width:899px){
+  /* el eje vertical necesita su propio carril: si no, roza el subtitulo */
+  .hero{padding-left:38px}
+  .hero-rail{left:4px}
+  .wrap{padding-left:max(var(--pad),18px);padding-right:max(var(--pad),18px)}
+  /* el slab 01 caia justo sobre la marca de registro superior izquierda */
+  .hero .sec-num{left:52px}
+}
 </style>
 </head>
 
@@ -2528,6 +2592,12 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
      Purely decorative + pointer-events:none, so it is invisible to AT and to clicks. -->
 <div class="frame" aria-hidden="true"></div>
 
+<!-- Marcas de registro de imprenta: encuadran sin encerrar. -->
+<div class="regmarks" aria-hidden="true">
+  <i class="rm rm-tl"></i><i class="rm rm-tr"></i>
+  <i class="rm rm-bl"></i><i class="rm rm-br"></i>
+</div>
+
 <!-- ===================== BARRA DE APP (movil) =====================
      Lo que convierte esto en una aplicacion y no en una landing: una
      barra inferior persistente de vidrio, con indicador que se desliza
@@ -2538,13 +2608,13 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></span>
     <span class="ab-tx">Inicio</span>
   </a>
-  <a class="ab-item" href="#catalog" data-ab="catalog">
-    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 3h-4z"/><path d="M8 6h8l1.4 12.2a2 2 0 0 1-2 2.2H8.6a2 2 0 0 1-2-2.2z"/><path d="M8.6 13h6.8"/></svg></span>
-    <span class="ab-tx">Colección</span>
-  </a>
   <a class="ab-item" href="#finder" data-ab="finder">
     <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.2 3 4.5 5 4.5 8a4.5 4.5 0 0 1-9 0c0-3 2.3-5 4.5-8Z"/><path d="M12 20v1"/></svg></span>
     <span class="ab-tx">Tu aroma</span>
+  </a>
+  <a class="ab-item" href="#catalog" data-ab="catalog">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 3h-4z"/><path d="M8 6h8l1.4 12.2a2 2 0 0 1-2 2.2H8.6a2 2 0 0 1-2-2.2z"/><path d="M8.6 13h6.8"/></svg></span>
+    <span class="ab-tx">Colección</span>
   </a>
   <button class="ab-item" id="abFav" type="button">
     <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg><b class="ab-badge" id="abFavCount" hidden>0</b></span>
@@ -4581,23 +4651,21 @@ function setupAppBar(){
     });
   });
 
-  // mostrar/ocultar segun se deje atras el hero
-  const hero=$('.hero');
-  if(hero && 'IntersectionObserver' in window){
-    new IntersectionObserver(es=>{
-      es.forEach(e=>bar.classList.toggle('show', !e.isIntersecting));
-    },{rootMargin:'-45% 0px 0px 0px'}).observe(hero);
-  } else { bar.classList.add('show'); }
+  /* La barra vive SIEMPRE, tambien sobre el hero: es la navegacion de la
+     aplicacion, no un elemento que aparece y desaparece. */
+  bar.classList.add('show');
 
   /* El indicador sigue a la seccion realmente visible.
      Se mapea la pagina COMPLETA: antes solo habia 3 secciones vigiladas,
      asi que al pasar por "Como funciona", encargos o la historia el
      indicador se quedaba clavado en "Coleccion" — un estado que miente.
      Cada seccion apunta a la pestana que le corresponde conceptualmente. */
+  /* indices segun el ORDEN de la barra, que ahora sigue al de la pagina:
+     0 Inicio · 1 Tu aroma · 2 Coleccion */
   const mapa=[
-    [0,'.hero'],
-    [1,'#worlds'],[1,'#catalog'],[1,'#how'],[1,'#encargos'],
-    [2,'#finder'],
+    [0,'.hero'],[0,'#worlds'],
+    [1,'#finder'],
+    [2,'#catalog'],[2,'#how'],[2,'#encargos'],
     [0,'.ed-break'],[0,'#about'],[0,'#luis'],[0,'#faq']
   ];
   if('IntersectionObserver' in window){
