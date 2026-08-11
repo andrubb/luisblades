@@ -2450,6 +2450,36 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(prefers-reduced-motion:reduce){
   #grid .card,.how-step,#grid .card .card-media{transition:none!important;transform:none!important}
 }
+
+/* ===================================================================
+   UNIFICACION DE TONO — detectado en el barrido de revision.
+   La pagina mezclaba TRES fondos distintos sin criterio:
+     encargos  #FFFFFF  blanco puro   (todo lo demas claro usa bone)
+     how/faq   #101010  ink           (todo lo demas oscuro usa noir)
+     resto     #F5F1EA / #0B0B0C
+   Un cambio de 4 puntos de luminancia entre secciones no se percibe como
+   intencion, se percibe como descuido. Se reducen a DOS: bone y noir.
+   =================================================================== */
+.encargos{background:var(--bg);border-top-color:rgba(16,16,16,.10);border-bottom-color:rgba(16,16,16,.10)}
+/* #faq usa selector de ID (linea ~1196), que le gana a la clase: hay
+   que igualarlo en especificidad o el noir no se aplica. */
+.how,.faq,#faq{background:var(--noir)}
+#faq{border-top:1px solid rgba(242,244,246,.12);border-bottom:1px solid rgba(242,244,246,.12)}
+/* los bordes plateados de las planchas eran de la paleta vieja */
+.how{border-top:1px solid rgba(242,244,246,.12);border-bottom:1px solid rgba(242,244,246,.12)}
+.faq{border-top:1px solid rgba(242,244,246,.12);border-bottom:1px solid rgba(242,244,246,.12)}
+/* la plancha de "un aroma" tambien se alinea al noir */
+.ed-break{background:radial-gradient(130% 100% at 50% 42%,#141416 38%,var(--noir) 100%)}
+
+/* la seccion de encargos gana la misma aurora tenue que el resto de las
+   claras, para que no quede como el unico plano liso de la pagina */
+.encargos{position:relative}
+.encargos::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(70% 55% at 88% 12%,rgba(200,135,58,.16),transparent 62%),
+             radial-gradient(60% 50% at 6% 92%,rgba(92,26,27,.10),transparent 64%);
+}
+.encargos > *{position:relative;z-index:1}
 </style>
 </head>
 
