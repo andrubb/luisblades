@@ -2288,6 +2288,99 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   #about .eye-text .beat-4{max-width:34ch}
 }
 #about .aurora-soft{opacity:.75}
+
+/* ===================================================================
+   APP SHELL — barra inferior persistente.
+   Es la pieza que cambia la percepcion de "pagina web" a "aplicacion":
+   navegacion siempre al alcance del pulgar, estado visible, contadores
+   en vivo. Vidrio liquido sobre noir, dentro del marco.
+   =================================================================== */
+.appbar{
+  position:fixed;z-index:260;
+  left:calc(var(--fw-lr) + 8px);
+  right:calc(var(--fw-lr) + 8px);
+  bottom:calc(var(--fw-tb) + 8px + env(safe-area-inset-bottom));
+  height:64px;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  align-items:center;
+  border-radius:22px;
+  background:rgba(14,14,16,.86);
+  border:1px solid rgba(242,244,246,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 18px 44px -18px rgba(0,0,0,.9);
+  /* la barra entra deslizando desde abajo cuando el hero se deja atras */
+  transform:translateY(calc(100% + var(--fw-tb) + 20px));
+  transition:transform .6s var(--e-expo);
+  will-change:transform;
+}
+.appbar.show{transform:translateY(0)}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .appbar{background:rgba(14,14,16,.62);
+    -webkit-backdrop-filter:blur(20px) saturate(170%);
+            backdrop-filter:blur(20px) saturate(170%);}
+}
+@media(min-width:900px){ .appbar{display:none} }
+
+.ab-item{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  height:100%;background:none;border:0;padding:0;cursor:pointer;
+  color:var(--on-noir-3);text-decoration:none;
+  font-family:var(--font-body);font-size:9px;letter-spacing:.06em;
+  transition:color .35s var(--e-quart);
+  -webkit-tap-highlight-color:transparent;
+}
+.ab-item .ab-ic{position:relative;display:block;width:22px;height:22px;
+  transition:transform .45s var(--e-expo)}
+.ab-item .ab-ic svg{width:100%;height:100%;display:block}
+.ab-item.is-on{color:var(--bone)}
+.ab-item.is-on .ab-ic{transform:translateY(-2px) scale(1.08)}
+.ab-item:active .ab-ic{transform:scale(.9)}
+.ab-tx{opacity:.9;white-space:nowrap}
+
+/* indicador que se desliza bajo la pestana activa */
+.ab-ind{
+  position:absolute;z-index:0;top:6px;bottom:6px;left:0;width:20%;
+  border-radius:16px;
+  background:linear-gradient(160deg,rgba(200,135,58,.30),rgba(200,135,58,.10));
+  border:1px solid rgba(200,135,58,.34);
+  transform:translateX(0);
+  transition:transform .55s var(--e-expo);
+  pointer-events:none;
+}
+/* contador */
+.ab-badge[hidden]{display:none}   /* display:flex le ganaba a [hidden] */
+.ab-badge{
+  position:absolute;top:-5px;right:-8px;min-width:16px;height:16px;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 4px;border-radius:999px;
+  background:var(--amber);color:var(--noir);
+  font-family:var(--font-struct);font-weight:800;font-size:9px;line-height:1;
+}
+
+/* los flotantes suben para no chocar con la barra */
+@media(max-width:899px){
+  .float-wa{bottom:calc(var(--fw-tb) + 84px + env(safe-area-inset-bottom))}
+  .to-top{bottom:calc(var(--fw-tb) + 84px + env(safe-area-inset-bottom))}
+  /* el drawer y el modal deben quedar POR ENCIMA de la barra */
+  .drawer{bottom:calc(var(--fw-tb))}
+  body{padding-bottom:calc(var(--fw-tb) + 78px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .appbar,.ab-ind,.ab-item .ab-ic{transition:none}
+}
+
+/* ===================================================================
+   REVELADO DE TEXTO POR LINEA (GSAP)
+   Sustituye los fundidos genericos. Cada linea vive dentro de una
+   mascara y sube desde detras: el texto no "aparece", ENTRA. Es el
+   gesto estandar del trabajo editorial premium y encaja con el
+   concepto — igual que el aroma, el texto emerge, no se enciende.
+   =================================================================== */
+.ln-mask{display:block;overflow:hidden;padding-bottom:.04em;margin-bottom:-.04em}
+.ln-in{display:block;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){
+  .ln-in{transform:none!important;opacity:1!important}
+}
 </style>
 </head>
 
@@ -2335,6 +2428,34 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <!-- Architectural black frame: persistent at every scroll position, all sections.
      Purely decorative + pointer-events:none, so it is invisible to AT and to clicks. -->
 <div class="frame" aria-hidden="true"></div>
+
+<!-- ===================== BARRA DE APP (movil) =====================
+     Lo que convierte esto en una aplicacion y no en una landing: una
+     barra inferior persistente de vidrio, con indicador que se desliza
+     y contadores en vivo. Solo movil: en desktop la nav superior basta. -->
+<nav class="appbar" id="appbar" aria-label="Navegación principal">
+  <span class="ab-ind" aria-hidden="true"></span>
+  <a class="ab-item is-on" href="#top" data-ab="top">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></span>
+    <span class="ab-tx">Inicio</span>
+  </a>
+  <a class="ab-item" href="#catalog" data-ab="catalog">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l-1 3h-4z"/><path d="M8 6h8l1.4 12.2a2 2 0 0 1-2 2.2H8.6a2 2 0 0 1-2-2.2z"/><path d="M8.6 13h6.8"/></svg></span>
+    <span class="ab-tx">Colección</span>
+  </a>
+  <a class="ab-item" href="#finder" data-ab="finder">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.2 3 4.5 5 4.5 8a4.5 4.5 0 0 1-9 0c0-3 2.3-5 4.5-8Z"/><path d="M12 20v1"/></svg></span>
+    <span class="ab-tx">Tu aroma</span>
+  </a>
+  <button class="ab-item" id="abFav" type="button">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg><b class="ab-badge" id="abFavCount" hidden>0</b></span>
+    <span class="ab-tx">Favoritos</span>
+  </button>
+  <button class="ab-item" id="abCart" type="button">
+    <span class="ab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><b class="ab-badge" id="abCartCount" hidden>0</b></span>
+    <span class="ab-tx">Bolsa</span>
+  </button>
+</nav>
 
 <!-- ============================ NAVBAR ============================ -->
 <nav class="nav" id="nav">
@@ -2499,7 +2620,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <span class="eyebrow" data-i18n="fq_eyebrow">Dos preguntas</span>
       <h2 class="struct-h" data-i18n="fq_title">Encontrá tu aroma</h2>
     </div>
-    <div class="finder-box reveal" id="finderBox"><!--PRERENDER:finder--><p class="fq-q">¿Para qué momento lo buscás?</p><div class="fq-opts">
+    <div class="finder-box reveal" id="finderBox"><!--PRERENDER:finder--><p class="fq-q" data-lined="1"><span class="ln-mask"><span class="ln-in">¿Para qué momento lo buscás?</span></span></p><div class="fq-opts">
       <button class="fq-opt" data-occ="day">Día · Oficina</button><button class="fq-opt" data-occ="night">Noche · Cita</button><button class="fq-opt" data-occ="formal">Ocasión especial</button></div><!--/PRERENDER:finder--></div>
   </div>
 </section>
@@ -4271,10 +4392,130 @@ function buildBeats(){
       ease:FX.ease, duration:FX.dur
     },vars)));
   };
-  mk('.eye-text .beat-1',{opacity:0,y:isMob()?26:38});
-  mk('.eye-text .beat-2',{opacity:0,x:isMob()?-22:-56});
-  mk('.eye-text .beat-3',{clipPath:'inset(0 100% 0 0)',duration:.95,ease:'expo.inOut'});
-  mk('.eye-text .beat-4',{opacity:0,scale:.9,transformOrigin:'left center',duration:.85});
+  /* Los cuatro beats los gobierna ahora buildLineReveals() con revelado
+     por linea enmascarada. Animarlos aqui tambien haria que las dos
+     mecanicas pelearan por las mismas propiedades. */
+}
+
+/* ===================================================================
+   PARTIR EN LINEAS REALES con la Range API.
+   No se parte por palabras: se mide donde el navegador QUIEBRA de verdad
+   cada linea y se envuelve cada una en su mascara. Asi el revelado sigue
+   la maquetacion real y no una aproximacion.
+   =================================================================== */
+function splitLines(el){
+  if(!el || el.dataset.lined) return [];
+  const txt=el.textContent.replace(/\s+/g,' ').trim();
+  if(!txt || txt.length>600) return [];        // parrafos enormes: no compensa
+  const guardaHTML=el.innerHTML;
+  // se marca palabra por palabra para poder medir su posicion vertical
+  el.innerHTML = txt.split(' ').map(w=>'<i class="w">'+
+    w.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</i>').join(' ');
+  const ws=[...el.querySelectorAll('i.w')];
+  if(!ws.length){ el.innerHTML=guardaHTML; return []; }
+  const lineas=[]; let actual=[], topPrev=null;
+  ws.forEach(w=>{
+    const t=Math.round(w.getBoundingClientRect().top);
+    if(topPrev!==null && Math.abs(t-topPrev)>3){ lineas.push(actual); actual=[]; }
+    actual.push(w.textContent); topPrev=t;
+  });
+  if(actual.length) lineas.push(actual);
+  if(lineas.length<1){ el.innerHTML=guardaHTML; return []; }
+  el.innerHTML = lineas.map(L=>'<span class="ln-mask"><span class="ln-in">'+
+    L.join(' ')+'</span></span>').join('');
+  el.dataset.lined='1';
+  return [...el.querySelectorAll('.ln-in')];
+}
+
+/* Revelado por linea con ScrollTrigger. Sin pin, sin reverse: es texto
+   de lectura y borrarlo al subir seria hostil. */
+let lineTls=[];
+function buildLineReveals(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  lineTls.forEach(t=>{ if(t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+  lineTls=[];
+  const objetivos=[
+    '#about .eye-text .beat-1','#about .eye-text .beat-2',
+    '#about .eye-text .beat-3','#about .eye-text .beat-4',
+    '#finder .fq-q','#encargos .enc-note'
+  ];
+  objetivos.forEach(sel=>{
+    const el=$(sel); if(!el) return;
+    const lineas=splitLines(el);
+    if(!lineas.length) return;
+    lineTls.push(gsap.from(lineas,{
+      yPercent:112, opacity:0,
+      duration:.9, ease:'expo.out',
+      stagger:.085,
+      scrollTrigger:{trigger:el,start:'top 88%',
+        toggleActions:'play none none none', refreshPriority:-80}
+    }));
+  });
+}
+
+/* ===================================================================
+   APP SHELL — logica de la barra inferior.
+   · aparece cuando el hero queda atras (no compite con la portada)
+   · el indicador sigue a la seccion visible, no solo al clic
+   · los contadores replican los del header
+   =================================================================== */
+function setupAppBar(){
+  const bar=$('#appbar'); if(!bar) return;
+  const items=$$('.ab-item',bar), ind=$('.ab-ind',bar);
+  const mueveInd=i=>{ if(ind) ind.style.transform='translateX('+(i*100)+'%)'; };
+  const activa=i=>{ items.forEach((it,k)=>it.classList.toggle('is-on',k===i)); mueveInd(i); };
+
+  // los dos ultimos abren paneles en vez de navegar
+  const fav=$('#abFav'), cart=$('#abCart');
+  if(fav)  fav.addEventListener('click',()=>{ const b=$('#favBtn');  if(b) b.click(); });
+  if(cart) cart.addEventListener('click',()=>{ const b=$('#cartBtn'); if(b) b.click(); });
+
+  // navegacion suave respetando reduced-motion
+  items.forEach((it,i)=>{
+    const dest=it.getAttribute('data-ab');
+    if(!dest) return;
+    it.addEventListener('click',e=>{
+      e.preventDefault();
+      activa(i);
+      const t = dest==='top' ? document.body : document.getElementById(dest);
+      if(t) t.scrollIntoView({behavior: reduceMotion()?'auto':'smooth', block:'start'});
+    });
+  });
+
+  // mostrar/ocultar segun se deje atras el hero
+  const hero=$('.hero');
+  if(hero && 'IntersectionObserver' in window){
+    new IntersectionObserver(es=>{
+      es.forEach(e=>bar.classList.toggle('show', !e.isIntersecting));
+    },{rootMargin:'-45% 0px 0px 0px'}).observe(hero);
+  } else { bar.classList.add('show'); }
+
+  // el indicador sigue a la seccion realmente visible
+  const mapa=[['top','.hero'],['catalog','#catalog'],['finder','#finder']];
+  if('IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{
+        if(!e.isIntersecting) return;
+        const i=mapa.findIndex(m=>e.target.matches(m[1]));
+        if(i>=0) activa(i);
+      });
+    },{rootMargin:'-45% 0px -45% 0px'});
+    mapa.forEach(m=>{ const el=$(m[1]); if(el) io.observe(el); });
+  }
+
+  // contadores en vivo, espejo de los del header
+  const sync=()=>{
+    [['#favCount','#abFavCount'],['#cartCount','#abCartCount']].forEach(([src,dst])=>{
+      const a=$(src), b=$(dst); if(!a||!b) return;
+      const v=(a.textContent||'0').trim();
+      b.textContent=v; b.hidden = (v==='0'||v==='');
+    });
+  };
+  sync();
+  ['#favCount','#cartCount'].forEach(sel=>{
+    const el=$(sel); if(el && window.MutationObserver)
+      new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
+  });
 }
 
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
@@ -5062,6 +5303,7 @@ function initAnim(){
     buildFinderIn();   // C1 — entrada del quiz
     buildWorldsType(); // C2 — numerales + reveal palabra a palabra
     buildBeats();      // C4 — 4 beats, 4 mecanicas distintas
+    buildLineReveals();// texto que ENTRA por linea, no que se enciende
     window.__fxReady=true;
     ScrollTrigger.sort();   // creation order ≠ page order (how builds before curator) — sort by refreshPriority
     queueRefresh();
@@ -5117,6 +5359,7 @@ async function init(){
   updateFavUI();
   renderCarousels();     // Luis photos + cuts (placeholders until real media added)
   initAnim();
+  setupAppBar();         // shell de aplicacion: barra inferior persistente
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
   if(location.hash==='#admin') openAdmin();
 }
