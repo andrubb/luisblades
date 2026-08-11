@@ -2555,6 +2555,57 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .hero .tagline,.hero .hero-eyebrow{padding-right:26px}
   .hero{padding-right:8px}
 }
+
+/* ===================================================================
+   FICHA DE PRODUCTO COMO HOJA DE APLICACION
+   Deja de ser un modal web y pasa a comportarse como una hoja nativa:
+   asa visible, arrastre para cerrar, resorte al soltar y superficie de
+   vidrio. El fondo se encoge levemente mientras la hoja sube, que es el
+   gesto que en iOS comunica "esto esta ENCIMA", no "esto reemplazo".
+   =================================================================== */
+.sheet-grip{
+  /* fuera de #modalCard (renderModal borra su contenido), asi que se
+     posiciona sobre la hoja en vez de fluir dentro de ella */
+  position:absolute;left:50%;transform:translateX(-50%);z-index:5;
+  top:calc(6dvh + 10px);pointer-events:none;
+  display:block;width:44px;height:5px;
+  border-radius:999px;background:rgba(16,16,16,.22);
+  box-shadow:0 1px 0 rgba(255,255,255,.5);
+}
+@media(min-width:900px){ .sheet-grip{display:none} }
+
+@media(max-width:899px){
+  .modal-card{
+    border-radius:26px 26px 0 0;
+    height:94dvh;margin-top:6dvh;
+    background:linear-gradient(180deg,rgba(250,248,245,.94),var(--bg) 22%);
+    box-shadow:0 -24px 60px -20px rgba(0,0,0,.55);
+    /* el arrastre lo mueve en vivo; la transicion solo actua al soltar */
+    transition:transform .52s var(--e-expo);
+    touch-action:pan-y;
+    overscroll-behavior:contain;
+  }
+  @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+    .modal-card{
+      background:linear-gradient(180deg,rgba(250,248,245,.82),rgba(245,241,234,.97) 22%);
+      -webkit-backdrop-filter:blur(22px) saturate(180%);
+              backdrop-filter:blur(22px) saturate(180%);
+    }
+  }
+  .modal.dragging .modal-card{transition:none}
+  /* el overlay se aclara conforme la hoja baja: respuesta continua al dedo */
+  .modal.dragging + .overlay,.modal.dragging ~ .overlay{opacity:var(--sheet-p,1)}
+}
+/* mientras la hoja esta arriba, el fondo se encoge: jerarquia de capas */
+@media(max-width:899px){
+  main,.appbar{transition:transform .52s var(--e-expo), filter .52s var(--e-expo)}
+  body.sheet-open main{transform:scale(.965);filter:brightness(.72)}
+  body.sheet-open .appbar{transform:translateY(120%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .modal-card,main,.appbar{transition:none!important}
+  body.sheet-open main{transform:none;filter:none}
+}
 </style>
 </head>
 
@@ -3276,7 +3327,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </aside>
 
-<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+<!-- el asa vive FUERA de #modalCard: renderModal reemplaza su innerHTML
+     en cada apertura y se la llevaba por delante -->
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div><span class="sheet-grip" aria-hidden="true"></span></div>
 
 <!-- ============================ FLOAT / TOAST / ADMIN ============================ -->
 <aside style="display:contents" aria-label="Accesos rápidos">
@@ -4862,11 +4915,65 @@ function updateFavUI(){
    PRODUCT MODAL
    =================================================================== */
 function openModal(id){
+  document.body.classList.add('sheet-open');   // el fondo se encoge tras la hoja
   const p=S.products.find(x=>x.id===id); if(!p)return;
   S.modalP=p; S.modalVol=100; S.modalQty=1; renderModal();
   $('#modal').classList.add('show'); $('#overlay').classList.add('show'); document.body.style.overflow='hidden';
 }
-function closeModal(){ $('#modal').classList.remove('show'); if(!$('#cart').classList.contains('show'))$('#overlay').classList.remove('show'); document.body.style.overflow=''; }
+function closeModal(){
+  $('#modal').classList.remove('show');
+  if(!$('#cart').classList.contains('show'))$('#overlay').classList.remove('show');
+  document.body.style.overflow='';
+  document.body.classList.remove('sheet-open');
+}
+
+/* ===================================================================
+   GESTO DE HOJA — arrastrar hacia abajo para cerrar la ficha.
+   Reglas que lo hacen sentir nativo y no un truco:
+   · solo arranca si la hoja esta arriba del todo (scrollTop 0); si no,
+     el dedo debe poder seguir leyendo
+   · resistencia: el desplazamiento real es una fraccion del recorrido,
+     asi la hoja "pesa"
+   · cierra por DISTANCIA o por VELOCIDAD — un flick corto y rapido
+     tambien cierra, que es lo que espera la mano
+   · al soltar sin cerrar, vuelve con la curva de la casa
+   =================================================================== */
+function setupSheetGesture(){
+  const modal=$('#modal'), card=$('#modalCard');
+  if(!modal||!card) return;
+  let y0=0, dy=0, t0=0, activo=false;
+  const soporta = window.PointerEvent && matchMedia('(max-width:899px)').matches;
+  if(!soporta) return;
+
+  card.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse') return;
+    if(card.scrollTop>0) return;            // si esta leyendo, no secuestrar
+    activo=true; y0=e.clientY; dy=0; t0=performance.now();
+    modal.classList.add('dragging');
+  },{passive:true});
+
+  card.addEventListener('pointermove',e=>{
+    if(!activo) return;
+    const bruto=e.clientY-y0;
+    if(bruto<0){ dy=0; card.style.transform=''; return; }
+    dy=bruto*0.62;                           // resistencia: la hoja pesa
+    card.style.transform='translate3d(0,'+dy+'px,0)';
+    modal.style.setProperty('--sheet-p', String(1-Math.min(dy/380,.85)));
+  },{passive:true});
+
+  const soltar=()=>{
+    if(!activo) return;
+    activo=false;
+    modal.classList.remove('dragging');
+    const vel = dy/Math.max(1,performance.now()-t0);   // px por ms
+    card.style.transform='';
+    modal.style.removeProperty('--sheet-p');
+    if(dy>130 || vel>0.55) closeModal();               // distancia O velocidad
+    dy=0;
+  };
+  card.addEventListener('pointerup',soltar,{passive:true});
+  card.addEventListener('pointercancel',soltar,{passive:true});
+}
 function meterRow(label,val){ return `<div class="meter-row"><span class="ml">${label}</span><div class="meter-track"><span class="fill" data-w="${val/5*100}"></span></div></div>`; }
 function noteTier(label,arr){ return `<div class="pyr-tier"><div class="t">${label}</div><span class="pyr-bar" aria-hidden="true"></span><div class="note-tags">${arr.map(n=>`<span>${trNote(n)}</span>`).join('')}</div></div>`; }
 function renderModal(){
@@ -5550,6 +5657,7 @@ async function init(){
   renderCarousels();     // Luis photos + cuts (placeholders until real media added)
   initAnim();
   setupAppBar();         // shell de aplicacion: barra inferior persistente
+  setupSheetGesture();   // la ficha se arrastra para cerrar, como una app
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
   if(location.hash==='#admin') openAdmin();
 }
