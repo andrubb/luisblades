@@ -4559,16 +4559,28 @@ function setupAppBar(){
     },{rootMargin:'-45% 0px 0px 0px'}).observe(hero);
   } else { bar.classList.add('show'); }
 
-  // el indicador sigue a la seccion realmente visible
-  const mapa=[['top','.hero'],['catalog','#catalog'],['finder','#finder']];
+  /* El indicador sigue a la seccion realmente visible.
+     Se mapea la pagina COMPLETA: antes solo habia 3 secciones vigiladas,
+     asi que al pasar por "Como funciona", encargos o la historia el
+     indicador se quedaba clavado en "Coleccion" — un estado que miente.
+     Cada seccion apunta a la pestana que le corresponde conceptualmente. */
+  const mapa=[
+    [0,'.hero'],
+    [1,'#worlds'],[1,'#catalog'],[1,'#how'],[1,'#encargos'],
+    [2,'#finder'],
+    [0,'.ed-break'],[0,'#about'],[0,'#luis'],[0,'#faq']
+  ];
   if('IntersectionObserver' in window){
+    const vistos=new Map();
     const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{
-        if(!e.isIntersecting) return;
-        const i=mapa.findIndex(m=>e.target.matches(m[1]));
-        if(i>=0) activa(i);
-      });
-    },{rootMargin:'-45% 0px -45% 0px'});
+      es.forEach(e=>vistos.set(e.target, e.isIntersecting ? e.intersectionRatio : 0));
+      // gana la seccion con mayor presencia en pantalla, no la ultima que entro
+      let mejor=null, ratio=0;
+      vistos.forEach((r,el)=>{ if(r>ratio){ ratio=r; mejor=el; } });
+      if(!mejor) return;
+      const m=mapa.find(x=>mejor.matches(x[1]));
+      if(m) activa(m[0]);
+    },{rootMargin:'-40% 0px -40% 0px', threshold:[0,.25,.5,.75,1]});
     mapa.forEach(m=>{ const el=$(m[1]); if(el) io.observe(el); });
   }
 
