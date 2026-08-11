@@ -2381,6 +2381,75 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(prefers-reduced-motion:reduce){
   .ln-in{transform:none!important;opacity:1!important}
 }
+
+/* ===================================================================
+   1 · TARJETA DEL CURADOR — usaba la variante "contain" con padding, y
+   en un contenedor ancho (312x234) dejaba la foto en 190x183: demasiado
+   aire. La pieza destacada va siempre a sangre.
+   =================================================================== */
+.feat-media .ph-img,#featured .ph-img{
+  object-fit:cover;padding:0;background:none;width:100%;height:100%;
+}
+
+/* ===================================================================
+   2 · PROFUNDIDAD 3D REAL — las tarjetas entran en perspectiva.
+   Se usa CSS 3D y no WebGL a proposito: el trafico es Instagram en
+   celular de gama media y three.js son ~600KB para un efecto que aqui
+   se consigue en el compositor, sin un solo byte extra de red.
+   rotateX + translateZ dan paralaje verdadero entre marco y contenido.
+   =================================================================== */
+#grid{perspective:1400px;perspective-origin:50% 40%}
+#grid .card{transform-style:preserve-3d;will-change:transform}
+#grid .card .card-media{transform:translateZ(0);transition:transform .7s var(--e-expo)}
+@media(hover:hover){
+  #grid .card:hover{transform:translateZ(26px) rotateX(3deg)}
+  #grid .card:hover .card-media{transform:translateZ(30px)}
+}
+
+/* ===================================================================
+   3 · VIDRIO LIQUIDO EN LOS CHIPS — precio y categoria dejan de ser
+   texto suelto y pasan a piezas de vidrio con canto iluminado.
+   =================================================================== */
+.card-foot .card-cat{
+  display:inline-block;padding:5px 11px;border-radius:999px;
+  background:rgba(16,16,16,.05);
+  border:1px solid rgba(16,16,16,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75);
+  font-size:.6rem;letter-spacing:.16em;
+}
+.tag-best{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  background:linear-gradient(140deg,rgba(200,135,58,.20),rgba(200,135,58,.06));
+  border:1px solid rgba(179,118,44,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+  color:var(--blue-text);
+}
+.tag-best::before{content:none}
+
+/* ===================================================================
+   4 · COMO FUNCIONA — ya estaba bien; se le da el mismo lenguaje de
+   vidrio y profundidad para que no quede como la unica seccion plana.
+   =================================================================== */
+.how-steps{perspective:1200px}
+.how-step{
+  position:relative;padding:clamp(20px,4vw,28px);
+  border-radius:18px;
+  background:linear-gradient(150deg,rgba(245,241,234,.055),rgba(245,241,234,.015));
+  border:1px solid rgba(242,244,246,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
+  transform-style:preserve-3d;
+}
+.how-step .hs-svg{margin-bottom:2px}
+@media(hover:hover){
+  .how-step{transition:transform .6s var(--e-expo), border-color .6s var(--e-expo)}
+  .how-step:hover{transform:translateZ(20px) translateY(-4px);border-color:rgba(200,135,58,.34)}
+}
+/* el conector de pasos gana grosor y brillo ambar */
+.how-line-fill{box-shadow:0 0 16px rgba(200,135,58,.5)}
+
+@media(prefers-reduced-motion:reduce){
+  #grid .card,.how-step,#grid .card .card-media{transition:none!important;transform:none!important}
+}
 </style>
 </head>
 
