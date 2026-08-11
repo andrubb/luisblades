@@ -2544,6 +2544,17 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   /* el slab 01 caia justo sobre la marca de registro superior izquierda */
   .hero .sec-num{left:52px}
 }
+
+/* ===================================================================
+   AIRE CONTRA EL MARCO (desktop). Medido: la tagline y el eyebrow
+   terminaban en x=1246, que es EXACTAMENTE el limite interior del
+   marco. No se desbordaban, pero tocar el canto con 0px de aire lee
+   como texto cortado — que fue justo la impresion en la revision.
+   =================================================================== */
+@media(min-width:900px){
+  .hero .tagline,.hero .hero-eyebrow{padding-right:26px}
+  .hero{padding-right:8px}
+}
 </style>
 </head>
 
