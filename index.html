@@ -2606,6 +2606,86 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .modal-card,main,.appbar{transition:none!important}
   body.sheet-open main{transform:none;filter:none}
 }
+
+/* ===================================================================
+   1 · CAMPO TOPOGRAFICO (hero)
+   Curvas de nivel que mutan, en ambar sobre noir — no en el morado de
+   la referencia: el efecto es prestado, el color es nuestro.
+   Dos capas identicas deformadas por el mismo filtro estatico, girando
+   y escalando en sentidos opuestos. Lo que se percibe como mutacion es
+   la INTERFERENCIA entre ambas, no un filtro recalculandose.
+   =================================================================== */
+.topo{position:absolute;inset:-18%;z-index:0;pointer-events:none;overflow:hidden;
+  opacity:.30;mix-blend-mode:screen}
+.tp{
+  position:absolute;inset:-25%;display:block;
+  background:repeating-radial-gradient(circle at 38% 42%,
+    rgba(200,135,58,.85) 0px, rgba(200,135,58,.85) 2px,
+    transparent 2px, transparent 26px);
+  filter:url(#topo-warp);
+  will-change:transform;transform:translateZ(0);
+}
+.tp-b{
+  background:repeating-radial-gradient(circle at 66% 58%,
+    rgba(232,166,83,.7) 0px, rgba(232,166,83,.7) 2px,
+    transparent 2px, transparent 34px);
+  opacity:.75;
+}
+@media(prefers-reduced-motion:no-preference){
+  .tp-a{animation:tp-a 68s linear infinite}
+  .tp-b{animation:tp-b 91s linear infinite}
+}
+@keyframes tp-a{from{transform:rotate(0deg) scale(1)}   to{transform:rotate(360deg) scale(1)}}
+@keyframes tp-b{from{transform:rotate(360deg) scale(1.15)} to{transform:rotate(0deg) scale(1.15)}}
+/* en movil se aligera: menos opacidad y una sola capa */
+@media(max-width:899px){
+  .topo{opacity:.20}
+  .tp-b{display:none}
+}
+@media(prefers-reduced-motion:reduce){ .tp{animation:none} }
+
+/* ===================================================================
+   2 · DIVISOR ORGANICO DE VIDRIO LIQUIDO
+   Una forma que muta lentamente su propio contorno via border-radius.
+   Separa secciones sin cortarlas con una linea: el ojo pasa por encima.
+   Superficie de vidrio real — no es una silueta plana.
+   =================================================================== */
+.blob-div{
+  position:relative;height:clamp(120px,20vw,210px);
+  margin:calc(-1 * clamp(60px,10vw,105px)) 0;
+  display:grid;place-items:center;pointer-events:none;z-index:4;
+}
+.blob{
+  display:block;width:clamp(110px,20vw,190px);aspect-ratio:1;
+  background:linear-gradient(150deg,rgba(200,135,58,.34),rgba(245,241,234,.10) 55%,rgba(92,26,27,.24));
+  border:1px solid rgba(245,241,234,.22);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.30),
+             inset 0 -2px 0 rgba(0,0,0,.22),
+             0 26px 60px -24px rgba(0,0,0,.6);
+  border-radius:58% 42% 47% 53% / 52% 46% 54% 48%;
+  will-change:border-radius,transform;
+}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .blob{-webkit-backdrop-filter:blur(16px) saturate(190%);
+                backdrop-filter:blur(16px) saturate(190%);}
+}
+@media(prefers-reduced-motion:no-preference){
+  .blob{animation:blob-morph 17s var(--e-drift) infinite alternate,
+                  blob-float 11s var(--e-drift) infinite alternate}
+  .blob-div-alt .blob{animation-duration:21s,13s;animation-delay:-4s,-2s}
+}
+/* el contorno muta de verdad: cada esquina viaja por su cuenta */
+@keyframes blob-morph{
+  0%  {border-radius:58% 42% 47% 53% / 52% 46% 54% 48%}
+  35% {border-radius:38% 62% 63% 37% / 44% 62% 38% 56%}
+  70% {border-radius:66% 34% 38% 62% / 61% 39% 61% 39%}
+  100%{border-radius:44% 56% 57% 43% / 39% 58% 42% 61%}
+}
+@keyframes blob-float{
+  from{transform:translate3d(0,-10px,0) rotate(-6deg)}
+  to  {transform:translate3d(0,12px,0) rotate(7deg)}
+}
+@media(prefers-reduced-motion:reduce){ .blob{animation:none} }
 </style>
 </head>
 
@@ -2755,6 +2835,16 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
      de ruido y feDisplacementMap lo usa para deformar lo que hay detras, que es
      lo que un blur solo nunca consigue -->
 <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <!-- Deformacion topografica. La turbulencia se genera UNA SOLA VEZ:
+       animar baseFrequency recalcularia el filtro entero en cada frame y
+       eso destruye el scroll. El movimiento sale de mover dos capas ya
+       deformadas en sentidos opuestos — la interferencia entre ambas se
+       lee como mutacion y el coste es de compositor, no de filtro. -->
+  <filter id="topo-warp" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.0022 0.0041" numOctaves="3" seed="11" result="t"/>
+    <feGaussianBlur in="t" stdDeviation="1.4" result="ts"/>
+    <feDisplacementMap in="SourceGraphic" in2="ts" scale="180" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
   <filter id="lg-refract" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.006 0.010" numOctaves="2" seed="7" result="n"/>
     <feGaussianBlur in="n" stdDeviation="3" result="ns"/>
@@ -2766,6 +2856,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   <span class="sec-num" aria-hidden="true">01</span>
   <!-- LA ESTELA: aurora de manchas. Cinco cuerpos de color que derivan lento.
        No son adorno: son el aroma que no se ve, ocupando el aire. -->
+  <!-- CAMPO TOPOGRAFICO: dos capas de curvas de nivel que derivan en
+       sentidos opuestos. Lo que muta no es el filtro, es la interferencia. -->
+  <span class="topo" aria-hidden="true"><i class="tp tp-a"></i><i class="tp tp-b"></i></span>
   <span class="aurora" aria-hidden="true">
     <i class="au au-1"></i><i class="au au-2"></i><i class="au au-3"></i>
     <i class="au au-4"></i><i class="au au-5"></i>
@@ -3100,6 +3193,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
+<!-- divisor organico de vidrio liquido: separa sin cortar -->
+<div class="blob-div" aria-hidden="true"><span class="blob"></span></div>
+
 <!-- ================== 04 · CÓMO FUNCIONA — 3 steps ================== -->
 <section class="section how" id="how">
   <div class="wrap">
@@ -3128,6 +3224,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     </div>
   </div>
 </section>
+
+<div class="blob-div blob-div-alt" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ============================ 05 · ENCARGOS ============================ -->
 <section class="section encargos" id="encargos">
