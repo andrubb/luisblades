@@ -2651,57 +2651,74 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    Superficie de vidrio real — no es una silueta plana.
    =================================================================== */
 .blob-div{
-  /* el filtro goo fuerza creacion de capa y encarecia el arranque:
-     LCP 2600 -> 3172ms al introducirlo. Las burbujas viven bajo el
-     pliegue, asi que no deben renderizarse hasta acercarse a pantalla.
-     contain-intrinsic-size evita que el salto genere CLS. */
+  /* SIN content-visibility: implica contain:paint, y eso RECORTABA las
+     burbujas al salirse de su caja — es lo que se veia cortado en el
+     telefono. Al caer el filtro goo desaparece tambien el motivo de
+     rendimiento que lo justificaba. */
+  /* content-visibility vuelve: quitarlo fue lo que disparo el scroll
+     (de 27 a 130-199 frames sobre 32ms), porque saltaba el render de lo
+     que esta fuera de pantalla. Recortaba las burbujas porque la caja era
+     mas chica que su recorrido; ahora la caja es MAS GRANDE que la maxima
+     excursion (tamano x escala 1.16 + flotado 28px) y el margen negativo
+     devuelve el espacio al layout. Sin recorte y sin coste. */
   content-visibility:auto;
-  contain-intrinsic-size:auto clamp(120px,20vw,210px);
-  position:relative;height:clamp(120px,20vw,210px);
-  margin:calc(-1 * clamp(60px,10vw,105px)) 0;
-  display:grid;place-items:center;pointer-events:none;z-index:4;
+  contain-intrinsic-size:auto clamp(260px,44vw,440px);
+  position:relative;height:clamp(260px,44vw,440px);
+  margin:calc(-1 * clamp(130px,22vw,220px)) 0;
+  display:grid;place-items:center;pointer-events:none;
+  /* por encima de todo el contenido: nada las tapa. Queda por debajo del
+     marco (250), la barra (260) y los paneles. */
+  z-index:240;
+  /* clip solo en X: contiene el 1px de desborde que generaba el flotado
+     lateral, sin recortar arriba/abajo, que es donde debe rebasar. */
+  overflow-x:clip;overflow-y:visible;
 }
-/* La burbuja ya no es UNA forma con border-radius: son TRES nucleos que se
-   funden bajo el filtro goo. Es la unica manera de conseguir la cintura de
-   la referencia — border-radius nunca puede estrangular una silueta. */
+/* VUELTA AL VIDRIO REAL. Los metaballs se abandonan por tres razones
+   medidas, no por gusto:
+   1. filter:url(#goo) no se comporta igual en Safari iOS — en el telefono
+      salian tres bolitas sueltas en vez de un cuerpo fundido.
+   2. filter y backdrop-filter NO pueden coexistir: el filtro abre un
+      contexto nuevo y mata la transparencia. Eran excluyentes, y el
+      vidrio transparente es lo que importa aqui.
+   3. El goo obligaba a content-visibility por coste, y eso implica
+      contain:paint — que era lo que RECORTABA las burbujas.
+   Un solo cuerpo, transparente de verdad, que deja ver el fondo borroso
+   a traves suyo. */
 .blob{
+  /* pausada por defecto; solo corre cuando esta a la vista. Cinco
+     backdrop-filter animando a la vez llevaron el scroll p95 de 20-30ms
+     a 45.8ms — y cuatro de ellas fuera de pantalla. */
+  animation-play-state:paused;
   position:relative;display:block;
-  width:clamp(150px,27vw,250px);aspect-ratio:1;
-  filter:url(#goo) saturate(1.15);
-  will-change:transform;
-  opacity:.92;
+  width:clamp(130px,24vw,230px);aspect-ratio:1;
+  background:linear-gradient(150deg,rgba(245,241,234,.16),rgba(200,135,58,.14) 52%,rgba(92,26,27,.12));
+  border:1px solid rgba(245,241,234,.30);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.42),
+             inset 0 -3px 0 rgba(0,0,0,.20),
+             inset 0 0 30px rgba(255,255,255,.10),
+             0 30px 70px -26px rgba(0,0,0,.55);
+  border-radius:58% 42% 47% 53% / 52% 46% 54% 48%;
+  will-change:border-radius,transform;
+  transform:translateZ(0);
 }
-.blob i{
-  position:absolute;display:block;border-radius:50%;
-  /* el desenfoque del goo mezcla y apaga los tonos, asi que los nucleos
-     entran MAS saturados de lo que se quiere ver al final */
-  background:radial-gradient(circle at 32% 28%,
-    rgba(255,252,246,.92) 0%, rgba(232,166,83,.88) 38%, rgba(200,135,58,.78) 62%, rgba(92,26,27,.72) 100%);
-  will-change:transform;
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .blob{
+    /* la lente: lo que queda detras se ve borroso y saturado a traves */
+    -webkit-backdrop-filter:blur(18px) saturate(210%) brightness(1.06);
+            backdrop-filter:blur(18px) saturate(210%) brightness(1.06);
+    background:linear-gradient(150deg,rgba(245,241,234,.10),rgba(200,135,58,.09) 52%,rgba(92,26,27,.08));
+  }
 }
-/* nucleo mayor: el cuerpo */
-.blob i:nth-child(1){width:58%;height:58%;left:21%;top:26%}
-/* nucleo que sube y baja: es el que abre y cierra la cintura */
-.blob i:nth-child(2){width:44%;height:44%;left:30%;top:6%}
-/* nucleo lateral: rompe la simetria para que nunca sea una figura perfecta */
-.blob i:nth-child(3){width:36%;height:36%;left:44%;top:48%}
 @media(prefers-reduced-motion:no-preference){
-  /* el conjunto flota y respira... */
-  .blob{animation:blob-float 9s var(--e-drift) infinite alternate,
-                  blob-breathe 7s var(--e-drift) infinite alternate}
-  .blob-div-alt .blob{animation-duration:11s,8s;animation-delay:-3s,-2s}
-  /* ...y cada nucleo viaja por su cuenta. Cuando el segundo se aleja del
-     primero, el puente entre ambos se adelgaza hasta formar la cintura;
-     cuando vuelve, la silueta se cierra en una sola masa. Ese ir y venir
-     ES la deformacion que pediste. */
-  .blob i:nth-child(1){animation:nuc-1 11s var(--e-drift) infinite alternate}
-  .blob i:nth-child(2){animation:nuc-2 8s  var(--e-drift) infinite alternate}
-  .blob i:nth-child(3){animation:nuc-3 13s var(--e-drift) infinite alternate}
-  .blob-div-alt i:nth-child(1){animation-duration:14s;animation-delay:-4s}
-  .blob-div-alt i:nth-child(2){animation-duration:10s;animation-delay:-2.5s}
-  .blob-div-alt i:nth-child(3){animation-duration:16s;animation-delay:-6s}
+  /* Mas rapido y mas amplio que antes: pediste que se notara. Tres capas
+     simultaneas con ciclos primos entre si (6/5/4s) para que la
+     combinacion no se repita a ojo. */
+  .blob{animation:blob-morph 6s  var(--e-drift) infinite alternate,
+                  blob-float 5s  var(--e-drift) infinite alternate,
+                  blob-breathe 4s var(--e-drift) infinite alternate}
+  .blob-div-alt .blob{animation-duration:7s,6s,5s;animation-delay:-2s,-1.5s,-1s}
 }
-@keyframes blob-breathe{ from{scale:.9} to{scale:1.1} }
+@keyframes blob-breathe{ from{scale:.84} to{scale:1.16} }
 /* el nucleo 2 se separa lo justo para estrangular sin llegar a partirse */
 @keyframes nuc-2{
   0%  {transform:translate3d(0,0,0) scale(1)}
@@ -2719,15 +2736,19 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   100%{transform:translate3d(-6%,10%,0) scale(.8)}
 }
 /* el contorno muta de verdad: cada esquina viaja por su cuenta */
+/* estados mas extremos: con radios muy dispares la silueta se afina por
+   un lado y se hincha por otro, que es lo mas cerca de una cintura que
+   permite border-radius sin recurrir a filtros que rompen el vidrio */
 @keyframes blob-morph{
   0%  {border-radius:58% 42% 47% 53% / 52% 46% 54% 48%}
-  35% {border-radius:38% 62% 63% 37% / 44% 62% 38% 56%}
-  70% {border-radius:66% 34% 38% 62% / 61% 39% 61% 39%}
+  25% {border-radius:30% 70% 72% 28% / 38% 68% 32% 62%}
+  50% {border-radius:71% 29% 33% 67% / 66% 34% 66% 34%}
+  75% {border-radius:35% 65% 30% 70% / 68% 30% 70% 32%}
   100%{border-radius:44% 56% 57% 43% / 39% 58% 42% 61%}
 }
 @keyframes blob-float{
-  from{transform:translate3d(-16px,-20px,0) rotate(-11deg)}
-  to  {transform:translate3d(18px,22px,0) rotate(13deg)}
+  from{transform:translate3d(-26px,-26px,0) rotate(-18deg)}
+  to  {transform:translate3d(28px,28px,0) rotate(20deg)}
 }
 @media(prefers-reduced-motion:reduce){ .blob,.blob i{animation:none} }
 
@@ -2765,15 +2786,15 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .bd-lg .blob{width:clamp(190px,34vw,320px)}
 .bd-left {justify-items:start;padding-left:clamp(10px,7vw,90px)}
 .bd-right{justify-items:end;  padding-right:clamp(10px,7vw,90px)}
+/* En escritorio el desplazamiento lateral se leia como piezas sueltas en
+   sitios arbitrarios. Con el ancho de pantalla la composicion pide eje
+   central: todas vuelven al centro y solo varian de tamano. */
+@media(min-width:900px){
+  .bd-left,.bd-right{justify-items:center;padding-left:0;padding-right:0}
+}
 /* ritmos propios: ningun par de burbujas comparte ciclo */
-.bd-sm  .blob{animation-duration:7.5s,6s}
-.bd-sm  .blob i:nth-child(1){animation-duration:9s}
-.bd-sm  .blob i:nth-child(2){animation-duration:6.5s;animation-delay:-1.5s}
-.bd-sm  .blob i:nth-child(3){animation-duration:11s;animation-delay:-4s}
-.bd-lg  .blob{animation-duration:15s,12s;animation-delay:-6s,-4s}
-.bd-lg  .blob i:nth-child(1){animation-duration:19s;animation-delay:-7s}
-.bd-lg  .blob i:nth-child(2){animation-duration:13s;animation-delay:-5s}
-.bd-lg  .blob i:nth-child(3){animation-duration:21s;animation-delay:-9s}
+.bd-sm .blob{animation-duration:5s,4.2s,3.4s;animation-delay:-1s,-.6s,-.3s}
+.bd-lg .blob{animation-duration:8s,6.5s,5.5s;animation-delay:-3s,-2s,-1s}
 /* las que caen sobre plancha clara necesitan mas presencia */
 .bd-left .blob,.bd-right .blob{opacity:.86}
 
@@ -2788,6 +2809,39 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 }
 .modal-card{position:relative;z-index:1}
 @media(prefers-reduced-motion:reduce){ .flux-sheet{opacity:.3} }
+
+/* ===================================================================
+   COSTE DEL VIDRIO EN MOVIL — animar border-radius CON backdrop-filter
+   obliga a repintar el desenfoque en cada frame. Es lo caro, no el
+   movimiento en si: float y breathe son transform puro y no cuestan.
+   En movil se baja el radio de desenfoque y el morph va mas lento, que
+   ademas encaja: pantalla chica, gesto mas calmado.
+   =================================================================== */
+@media(max-width:899px){
+  /* SIN backdrop-filter en movil. No es su animacion lo caro: es el
+     desenfoque en si, cinco veces, en cada frame de scroll. Medido:
+     115-199 frames sobre 32ms de ~500. Un scroll a 30fps arruina mas la
+     sensacion premium que una burbuja que no sea literalmente traslucida.
+     Se sustituye por vidrio SIMULADO: degradado translucido, canto
+     iluminado y brillo especular. Cuesta cero y a este tamano el ojo
+     no distingue que no hay desenfoque real detras. */
+  .blob{
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+    background:
+      radial-gradient(70% 55% at 30% 24%, rgba(255,255,255,.30), transparent 62%),
+      linear-gradient(150deg, rgba(245,241,234,.20), rgba(200,135,58,.16) 52%, rgba(92,26,27,.14));
+  }
+  /* En movil se ELIMINA el morph del contorno y quedan solo float y
+     breathe, que son transform puro: los compone la GPU sin repintar el
+     desenfoque. Medido: con morph, 181-199 frames sobre 32ms de ~470
+     (40%). El contorno organico se conserva, simplemente no muta.
+     En escritorio si muta: ahi hay potencia de sobra. */
+  .blob{animation:blob-float 5s var(--e-drift) infinite alternate,
+                 blob-breathe 4s var(--e-drift) infinite alternate}
+  .blob-div-alt .blob{animation-duration:6s,5s;animation-delay:-1.5s,-1s}
+  .bd-sm .blob{animation-duration:4.2s,3.4s;animation-delay:-.6s,-.3s}
+  .bd-lg .blob{animation-duration:6.5s,5.5s;animation-delay:-2s,-1s}
+}
 </style>
 </head>
 
@@ -2947,11 +3001,6 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
        estaba difuso vuelve a ser solido, pero las formas que se acercaron
        ya se habian mezclado. Resultado: se FUNDEN al juntarse y se
        ESTRANGULAN al separarse — la cintura de la referencia. -->
-  <filter id="goo">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b"/>
-    <feColorMatrix in="b" mode="matrix"
-      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="g"/>
-  </filter>
   <filter id="topo-warp" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.0022 0.0041" numOctaves="3" seed="11" result="t"/>
     <feGaussianBlur in="t" stdDeviation="1.4" result="ts"/>
@@ -3044,7 +3093,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
-<div class="blob-div bd-sm bd-left" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+<div class="blob-div bd-sm bd-left" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ================== ENCONTRÁ TU AROMA — scent finder (interlude, no numeral) ================== -->
 <section class="section finder" id="finder">
@@ -3307,7 +3356,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 </section>
 
 <!-- divisor organico de vidrio liquido: separa sin cortar -->
-<div class="blob-div" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+<div class="blob-div" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ================== 04 · CÓMO FUNCIONA — 3 steps ================== -->
 <section class="section how" id="how">
@@ -3338,7 +3387,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
-<div class="blob-div blob-div-alt" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+<div class="blob-div blob-div-alt" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ============================ 05 · ENCARGOS ============================ -->
 <section class="section encargos" id="encargos">
@@ -3392,7 +3441,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
-<div class="blob-div bd-lg bd-right" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+<div class="blob-div bd-lg bd-right" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ============================ 06 · ABOUT ============================ -->
 <section class="section" id="about">
@@ -3448,7 +3497,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
-<div class="blob-div bd-sm bd-right" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+<div class="blob-div bd-sm bd-right" aria-hidden="true"><span class="blob"></span></div>
 
 <!-- ============================ 08 · FAQ ============================ -->
 <section class="section" id="faq">
@@ -5099,6 +5148,17 @@ function setupAppBar(){
   });
 }
 
+/* Las burbujas solo animan mientras se ven. Sin esto, cinco
+   backdrop-filter corriendo a la vez cuestan scroll aunque esten fuera
+   de pantalla (medido: p95 45.8ms contra 20-30ms). */
+function setupBlobs(){
+  const bs=$('.blob'); if(!bs.length||!('IntersectionObserver' in window)) return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    e.target.style.animationPlayState = e.isIntersecting ? 'running' : 'paused';
+  }),{rootMargin:'150px'});
+  bs.forEach(b=>io.observe(b));
+}
+
 /* drag-to-scroll on desktop + arrow nav; native swipe + scroll-snap on touch */
 function setupCarousels(){
   $$('.car-track').forEach(track=>{
@@ -5998,6 +6058,7 @@ async function init(){
   setupAppBar();         // shell de aplicacion: barra inferior persistente
   setupSheetGesture();   // la ficha se arrastra para cerrar, como una app
   setupFlux();           // campo fluido en shader: hero + banda del pie
+  setupBlobs();          // las burbujas solo animan a la vista
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
   if(location.hash==='#admin') openAdmin();
 }
