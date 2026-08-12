@@ -2651,36 +2651,72 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    Superficie de vidrio real — no es una silueta plana.
    =================================================================== */
 .blob-div{
+  /* el filtro goo fuerza creacion de capa y encarecia el arranque:
+     LCP 2600 -> 3172ms al introducirlo. Las burbujas viven bajo el
+     pliegue, asi que no deben renderizarse hasta acercarse a pantalla.
+     contain-intrinsic-size evita que el salto genere CLS. */
+  content-visibility:auto;
+  contain-intrinsic-size:auto clamp(120px,20vw,210px);
   position:relative;height:clamp(120px,20vw,210px);
   margin:calc(-1 * clamp(60px,10vw,105px)) 0;
   display:grid;place-items:center;pointer-events:none;z-index:4;
 }
+/* La burbuja ya no es UNA forma con border-radius: son TRES nucleos que se
+   funden bajo el filtro goo. Es la unica manera de conseguir la cintura de
+   la referencia — border-radius nunca puede estrangular una silueta. */
 .blob{
-  display:block;width:clamp(110px,20vw,190px);aspect-ratio:1;
-  background:linear-gradient(150deg,rgba(200,135,58,.34),rgba(245,241,234,.10) 55%,rgba(92,26,27,.24));
-  border:1px solid rgba(245,241,234,.22);
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.30),
-             inset 0 -2px 0 rgba(0,0,0,.22),
-             0 26px 60px -24px rgba(0,0,0,.6);
-  border-radius:58% 42% 47% 53% / 52% 46% 54% 48%;
-  will-change:border-radius,transform;
+  position:relative;display:block;
+  width:clamp(150px,27vw,250px);aspect-ratio:1;
+  filter:url(#goo) saturate(1.15);
+  will-change:transform;
+  opacity:.92;
 }
-@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .blob{-webkit-backdrop-filter:blur(16px) saturate(190%);
-                backdrop-filter:blur(16px) saturate(190%);}
+.blob i{
+  position:absolute;display:block;border-radius:50%;
+  /* el desenfoque del goo mezcla y apaga los tonos, asi que los nucleos
+     entran MAS saturados de lo que se quiere ver al final */
+  background:radial-gradient(circle at 32% 28%,
+    rgba(255,252,246,.92) 0%, rgba(232,166,83,.88) 38%, rgba(200,135,58,.78) 62%, rgba(92,26,27,.72) 100%);
+  will-change:transform;
 }
+/* nucleo mayor: el cuerpo */
+.blob i:nth-child(1){width:58%;height:58%;left:21%;top:26%}
+/* nucleo que sube y baja: es el que abre y cierra la cintura */
+.blob i:nth-child(2){width:44%;height:44%;left:30%;top:6%}
+/* nucleo lateral: rompe la simetria para que nunca sea una figura perfecta */
+.blob i:nth-child(3){width:36%;height:36%;left:44%;top:48%}
 @media(prefers-reduced-motion:no-preference){
-  /* tres capas de movimiento a la vez para que se lea como burbuja viva:
-     el contorno muta, el cuerpo flota y ademas respira de tamano.
-     Duraciones primas entre si para que el ciclo no se vuelva predecible. */
-  .blob{animation:blob-morph 13s var(--e-drift) infinite alternate,
-                  blob-float 9s  var(--e-drift) infinite alternate,
+  /* el conjunto flota y respira... */
+  .blob{animation:blob-float 9s var(--e-drift) infinite alternate,
                   blob-breathe 7s var(--e-drift) infinite alternate}
-  .blob-div-alt .blob{animation-duration:17s,11s,8s;animation-delay:-5s,-3s,-2s}
+  .blob-div-alt .blob{animation-duration:11s,8s;animation-delay:-3s,-2s}
+  /* ...y cada nucleo viaja por su cuenta. Cuando el segundo se aleja del
+     primero, el puente entre ambos se adelgaza hasta formar la cintura;
+     cuando vuelve, la silueta se cierra en una sola masa. Ese ir y venir
+     ES la deformacion que pediste. */
+  .blob i:nth-child(1){animation:nuc-1 11s var(--e-drift) infinite alternate}
+  .blob i:nth-child(2){animation:nuc-2 8s  var(--e-drift) infinite alternate}
+  .blob i:nth-child(3){animation:nuc-3 13s var(--e-drift) infinite alternate}
+  .blob-div-alt i:nth-child(1){animation-duration:14s;animation-delay:-4s}
+  .blob-div-alt i:nth-child(2){animation-duration:10s;animation-delay:-2.5s}
+  .blob-div-alt i:nth-child(3){animation-duration:16s;animation-delay:-6s}
 }
-@keyframes blob-breathe{
-  from{scale:.88}
-  to  {scale:1.12}
+@keyframes blob-breathe{ from{scale:.9} to{scale:1.1} }
+/* el nucleo 2 se separa lo justo para estrangular sin llegar a partirse */
+@keyframes nuc-2{
+  0%  {transform:translate3d(0,0,0) scale(1)}
+  45% {transform:translate3d(6%,-30%,0) scale(.86)}
+  100%{transform:translate3d(-8%,-14%,0) scale(1.06)}
+}
+@keyframes nuc-1{
+  0%  {transform:translate3d(0,0,0) scale(1)}
+  50% {transform:translate3d(-7%,7%,0) scale(1.1)}
+  100%{transform:translate3d(5%,-4%,0) scale(.94)}
+}
+@keyframes nuc-3{
+  0%  {transform:translate3d(0,0,0) scale(.9)}
+  40% {transform:translate3d(16%,16%,0) scale(1.15)}
+  100%{transform:translate3d(-6%,10%,0) scale(.8)}
 }
 /* el contorno muta de verdad: cada esquina viaja por su cuenta */
 @keyframes blob-morph{
@@ -2693,7 +2729,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   from{transform:translate3d(-16px,-20px,0) rotate(-11deg)}
   to  {transform:translate3d(18px,22px,0) rotate(13deg)}
 }
-@media(prefers-reduced-motion:reduce){ .blob{animation:none} }
+@media(prefers-reduced-motion:reduce){ .blob,.blob i{animation:none} }
 
 /* ===================================================================
    CAMPO FLUIDO — shader WebGL2
@@ -2873,6 +2909,16 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
        eso destruye el scroll. El movimiento sale de mover dos capas ya
        deformadas en sentidos opuestos — la interferencia entre ambas se
        lee como mutacion y el coste es de compositor, no de filtro. -->
+  <!-- GOO / METABALLS. El desenfoque difumina los bordes y la matriz de
+       color reconstruye el alfa con una pendiente brutal (22, -10): lo que
+       estaba difuso vuelve a ser solido, pero las formas que se acercaron
+       ya se habian mezclado. Resultado: se FUNDEN al juntarse y se
+       ESTRANGULAN al separarse — la cintura de la referencia. -->
+  <filter id="goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b"/>
+    <feColorMatrix in="b" mode="matrix"
+      values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="g"/>
+  </filter>
   <filter id="topo-warp" x="-12%" y="-12%" width="124%" height="124%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.0022 0.0041" numOctaves="3" seed="11" result="t"/>
     <feGaussianBlur in="t" stdDeviation="1.4" result="ts"/>
@@ -3226,7 +3272,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 </section>
 
 <!-- divisor organico de vidrio liquido: separa sin cortar -->
-<div class="blob-div" aria-hidden="true"><span class="blob"></span></div>
+<div class="blob-div" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
 
 <!-- ================== 04 · CÓMO FUNCIONA — 3 steps ================== -->
 <section class="section how" id="how">
@@ -3257,7 +3303,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
-<div class="blob-div blob-div-alt" aria-hidden="true"><span class="blob"></span></div>
+<div class="blob-div blob-div-alt" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
 
 <!-- ============================ 05 · ENCARGOS ============================ -->
 <section class="section encargos" id="encargos">
