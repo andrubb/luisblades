@@ -2755,6 +2755,39 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 /* sin WebGL2 el canvas queda vacio: se le da un fondo digno */
 .flux-foot{background:linear-gradient(100deg,var(--noir),#1a1a1c 55%,var(--noir))}
 @media(prefers-reduced-motion:reduce){ .flux-hero{opacity:.16} }
+
+/* ===================================================================
+   VARIANTES DE BURBUJA — la misma pieza repetida cinco veces se lee
+   como plantilla. Cada una cambia tamano, lado y ritmo, y ninguna
+   vuelve al centro salvo las dos originales.
+   =================================================================== */
+.bd-sm .blob{width:clamp(96px,17vw,150px)}
+.bd-lg .blob{width:clamp(190px,34vw,320px)}
+.bd-left {justify-items:start;padding-left:clamp(10px,7vw,90px)}
+.bd-right{justify-items:end;  padding-right:clamp(10px,7vw,90px)}
+/* ritmos propios: ningun par de burbujas comparte ciclo */
+.bd-sm  .blob{animation-duration:7.5s,6s}
+.bd-sm  .blob i:nth-child(1){animation-duration:9s}
+.bd-sm  .blob i:nth-child(2){animation-duration:6.5s;animation-delay:-1.5s}
+.bd-sm  .blob i:nth-child(3){animation-duration:11s;animation-delay:-4s}
+.bd-lg  .blob{animation-duration:15s,12s;animation-delay:-6s,-4s}
+.bd-lg  .blob i:nth-child(1){animation-duration:19s;animation-delay:-7s}
+.bd-lg  .blob i:nth-child(2){animation-duration:13s;animation-delay:-5s}
+.bd-lg  .blob i:nth-child(3){animation-duration:21s;animation-delay:-9s}
+/* las que caen sobre plancha clara necesitan mas presencia */
+.bd-left .blob,.bd-right .blob{opacity:.86}
+
+/* ===================================================================
+   CAMPO FLUIDO EN LA FICHA — una superficie viva detras del frasco.
+   Vive DETRAS de la hoja, no dentro: al arrastrar para cerrar, la hoja
+   se desliza sobre el campo y aparece profundidad real entre las capas.
+   =================================================================== */
+.flux-sheet{
+  position:absolute;inset:0;z-index:0;width:100%;height:100%;
+  opacity:.5;
+}
+.modal-card{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){ .flux-sheet{opacity:.3} }
 </style>
 </head>
 
@@ -3010,6 +3043,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     <div class="stats reveal" id="stats"></div>
   </div>
 </section>
+
+<div class="blob-div bd-sm bd-left" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
 
 <!-- ================== ENCONTRÁ TU AROMA — scent finder (interlude, no numeral) ================== -->
 <section class="section finder" id="finder">
@@ -3357,6 +3392,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   </div>
 </section>
 
+<div class="blob-div bd-lg bd-right" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
+
 <!-- ============================ 06 · ABOUT ============================ -->
 <section class="section" id="about">
   <span class="aurora aurora-soft" aria-hidden="true">
@@ -3410,6 +3447,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     <div class="cuts-grid reveal" id="cutsGrid"></div>
   </div>
 </section>
+
+<div class="blob-div bd-sm bd-right" aria-hidden="true"><span class="blob"><i></i><i></i><i></i></span></div>
 
 <!-- ============================ 08 · FAQ ============================ -->
 <section class="section" id="faq">
@@ -3506,7 +3545,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 <!-- el asa vive FUERA de #modalCard: renderModal reemplaza su innerHTML
      en cada apertura y se la llevaba por delante -->
-<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div><span class="sheet-grip" aria-hidden="true"></span></div>
+<div class="modal" id="modal"><canvas class="flux flux-sheet" aria-hidden="true"></canvas><div class="modal-card" id="modalCard"></div><span class="sheet-grip" aria-hidden="true"></span></div>
 
 <!-- ============================ FLOAT / TOAST / ADMIN ============================ -->
 <aside style="display:contents" aria-label="Accesos rápidos">
@@ -4911,6 +4950,18 @@ function setupFlux(){
      resolucion: el pixelado venia del buffer bajo mas el dither. */
   if(hero) crearFlux(hero,[0.05,0.04,0.05],[0.80,0.55,0.25],
                      movil?1.05:1.7, movil?15.0:19.0, 0.016, movil?0.95:0.75);
+  /* ficha — ambar profundo, bandas anchas y lentas: es fondo de lectura,
+     no puede competir con el producto. Solo se crea cuando existe. */
+  /* La ficha arranca cerrada, asi que crear aqui su contexto WebGL2 solo
+     retrasaba el arranque: medido, LCP 2332 -> 3184ms por compilar un
+     tercer shader que nadie ve. Se crea la PRIMERA vez que se abre. */
+  const hoja=$('.flux-sheet');
+  if(hoja){
+    let creado=false;
+    window.__fluxSheet=()=>{ if(creado) return; creado=true;
+      crearFlux(hoja,[0.055,0.045,0.05],[0.62,0.42,0.20],
+                movil?0.85:1.3, movil?7.0:9.0, 0.026, movil?0.8:0.7); };
+  }
   /* pie — hueso sobre noir. Bandas anchas y borde muy blando: es donde
      mas se notaba la trama y donde el usuario pidio mas cuerpo. */
   if(pie)  crearFlux(pie ,[0.043,0.043,0.047],[0.96,0.945,0.918],
@@ -5203,6 +5254,7 @@ function updateFavUI(){
    =================================================================== */
 function openModal(id){
   document.body.classList.add('sheet-open');   // el fondo se encoge tras la hoja
+  if(window.__fluxSheet) window.__fluxSheet();  // el shader de la ficha nace al abrirla
   const p=S.products.find(x=>x.id===id); if(!p)return;
   S.modalP=p; S.modalVol=100; S.modalQty=1; renderModal();
   $('#modal').classList.add('show'); $('#overlay').classList.add('show'); document.body.style.overflow='hidden';
