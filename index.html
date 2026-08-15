@@ -2958,7 +2958,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .firma-nom:focus-visible{outline:1px solid var(--amber-hot);outline-offset:8px;border-radius:2px}
 .firma-nota{
   font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:rgba(242,244,246,.42);
+  /* medido: a .42 el contraste era 3.79:1 y AA pide 4.5 para texto de
+     este tamano. Es una llamada a la accion, ademas: tiene que leerse. */
+  color:rgba(242,244,246,.58);
 }
 @media(prefers-reduced-motion:reduce){
   .firma-nom,.firma-nom svg{transition:none}
@@ -4997,6 +4999,21 @@ const luisCuts = [
 const MEDIA_DB='bp_media', MEDIA_ALM='medios', MEDIA_CLAVE='v1';
 let MEDIA={retrato:null, fotos:[], cortes:[]};
 
+/* ===================================================================
+   NINGUNA ESPERA DEL ARRANQUE PUEDE SER INFINITA.
+   Ya ocurrio una vez: el arranque esperaba a requestAnimationFrame, que
+   en una pestana de fondo no llega NUNCA, y la pagina se quedaba a
+   medias para siempre. La leccion aplica a todo lo demas que init
+   espera. Si algo tarda mas de la cuenta, se sigue sin ello: la pagina
+   incompleta pero viva siempre es mejor que la pagina colgada.
+   =================================================================== */
+function conTecho(promesa, ms, siFalla){
+  return Promise.race([
+    Promise.resolve(promesa).catch(e=>{ console.warn('espera fallida',e); return siFalla; }),
+    new Promise(r=>setTimeout(()=>r(siFalla), ms))
+  ]);
+}
+
 function abrirMediaDB(){
   return new Promise((res,rej)=>{
     if(!('indexedDB' in window)) return rej(new Error('sin indexedDB'));
@@ -5004,6 +5021,9 @@ function abrirMediaDB(){
     p.onupgradeneeded=()=>{ if(!p.result.objectStoreNames.contains(MEDIA_ALM)) p.result.createObjectStore(MEDIA_ALM); };
     p.onsuccess=()=>res(p.result);
     p.onerror=()=>rej(p.error);
+    /* onblocked salta cuando otra pestana tiene abierta una version
+       anterior. Si no se atiende, ni onsuccess ni onerror llegan jamas. */
+    p.onblocked=()=>rej(new Error('indexedDB bloqueada por otra pestana'));
   });
 }
 async function leerMedios(){
@@ -5729,8 +5749,15 @@ function lazyVideos(){
    DATA LOADING — Supabase → local override → hardcoded
    =================================================================== */
 async function loadProducts(){
-  try{ await cargarSupabase();
-       if(sb){ const {data,error}=await sb.from('perfumes').select('*').order('id'); if(!error&&data&&data.length) return data; } }
+  /* Con techo los dos pasos. Hoy la clave es un placeholder y esto
+     resuelve al instante, pero en cuanto Luis ponga la clave real un CDN
+     lento o una consulta atascada pasarian a bloquear TODO el arranque,
+     no solo el catalogo. El catalogo local es un respaldo perfectamente
+     digno; quedarse sin pagina no lo es. */
+  try{ await conTecho(cargarSupabase(), 4000, null);
+       if(sb){ const {data,error}=await conTecho(
+                  sb.from('perfumes').select('*').order('id'), 5000, {data:null,error:'tardo demasiado'});
+               if(!error&&data&&data.length) return data; } }
   catch(e){ console.warn('Supabase fetch failed',e); }
   const ov=localStorage.getItem('bp_products');
   if(ov){ try{ const a=JSON.parse(ov); if(a&&a.length) return a; }catch(e){} }
@@ -6771,7 +6798,9 @@ async function init(){
   if(S.mode) $$('#daynight button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
   applyLang(S.lang);     // renders grid + cart + wa
   updateFavUI();
-  await leerMedios();    // retrato, fotos y videos que Luis subio desde el panel
+  /* con techo: una IndexedDB bloqueada por otra pestana no puede dejar
+     la pagina sin animaciones ni carruseles */
+  await conTecho(leerMedios(), 2500, null);
   renderCarousels();     // Luis photos + cuts
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
 

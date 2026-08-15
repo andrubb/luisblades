@@ -77,7 +77,13 @@ const grabbed = await evaluate(`(()=>{
     grid: clean(cards),
     finder: clean(finder.innerHTML),
     numTarjetas: grid.querySelectorAll('.card').length,
-    totalProductos: (window.S && S.products) ? S.products.length : 0,
+    /* Ojo: nada de acentos graves aqui dentro, esto vive en un template
+       literal y lo cerrarian.
+       S es un const de nivel superior, no una propiedad de window, asi
+       que window.S siempre fue undefined y este campo reportaba 0 aunque
+       el catalogo estuviera cargado. Ahora se lee el contador que la
+       propia pagina pinta, que es el dato real. */
+    totalProductos: ((document.getElementById('resultCount')||{}).textContent||'').trim(),
     tituloQuiz: (finder.querySelector('h3,h4,.fq-q') || {}).textContent || null
   };
 })()`);
