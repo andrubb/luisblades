@@ -2884,7 +2884,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
      (debounced, re-entrancy-guarded) on fonts.ready / img decode / load / #grid+#finderBox resize.
      =================================================================================== -->
 <script>/* mark JS available so we can pre-hide animated bits without FOUC; reduced-motion CSS overrides this.
-   LCP guard: if GSAP hasn't arrived within 2.2s (slow 4G), un-hide the hero so content paints — initAnim skips the intro in that case. */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('anim');setTimeout(function(){if(!window.__bpAnim)document.documentElement.classList.remove('anim');},2200);}}catch(e){}})();</script>
+   LCP guard: if GSAP hasn't arrived within 2.2s (slow 4G), un-hide the hero so content paints — initAnim skips the intro in that case. */(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){document.documentElement.classList.add('anim');setTimeout(function(){if(!window.__bpAnim)document.documentElement.classList.remove('anim');},2800);}}catch(e){}})();</script>
 
 <!-- Architectural black frame: persistent at every scroll position, all sections.
      Purely decorative + pointer-events:none, so it is invisible to AT and to clicks. -->
@@ -3608,7 +3608,10 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <div class="admin" id="admin"></div>
 
 <!-- ============================ SCRIPTS ============================ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase YA NO es bloqueante. Medido en movil a 4G: 1430ms de
+     descarga y parseo en el camino critico, para una libreria que solo
+     hace falta cuando existe una clave real y ademas se usa despues del
+     primer pintado. Se carga bajo demanda desde cargarSupabase(). -->
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
@@ -3636,8 +3639,24 @@ async function hashPass(txt){
              localStorage.removeItem('bp_admin_pass'); }
 }catch(_){} })();
 let sb = null;
-try { if (window.supabase && SUPABASE_ANON_KEY.indexOf('REPLACE') === -1) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
-catch(e){ console.warn('Supabase init skipped', e); }
+/* Carga perezosa: inyecta el script solo la primera vez que se pide y
+   solo si hay clave configurada. Devuelve el cliente o null. */
+let __sbProm=null;
+function cargarSupabase(){
+  if(__sbProm) return __sbProm;
+  if(SUPABASE_ANON_KEY.indexOf('REPLACE')!==-1) return (__sbProm=Promise.resolve(null));
+  __sbProm=new Promise(res=>{
+    const el=document.createElement('script');
+    el.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    el.async=true;
+    el.onload=()=>{ try{ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); }
+                    catch(e){ console.warn('supabase no arranco',e); }
+                    res(sb); };
+    el.onerror=()=>{ console.warn('supabase no se pudo descargar'); res(null); };
+    document.head.appendChild(el);
+  });
+  return __sbProm;
+}
 
 /* ----------------------------- STATE ------------------------------ */
 const S = {
@@ -4971,7 +4990,13 @@ void main(){
   o = vec4(mix(uA,uB,v),1.);
 }`;
 
-function crearFlux(cv, colA, colB, escala, bandas, blandura, dpr){
+/* `diferido`: el campo se pinta UNA vez y se queda quieto hasta que alguien
+   llame a libera(). Se usa en el hero. Motivo: la coreografia de entrada
+   del titulo y un shader a 60fps peleaban por el mismo instante, y el
+   resultado era justo el tiron que se veia al cargar. Asi el fondo esta
+   desde el primer fotograma —no hay salto visual— pero no consume nada
+   mientras el texto entra. */
+function crearFlux(cv, colA, colB, escala, bandas, blandura, dpr, diferido){
   let gl;
   try{ gl = cv.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'low-power'}); }catch(e){}
   if(!gl){ cv.remove(); return null; }
@@ -4996,33 +5021,63 @@ function crearFlux(cv, colA, colB, escala, bandas, blandura, dpr){
      venia de ahi. Se sube el buffer y se pierde algo de coste, que se
      compensa con una octava menos de ruido. */
   const DPR=dpr;
+  /* medir() se llamaba en CADA frame, y getBoundingClientRect fuerza al
+     navegador a recalcular el layout en ese instante. Sesenta reflujos
+     por segundo sobre un DOM grande, justo mientras la coreografia CSS
+     del hero esta ensuciando el layout: esa era una causa real del tiron
+     inicial. El tamano de un canvas solo cambia cuando cambia el tamano,
+     asi que ahora lo avisa un ResizeObserver y el bucle no mide nada. */
   const medir=()=>{
     const r=cv.getBoundingClientRect();
     const w=Math.max(2,Math.round(r.width*DPR)), h=Math.max(2,Math.round(r.height*DPR));
-    if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; gl.viewport(0,0,w,h); }
-    gl.uniform2f(uRes,cv.width,cv.height);
+    if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; gl.viewport(0,0,w,h);
+      gl.uniform2f(uRes,cv.width,cv.height); }
   };
+  medir();
+  if('ResizeObserver' in window){
+    /* el callback llega FUERA del frame de pintado, asi que aqui medir no
+       bloquea nada */
+    new ResizeObserver(()=>medir()).observe(cv);
+  } else {
+    window.addEventListener('resize',medir,{passive:true});
+  }
   let raf=null, vivo=false, t0=performance.now();
-  const pinta=()=>{ medir(); gl.uniform1f(uT,(performance.now()-t0)/1000); gl.drawArrays(gl.TRIANGLES,0,3); };
+  /* el frame ya no mide: solo avanza el tiempo y dibuja */
+  const pinta=()=>{ gl.uniform1f(uT,(performance.now()-t0)/1000); gl.drawArrays(gl.TRIANGLES,0,3); };
   const bucle=()=>{ if(!vivo) return; pinta(); raf=requestAnimationFrame(bucle); };
-  const arranca=()=>{ if(vivo) return; vivo=true; bucle(); };
-  const para=()=>{ vivo=false; if(raf) cancelAnimationFrame(raf); raf=null; };
-  if(reduceMotion()){ pinta(); return {pinta,arranca:()=>{},para}; }   // un fotograma y quieto
+  /* mientras siga retenido, arranca() solo deja un fotograma fijo */
+  let retenido=!!diferido, aLaVista=false;
+  const arranca=()=>{ aLaVista=true; if(retenido||vivo) return; vivo=true; bucle(); };
+  const para=()=>{ aLaVista=false; vivo=false; if(raf) cancelAnimationFrame(raf); raf=null; };
+  const libera=()=>{ if(!retenido) return; retenido=false; if(aLaVista) arranca(); };
+  if(reduceMotion()){ pinta(); return {pinta,arranca:()=>{},para,libera:()=>{}}; }   // un fotograma y quieto
+  if(retenido) pinta();                 // el fondo se ve ya, pero quieto
   if('IntersectionObserver' in window){
     new IntersectionObserver(es=>{ es[0].isIntersecting ? arranca() : para(); },{rootMargin:'120px'}).observe(cv);
   } else arranca();
-  window.addEventListener('resize',()=>{ if(!vivo) pinta(); },{passive:true});
+  /* si esta parado (fuera de vista o reduced-motion) y cambia el tamano,
+     hace falta un fotograma suelto para que no quede un buffer vacio */
+  window.addEventListener('resize',()=>{ if(!vivo){ medir(); pinta(); } },{passive:true});
   document.addEventListener('visibilitychange',()=>{ document.hidden?para():arranca(); });
-  return {pinta,arranca,para};
+  return {pinta,arranca,para,libera};
 }
 
-function setupFlux(){
-  const hero=$('.flux-hero'), pie=$('.flux-foot');
+/* Partido en dos. El shader del hero se compila en la fase 1 porque se ve
+   de inmediato; el del pie esta a varias pantallas de distancia y compilarlo
+   en el arranque solo robaba hilo principal a la intro. */
+function setupFluxHero(){
+  const hero=$('.flux-hero');
   const movil = matchMedia('(max-width:899px)').matches;
   /* hero — ambar sobre noir. En movil menos bandas (mas gruesas) y mayor
      resolucion: el pixelado venia del buffer bajo mas el dither. */
-  if(hero) crearFlux(hero,[0.05,0.04,0.05],[0.80,0.55,0.25],
-                     movil?1.05:1.7, movil?15.0:19.0, 0.016, movil?0.95:0.75);
+  /* diferido=true: se ve desde el primer fotograma, empieza a moverse
+     cuando la intro del titulo ya termino (lo suelta la fase 3). */
+  if(hero) window.__fluxHero=crearFlux(hero,[0.05,0.04,0.05],[0.80,0.55,0.25],
+                     movil?1.05:1.7, movil?15.0:19.0, 0.016, movil?0.95:0.75, true);
+}
+function setupFluxResto(){
+  const pie=$('.flux-foot');
+  const movil = matchMedia('(max-width:899px)').matches;
   /* ficha — ambar profundo, bandas anchas y lentas: es fondo de lectura,
      no puede competir con el producto. Solo se crea cuando existe. */
   /* La ficha arranca cerrada, asi que crear aqui su contexto WebGL2 solo
@@ -5216,7 +5271,8 @@ function lazyVideos(){
    DATA LOADING — Supabase → local override → hardcoded
    =================================================================== */
 async function loadProducts(){
-  try{ if(sb){ const {data,error}=await sb.from('perfumes').select('*').order('id'); if(!error&&data&&data.length) return data; } }
+  try{ await cargarSupabase();
+       if(sb){ const {data,error}=await sb.from('perfumes').select('*').order('id'); if(!error&&data&&data.length) return data; } }
   catch(e){ console.warn('Supabase fetch failed',e); }
   const ov=localStorage.getItem('bp_products');
   if(ov){ try{ const a=JSON.parse(ov); if(a&&a.length) return a; }catch(e){} }
@@ -5784,8 +5840,8 @@ async function adminSettings(m){
     refreshWA(); refreshHours(); applyLang(dl); toast('Guardado'); renderAdmin();
   });
 }
-async function syncUp(p){ try{ if(sb) await sb.from('perfumes').upsert(p); }catch(e){ console.warn('upsert skipped',e); } }
-async function syncDel(id){ try{ if(sb) await sb.from('perfumes').delete().eq('id',id); }catch(e){ console.warn('delete skipped',e); } }
+async function syncUp(p){ try{ await cargarSupabase(); if(sb) await sb.from('perfumes').upsert(p); }catch(e){ console.warn('upsert skipped',e); } }
+async function syncDel(id){ try{ await cargarSupabase(); if(sb) await sb.from('perfumes').delete().eq('id',id); }catch(e){ console.warn('delete skipped',e); } }
 
 /* ===================================================================
    EVENTS & INIT
@@ -6071,8 +6127,55 @@ function initAnim(){
     }
   }
 }
+/* Espera a que el navegador haya PINTADO de verdad. Un solo rAF encola
+   trabajo para el proximo frame; el segundo se ejecuta ya con ese frame
+   en pantalla, que es el momento real en que el usuario ve algo. */
+const trasPintar=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+
+/* La coreografia CSS del hero dura ~1.5s y es lo primero que ve el
+   usuario. Montar ScrollTrigger encima de ella era lo que la trababa
+   (medido: 546ms de bloqueo justo sobre la intro). Se espera a que
+   termine — salvo que el usuario haga scroll antes, en cuyo caso los
+   triggers hacen falta YA y se montan sin esperar ni pasar por idle. */
+function esperaIntro(){
+  return new Promise(res=>{
+    let hecho=false;
+    const lanzar=inmediato=>{
+      if(hecho) return; hecho=true;
+      window.removeEventListener('scroll',porScroll);
+      /* si el usuario ya esta bajando, los triggers hacen falta AHORA:
+         ni idle ni esperas. En cualquier otro caso se cede el hueco. */
+      if(inmediato===true) return res();
+      (window.requestIdleCallback||(f=>setTimeout(f,1)))(()=>res(),{timeout:300});
+    };
+    const porScroll=()=>lanzar(true);
+    window.addEventListener('scroll',porScroll,{passive:true});
+    setTimeout(lanzar, reduceMotion()?0:1500);
+  });
+}
+
+/* ===================================================================
+   ARRANQUE EN TRES FASES.
+   Antes todo corria de golpe en DOMContentLoaded. Medido en un movil 4x
+   mas lento: 518ms de bloqueo ahi y otros 546ms al 'load', ambos encima
+   de la intro del hero. Eso es exactamente el "lag" que se veia.
+   Ahora la primera pantalla se queda sola con el hilo principal.
+   =================================================================== */
 async function init(){
+  /* ---------- FASE 1 · solo lo que se ve en la primera pantalla ---------- */
   $('#yr').textContent=new Date().getFullYear();
+  setupEvents();         // los botones responden desde el primer frame
+  setupAppBar();         // shell de aplicacion: barra inferior persistente
+  setupFluxHero();       // el campo fluido que SI se ve de entrada
+  if(location.hash==='#admin') openAdmin();
+
+  /* El reloj de la fase 3 arranca AQUI, no al final: si se pusiera despues
+     de cargar los productos, en una red lenta la fase 3 se iria detras de
+     la descarga y las animaciones de scroll llegarian tardisimo. */
+  const relojIntro=esperaIntro();
+
+  /* ---------- FASE 2 · con la primera pantalla ya pintada ---------- */
+  await trasPintar();
   // loading skeletons — full card silhouette (media + text lines) so real cards land with zero layout jump
   // solo esqueletos si NO hay contenido pre-renderizado (ver tools/prerender.mjs)
   if(!$('#grid').querySelector('.card')){
@@ -6080,17 +6183,21 @@ async function init(){
   }
   S.products=await loadProducts();
   if(S.mode) $$('#daynight button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
-  setupEvents();
   applyLang(S.lang);     // renders grid + cart + wa
   updateFavUI();
-  renderCarousels();     // Luis photos + cuts (placeholders until real media added)
-  initAnim();
-  setupAppBar();         // shell de aplicacion: barra inferior persistente
-  setupSheetGesture();   // la ficha se arrastra para cerrar, como una app
-  setupFlux();           // campo fluido en shader: hero + banda del pie
-  setupBlobs();          // las burbujas solo animan a la vista
+  renderCarousels();     // Luis photos + cuts
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
-  if(location.hash==='#admin') openAdmin();
+
+  /* ---------- FASE 3 · con la intro terminada Y el catalogo ya en el DOM ---
+     Las dos condiciones importan: ScrollTrigger tiene que medir las fichas
+     definitivas, no los esqueletos, o los disparadores quedan en sitios que
+     ya no existen. */
+  await relojIntro;
+  if(window.__fluxHero) window.__fluxHero.libera();  // el fondo del hero echa a andar
+  initAnim();          // ScrollTrigger: lo mas caro de todo el arranque
+  setupSheetGesture(); // la ficha se arrastra para cerrar, como una app
+  setupFluxResto();    // la banda del pie, a varias pantallas de aqui
+  setupBlobs();        // las burbujas solo animan a la vista
 }
 /* B4 — si la URL trae ?cat=, aplicar ese filtro al aterrizar.
    Se valida contra las pills existentes: una categoria inventada se ignora
