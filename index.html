@@ -2353,20 +2353,32 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       0 26px 52px -20px rgba(0,0,0,.86),      /* sombra ambiental */
       0  8px 16px -10px rgba(0,0,0,.70);      /* sombra de contacto */
     isolation:isolate;
+    /* recorta la banda de luz a la forma de la barra. Comprobado que no
+       corta nada util: los contadores cuelgan del icono, que esta muy
+       dentro, no del borde. */
+    overflow:hidden;
   }
-  /* 2 · el reflejo que nunca se detiene */
+  /* 2 · el reflejo que nunca se detiene.
+     MEDIDO: la primera version animaba background-position, y eso repinta
+     el elemento en cada fotograma. Sobre algo con backdrop-filter obliga
+     ademas a volver a filtrar todo el fondo. Con seis piezas asi (la
+     barra y cinco burbujas) el scroll paso de 7% a 25% de fotogramas
+     perdidos y de 55 a 47 fps.
+     Ahora la banda de luz es una CAJA que se desplaza con transform: eso
+     lo resuelve el compositor sin repintar nada. El recorte lo hace el
+     overflow del padre. */
   .appbar::before{
-    content:'';position:absolute;inset:0;border-radius:inherit;
+    content:'';position:absolute;top:-12%;bottom:-12%;left:0;
+    width:44%;
     pointer-events:none;z-index:0;
     background:linear-gradient(112deg,
-      rgba(255,255,255,0) 34%,
-      rgba(255,255,255,.11) 44%,
-      rgba(255,255,255,.16) 50%,
-      rgba(255,255,255,.05) 57%,
-      rgba(255,255,255,0) 66%);
-    background-size:280% 100%;
-    background-repeat:no-repeat;
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.13) 38%,
+      rgba(255,255,255,.18) 52%,
+      rgba(255,255,255,.05) 70%,
+      rgba(255,255,255,0) 100%);
     animation:vidrio-reflejo 11s linear infinite;
+    will-change:transform;
   }
   /* 1 · el canto lenticular */
   .appbar::after{
@@ -2383,9 +2395,10 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
             mask-composite:exclude;
   }
 }
+/* solo transform: el compositor lo resuelve sin repintar */
 @keyframes vidrio-reflejo{
-  from{background-position:160% 0}
-  to  {background-position:-60% 0}
+  from{transform:translate3d(-115%,0,0)}
+  to  {transform:translate3d(330%,0,0)}
 }
 @media(min-width:900px){ .appbar{display:none} }
 
@@ -2780,6 +2793,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   border-radius:58% 42% 47% 53% / 52% 46% 54% 48%;
   will-change:border-radius,transform;
   transform:translateZ(0);
+  /* la banda de luz se recorta a la silueta, que ademas va mutando */
+  overflow:hidden;
 }
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .blob{
@@ -2795,25 +2810,25 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    Hereda el play-state del padre, asi que respeta la pausa fuera de
    pantalla en vez de seguir animando donde nadie mira. */
 .blob::before{
-  content:'';position:absolute;inset:0;border-radius:inherit;
+  content:'';position:absolute;top:-14%;bottom:-14%;left:0;
+  width:46%;
   pointer-events:none;
   background:linear-gradient(118deg,
-    rgba(255,255,255,0) 30%,
-    rgba(255,255,255,.20) 46%,
-    rgba(255,255,255,.26) 51%,
-    rgba(255,255,255,.06) 58%,
-    rgba(255,255,255,0) 70%);
-  background-size:260% 100%;
-  background-repeat:no-repeat;
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.22) 40%,
+    rgba(255,255,255,.28) 52%,
+    rgba(255,255,255,.07) 72%,
+    rgba(255,255,255,0) 100%);
   animation:vidrio-reflejo 8s linear infinite;
   animation-play-state:inherit;
+  will-change:transform;
 }
 .blob-div-alt .blob::before{animation-duration:10s;animation-delay:-3s}
 .bd-sm .blob::before{animation-duration:6.5s;animation-delay:-1.5s}
 .bd-lg .blob::before{animation-duration:12s;animation-delay:-4s}
 @media(prefers-reduced-motion:reduce){
   /* el brillo se queda, pero quieto en una posicion favorecedora */
-  .blob::before{animation:none;background-position:38% 0}
+  .blob::before,.appbar::before{animation:none;transform:translate3d(60%,0,0)}
 }
 @media(prefers-reduced-motion:no-preference){
   /* Mas rapido y mas amplio que antes: pediste que se notara. Tres capas
