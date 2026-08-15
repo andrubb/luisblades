@@ -6338,7 +6338,13 @@ function adminMedios(m){
           <p class="med-nota">${g.nota}</p>
           <div class="med-rejilla">
             ${lista.map(it=>fichaMedio(g.clave,it)).join('')}
-            <label class="med-soltar" data-zona="${g.clave}" tabindex="0">
+            <!-- role y aria-label porque el input va oculto: sin ellos un
+                 lector de pantalla anuncia esto como un elemento generico
+                 sin nombre, y no hay forma de saber que hace ni a que grupo
+                 pertenece. Con tres zonas iguales en la pagina, decir cual
+                 es cual importa. -->
+            <label class="med-soltar" data-zona="${g.clave}" tabindex="0"
+                   role="button" aria-label="${lista.length&&g.unico?'Reemplazar':'Agregar'} en ${g.titulo}">
               <input type="file" accept="${g.acepta}" ${g.unico?'':'multiple'} data-entrada="${g.clave}" hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
               <span>${lista.length&&g.unico?'Reemplazar':'Agregar'}</span>
