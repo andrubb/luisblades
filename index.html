@@ -2842,6 +2842,112 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .bd-sm .blob{animation-duration:4.2s,3.4s;animation-delay:-.6s,-.3s}
   .bd-lg .blob{animation-duration:6.5s,5.5s;animation-delay:-2s,-1s}
 }
+
+/* ===================================================================
+   RETRATO DE LUIS — la foto que encabeza su seccion.
+   Marco con las mismas esquinas de imprenta que enmarcan la pagina:
+   la pieza pertenece al sistema, no es una foto pegada encima.
+   =================================================================== */
+.retrato{
+  margin:0 0 clamp(28px,5vw,46px);
+  display:grid; justify-items:center; gap:14px;
+}
+.retrato-marco{
+  position:relative;
+  width:min(100%,clamp(240px,62vw,380px));
+  aspect-ratio:4/5;
+  overflow:hidden;
+  background:linear-gradient(160deg,rgba(200,135,58,.10),rgba(0,0,0,.35));
+  border-radius:2px;
+}
+.retrato-marco img{
+  width:100%; height:100%; object-fit:cover; object-position:center 22%;
+  display:block;
+  /* el retrato entra en la paleta de la casa en vez de pelearse con ella */
+  filter:saturate(.86) contrast(1.06);
+}
+/* esquinas de imprenta, del mismo lenguaje que .rm */
+.retrato-esq{position:absolute;width:20px;height:20px;pointer-events:none;
+  border:1.5px solid var(--amber-hot);opacity:.85}
+.retrato-esq.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+.retrato-esq.tr{top:10px;right:10px;border-left:0;border-bottom:0}
+.retrato-esq.bl{bottom:10px;left:10px;border-right:0;border-top:0}
+.retrato-esq.br{bottom:10px;right:10px;border-left:0;border-top:0}
+/* Sin pie de foto. El encabezado de la seccion, justo encima, ya dice
+   "El Hombre Detras / Luis Blades": repetirlo bajo el retrato era ruido.
+   Ademas la primera version lo pinto en hueso sobre hueso — esta seccion
+   tiene fondo CLARO, no oscuro, y el nombre quedaba invisible. */
+
+/* ===================================================================
+   PANEL DE MEDIOS — subir y quitar sin tocar codigo.
+   Rejilla de miniaturas + una casilla para agregar. La casilla vive
+   DENTRO de la rejilla, no encima: asi el sitio donde se suelta el
+   archivo es el mismo sitio donde aparecera.
+   =================================================================== */
+.med-grupo{margin-bottom:30px}
+/* Nota en texto pelado, no en caja. Tres cajas de aviso seguidas pesaban
+   mas que el contenido y esto tiene que leerse de un vistazo. */
+.med-nota{margin:-6px 0 12px;font-size:.78rem;line-height:1.5;color:var(--muted);letter-spacing:.01em}
+.med-rejilla{
+  display:grid; gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(112px,1fr));
+}
+/* OJO: el panel de admin es de fondo CLARO (--surface / --bg), no oscuro
+   como el resto del sitio. Una primera version de estos estilos uso tonos
+   hueso sobre hueso y la casilla de «Agregar» quedaba literalmente
+   invisible: estaba ahi, ocupaba su sitio, y no se veia. */
+.med-item{
+  position:relative; margin:0; aspect-ratio:1;
+  border-radius:10px; overflow:hidden;
+  background:var(--bg);
+  border:1px solid var(--border);
+}
+.med-item img,.med-item video{width:100%;height:100%;object-fit:cover;display:block}
+.med-item figcaption{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:14px 8px 5px; font-size:10px; letter-spacing:.05em;
+  color:rgba(255,255,255,.82);
+  background:linear-gradient(transparent,rgba(0,0,0,.66));
+  pointer-events:none;
+}
+.med-tipo{
+  position:absolute;top:7px;left:7px;
+  font-size:9px;letter-spacing:.12em;padding:3px 6px;border-radius:4px;
+  background:rgba(0,0,0,.62);color:var(--amber-hot);
+}
+.med-quitar{
+  position:absolute;top:6px;right:6px;
+  width:28px;height:28px;display:grid;place-items:center;
+  border:0;border-radius:50%;cursor:pointer;
+  background:rgba(12,12,13,.72);color:#fff;
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  transition:background .18s var(--e-drift), transform .18s var(--e-drift);
+}
+.med-quitar svg{width:14px;height:14px}
+.med-quitar:hover{background:var(--oxblood);transform:scale(1.08)}
+.med-quitar:focus-visible{outline:2px solid var(--amber-hot);outline-offset:2px}
+
+.med-soltar{
+  aspect-ratio:1; display:grid; place-content:center; justify-items:center; gap:5px;
+  border-radius:10px; cursor:pointer; text-align:center; padding:8px;
+  border:1.5px dashed var(--silver);
+  color:var(--muted);
+  background:var(--surface);
+  transition:border-color .2s var(--e-drift), background .2s var(--e-drift), color .2s var(--e-drift);
+}
+.med-soltar svg{width:24px;height:24px;stroke-width:1.5}
+.med-soltar span{font-size:12.5px;letter-spacing:.04em;color:var(--text)}
+.med-soltar small{font-size:9.5px;letter-spacing:.03em}
+.med-soltar:hover,.med-soltar:focus-visible,.med-soltar.encima{
+  border-color:var(--blue); color:var(--blue-text);
+  background:rgba(200,135,58,.08); outline:none;
+}
+.med-soltar:hover span,.med-soltar:focus-visible span,.med-soltar.encima span{color:var(--blue-text)}
+.med-soltar.encima{border-style:solid}
+@media(prefers-reduced-motion:reduce){
+  .med-quitar,.med-soltar{transition:none}
+  .med-quitar:hover{transform:none}
+}
 </style>
 </head>
 
@@ -3482,6 +3588,17 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <h2 data-i18n="man_title">Luis Blades</h2>
       <p data-i18n="man_sub">El barbero y curador detrás de cada elección.</p>
     </div>
+
+    <!-- Retrato. Nace oculto: mientras no haya foto real es preferible que
+         no exista a que haya un hueco gris fingiendo ser una persona.
+         Se rellena desde el panel de admin > Medios, sin tocar codigo. -->
+    <figure class="retrato reveal" id="retratoLuis" hidden>
+      <div class="retrato-marco">
+        <img id="retratoImg" alt="Luis Blades" loading="lazy" decoding="async">
+        <span class="retrato-esq tl"></span><span class="retrato-esq tr"></span>
+        <span class="retrato-esq bl"></span><span class="retrato-esq br"></span>
+      </div>
+    </figure>
 
     <div class="carousel" id="photoStage">
       <button class="car-nav prev" data-car="photoTrack" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 18 9 12l6-6"/></svg></button>
@@ -4657,20 +4774,146 @@ const luisCuts = [
   ''  // corte 6
 ];
 
+/* ===================================================================
+   MEDIOS — retrato, fotos y videos que Luis administra desde el panel.
+
+   Vive en IndexedDB, no en localStorage, y la razon es de tamano: una
+   sola foto comprimida ronda los 120-200KB y localStorage se queda sin
+   cuota (~5MB) a la sexta o septima. IndexedDB aguanta de sobra y ademas
+   guarda binarios sin convertirlos a texto.
+
+   Todo el objeto se guarda bajo una unica clave: son pocos elementos y
+   asi cada escritura es atomica — no puede quedar medio guardado.
+   =================================================================== */
+const MEDIA_DB='bp_media', MEDIA_ALM='medios', MEDIA_CLAVE='v1';
+let MEDIA={retrato:null, fotos:[], cortes:[]};
+
+function abrirMediaDB(){
+  return new Promise((res,rej)=>{
+    if(!('indexedDB' in window)) return rej(new Error('sin indexedDB'));
+    const p=indexedDB.open(MEDIA_DB,1);
+    p.onupgradeneeded=()=>{ if(!p.result.objectStoreNames.contains(MEDIA_ALM)) p.result.createObjectStore(MEDIA_ALM); };
+    p.onsuccess=()=>res(p.result);
+    p.onerror=()=>rej(p.error);
+  });
+}
+async function leerMedios(){
+  try{
+    const db=await abrirMediaDB();
+    const v=await new Promise((res,rej)=>{
+      const t=db.transaction(MEDIA_ALM,'readonly').objectStore(MEDIA_ALM).get(MEDIA_CLAVE);
+      t.onsuccess=()=>res(t.result); t.onerror=()=>rej(t.error);
+    });
+    if(v && typeof v==='object'){
+      MEDIA={retrato:v.retrato||null, fotos:Array.isArray(v.fotos)?v.fotos:[], cortes:Array.isArray(v.cortes)?v.cortes:[]};
+    }
+  }catch(e){ console.warn('medios: no se pudieron leer',e); }
+  return MEDIA;
+}
+async function guardarMedios(){
+  try{
+    const db=await abrirMediaDB();
+    await new Promise((res,rej)=>{
+      const t=db.transaction(MEDIA_ALM,'readwrite').objectStore(MEDIA_ALM).put(MEDIA,MEDIA_CLAVE);
+      t.onsuccess=()=>res(); t.onerror=()=>rej(t.error);
+    });
+    return true;
+  }catch(e){
+    console.warn('medios: no se pudieron guardar',e);
+    toast('No se pudo guardar. Puede que el almacenamiento esté lleno.');
+    return false;
+  }
+}
+
+/* Comprime una imagen antes de guardarla. Sin esto, una foto de movil
+   moderna entra a 4-6MB y con cuatro fotos el sitio ya arrastra. Se
+   reescala al lado mayor indicado y se prueba WebP: si el navegador lo
+   soporta pesa un 25-35% menos que el JPEG a la misma calidad. */
+function comprimeImagen(file, maxLado=1600, calidad=0.82){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onerror=()=>rej(new Error('no se pudo leer el archivo'));
+    fr.onload=()=>{
+      const img=new Image();
+      img.onerror=()=>rej(new Error('el archivo no es una imagen valida'));
+      img.onload=()=>{
+        const esc=Math.min(1, maxLado/Math.max(img.naturalWidth,img.naturalHeight));
+        const w=Math.round(img.naturalWidth*esc), h=Math.round(img.naturalHeight*esc);
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        const x=c.getContext('2d');
+        x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high';
+        x.drawImage(img,0,0,w,h);
+        let out=c.toDataURL('image/webp',calidad);
+        if(out.indexOf('data:image/webp')!==0) out=c.toDataURL('image/jpeg',calidad);  // sin WebP
+        res({src:out, w, h});
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+const leeComoDataURL=file=>new Promise((res,rej)=>{
+  const fr=new FileReader();
+  fr.onload=()=>res(fr.result); fr.onerror=()=>rej(new Error('no se pudo leer el archivo'));
+  fr.readAsDataURL(file);
+});
+const pesoKB=str=>Math.round((String(str).length*0.75)/1024);   // data URL -> KB reales
+const idMedio=()=>'m'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+/* Convierte un archivo suelto en un elemento del almacen. Devuelve null y
+   avisa si no sirve, en vez de guardar algo roto en silencio. */
+async function archivoAMedio(file){
+  const esVideo=/^video\//.test(file.type);
+  const esImagen=/^image\//.test(file.type);
+  if(!esVideo && !esImagen){ toast('«'+file.name+'» no es una imagen ni un video'); return null; }
+  if(esVideo){
+    const MB=file.size/1048576;
+    if(MB>40){ toast('El video pesa '+MB.toFixed(0)+'MB. El máximo es 40MB.'); return null; }
+    if(MB>12) toast('Video de '+MB.toFixed(0)+'MB: tardará en cargar en datos móviles');
+    const src=await leeComoDataURL(file);
+    return {id:idMedio(), tipo:'video', src, nombre:file.name, kb:pesoKB(src)};
+  }
+  const {src}=await comprimeImagen(file);
+  return {id:idMedio(), tipo:'img', src, nombre:file.name, kb:pesoKB(src)};
+}
+
 const PH_PHOTO=()=>`<div class="car-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3 7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3z"/><circle cx="12" cy="12.5" r="3.5"/></svg><span>${S.lang==='es'?'Foto':'Photo'}</span></div>`;
 
 function renderCarousels(){
+  /* El retrato solo existe si hay retrato. Un marco vacio con silueta
+     generica se lee como error, no como diseno. */
+  const fig=$('#retratoLuis'), rim=$('#retratoImg');
+  if(fig && rim){
+    if(MEDIA.retrato && MEDIA.retrato.src){ rim.src=MEDIA.retrato.src; fig.hidden=false; }
+    else { rim.removeAttribute('src'); fig.hidden=true; }
+  }
+  /* Las fotos del panel mandan; los huecos de luisPhotos solo se usan
+     para completar hasta seis y que el carrusel no quede cojo. */
+  const subidas=MEDIA.fotos||[];
+  const huecos=Math.max(0, luisPhotos.length-subidas.length);
   const pt=$('#photoTrack');
-  if(pt) pt.innerHTML=luisPhotos.map((u,i)=> u
-    ? `<div class="car-item"><img src="${u}" alt="Luis Blades ${i+1}" loading="lazy"></div>`
-    : `<div class="car-item">${PH_PHOTO()}</div>`).join('');
+  if(pt) pt.innerHTML=
+    subidas.map((m,i)=> m.tipo==='video'
+        ? `<div class="car-item"><video src="${m.src}" muted loop playsinline autoplay preload="metadata" aria-label="Luis Blades ${i+1}"></video></div>`
+        : `<div class="car-item"><img src="${m.src}" alt="Luis Blades ${i+1}" loading="lazy" decoding="async"></div>`).join('')
+    + Array.from({length:huecos},()=>`<div class="car-item">${PH_PHOTO()}</div>`).join('');
   setupCarousels(); renderCuts();
 }
 
 /* barbershop gallery — image-forward cells, razor-mark placeholder when empty */
 function renderCuts(){
   const g=$('#cutsGrid'); if(!g) return;
-  g.innerHTML=luisCuts.map((u,i)=>{
+  /* mismo criterio que arriba: lo subido primero, los huecos despues */
+  const subidos=MEDIA.cortes||[];
+  const huecos=Math.max(0, luisCuts.length-subidos.length);
+  const propios=subidos.map((m,i)=>{
+    const n=String(i+1).padStart(2,'0');
+    return m.tipo==='video'
+      ? `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" data-src="${m.src}" aria-label="${tr('cut_label')} ${n}"></video></div>`
+      : `<div class="cut-cell"><img src="${m.src}" alt="${tr('cut_label')} ${n}" loading="lazy" decoding="async"></div>`;
+  }).join('');
+  g.innerHTML=propios+luisCuts.slice(0,huecos).map((u,j)=>{
+    const i=subidos.length+j;
     const n=String(i+1).padStart(2,'0');
     if(!u) return `<div class="cut-cell"><div class="cut-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20 20 4l-2.2-2.2L4 15.6z"/><path d="m13.4 8.4 2.2 2.2"/></svg><span>${tr('cut_label')} ${n}</span></div></div>`;
     if(/\.mp4($|\?)/i.test(u)) return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
@@ -5584,7 +5827,7 @@ function applyLang(lang){
 function openAdmin(){ $('#admin').classList.add('show'); document.body.style.overflow='hidden'; renderAdmin(); }
 function closeAdmin(){ $('#admin').classList.remove('show'); document.body.style.overflow=''; if(location.hash==='#admin') history.replaceState(null,'',location.pathname); }
 const authed=()=>sessionStorage.getItem('bp_admin')==='1';
-const I={dash:'<rect x="3" y="3" width="7.5" height="9" rx="1.2"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.2"/><rect x="13.5" y="12" width="7.5" height="9" rx="1.2"/><rect x="3" y="16" width="7.5" height="5" rx="1.2"/>',prod:'<path d="M20.5 7.3 12 2.5 3.5 7.3v9.4L12 21.5l8.5-4.8z"/><path d="m3.6 7.4 8.4 4.8 8.4-4.8"/><path d="M12 21.5v-9.3"/>',add:'<path d="M12 5v14M5 12h14"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'};
+const I={dash:'<rect x="3" y="3" width="7.5" height="9" rx="1.2"/><rect x="13.5" y="3" width="7.5" height="5" rx="1.2"/><rect x="13.5" y="12" width="7.5" height="9" rx="1.2"/><rect x="3" y="16" width="7.5" height="5" rx="1.2"/>',prod:'<path d="M20.5 7.3 12 2.5 3.5 7.3v9.4L12 21.5l8.5-4.8z"/><path d="m3.6 7.4 8.4 4.8 8.4-4.8"/><path d="M12 21.5v-9.3"/>',add:'<path d="M12 5v14M5 12h14"/>',med:'<rect x="3" y="3" width="18" height="14" rx="2"/><circle cx="8.5" cy="8" r="1.6"/><path d="m3 14 4.5-4 3.5 3.2L15 9l6 5.6"/><path d="M7 21h10"/>',set:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>'};
 function renderAdmin(){
   const root=$('#admin');
   if(!authed()){
@@ -5606,7 +5849,7 @@ function renderAdmin(){
     setTimeout(()=>$('#apass').focus(),60);
     return;
   }
-  const tabs=[['dash','Panel',I.dash],['prod','Productos',I.prod],['add','Agregar',I.add],['set','Ajustes',I.set]];
+  const tabs=[['dash','Panel',I.dash],['prod','Productos',I.prod],['add','Agregar',I.add],['med','Medios',I.med],['set','Ajustes',I.set]];
   root.innerHTML=`<div class="admin-shell">
     <aside class="admin-side">
       <div class="brand"><svg class="lb-mark" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20 20 4l5 5L9 21z"/><path d="m16 8 5 5"/><path d="M27 12h9"/><path d="M30 17h6"/></svg><b>Privé</b></div>
@@ -5623,6 +5866,7 @@ function renderAdmin(){
 function renderAdminTab(){
   const m=$('#amain'); const tab=S.adminTab;
   if(tab==='dash') return adminDash(m);
+  if(tab==='med') return adminMedios(m);
   if(tab==='set') return adminSettings(m);
   // FIX: the Agregar TAB used to land here with editingId=null and crash on an
   // undefined product (blank panel). The tab now always opens a fresh form.
@@ -5811,6 +6055,122 @@ function saveProduct(isNew,id){
   persistProducts(); syncUp(prod); S.editingId=null; S.adminTab='prod'; renderAdmin(); refresh(false); updateCart();
   renderFeatured(); renderFinder(); if(window.__fxReady) buildCuratorCross();   // curator strip reflects edits immediately
 }
+/* ===================================================================
+   MEDIOS — el panel con el que Luis pone y quita su retrato, sus fotos
+   y sus videos sin tocar una linea de codigo.
+
+   Tres grupos porque son tres sitios distintos de la pagina, y mezclarlos
+   obligaria a explicar cual va donde. Cada grupo dice en una linea que
+   hace y donde sale.
+   =================================================================== */
+const GRUPOS=[
+  {clave:'retrato', titulo:'Retrato de Luis', unico:true,  acepta:'image/*',
+   nota:'La foto grande que encabeza su sección. Una sola, vertical si es posible.'},
+  {clave:'fotos',   titulo:'Fotos',           unico:false, acepta:'image/*,video/*',
+   nota:'El carrusel de su sección. Se pueden subir varias a la vez.'},
+  {clave:'cortes',  titulo:'Videos y cortes', unico:false, acepta:'image/*,video/*',
+   nota:'La cuadrícula «Sus Cortes». Acepta fotos y videos (máx. 40MB cada uno).'}
+];
+
+function fichaMedio(g,item){
+  const vista = item.tipo==='video'
+    ? `<video src="${item.src}" muted loop playsinline preload="metadata"></video><span class="med-tipo">VIDEO</span>`
+    : `<img src="${item.src}" alt="" loading="lazy" decoding="async">`;
+  return `<figure class="med-item" data-grupo="${g}" data-id="${item.id}">
+    ${vista}
+    <button class="med-quitar" data-quitar="${item.id}" data-grupo="${g}" aria-label="Quitar archivo" title="Quitar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+    <figcaption>${item.kb?item.kb+' KB':''}</figcaption>
+  </figure>`;
+}
+
+function adminMedios(m){
+  const pinta=()=>{
+    m.innerHTML=`<div class="a-head"><h1>Medios</h1>
+      <p class="a-sub">Las fotos y videos que se ven en la sección de Luis. Los cambios se aplican al instante.</p></div>
+      ${GRUPOS.map(g=>{
+        const lista = g.unico ? (MEDIA[g.clave]?[MEDIA[g.clave]]:[]) : (MEDIA[g.clave]||[]);
+        return `<section class="med-grupo">
+          <div class="a-sect">${g.titulo}</div>
+          <p class="med-nota">${g.nota}</p>
+          <div class="med-rejilla">
+            ${lista.map(it=>fichaMedio(g.clave,it)).join('')}
+            <label class="med-soltar" data-zona="${g.clave}" tabindex="0">
+              <input type="file" accept="${g.acepta}" ${g.unico?'':'multiple'} data-entrada="${g.clave}" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <span>${lista.length&&g.unico?'Reemplazar':'Agregar'}</span>
+              <small>o arrastrá aquí</small>
+            </label>
+          </div>
+        </section>`;
+      }).join('')}
+      <div class="a-note" style="margin-top:20px">
+        Las imágenes se comprimen solas al subirlas, así la página no se vuelve lenta.
+        Todo se guarda en este dispositivo: si abrís el panel desde otro teléfono no
+        vas a ver los mismos archivos hasta que se conecte la base de datos.
+      </div>`;
+
+    /* ---- alta por selector de archivos ---- */
+    $$('[data-entrada]').forEach(inp=>{
+      inp.addEventListener('change',async e=>{
+        await agrega(inp.dataset.entrada,[...e.target.files]);
+        inp.value='';
+      });
+    });
+
+    /* ---- alta arrastrando ---- */
+    $$('[data-zona]').forEach(z=>{
+      const clave=z.dataset.zona;
+      ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev,e=>{
+        e.preventDefault(); z.classList.add('encima'); }));
+      ['dragleave','drop'].forEach(ev=>z.addEventListener(ev,e=>{
+        e.preventDefault(); z.classList.remove('encima'); }));
+      z.addEventListener('drop',async e=>{
+        const fs=e.dataTransfer&&e.dataTransfer.files; if(fs&&fs.length) await agrega(clave,[...fs]);
+      });
+      /* accesible con teclado */
+      z.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); z.querySelector('input').click(); } });
+    });
+
+    /* ---- baja ---- */
+    $$('[data-quitar]').forEach(b=>{
+      b.addEventListener('click',async ()=>{
+        const g=b.dataset.grupo, id=b.dataset.quitar;
+        if(!confirm('¿Quitar este archivo?')) return;
+        if(g==='retrato') MEDIA.retrato=null;
+        else MEDIA[g]=(MEDIA[g]||[]).filter(x=>x.id!==id);
+        await guardarMedios(); renderCarousels(); toast('Quitado'); pinta();
+      });
+    });
+  };
+
+  const agrega=async(clave,archivos)=>{
+    if(!archivos.length) return;
+    const g=GRUPOS.find(x=>x.clave===clave);
+    toast(archivos.length>1?'Procesando '+archivos.length+' archivos…':'Procesando…');
+    let ok=0;
+    for(const f of archivos){
+      /* el retrato es uno solo: el primero valido gana y se corta */
+      if(g.unico && ok) break;
+      try{
+        const medio=await archivoAMedio(f);
+        if(!medio) continue;
+        if(g.unico) MEDIA.retrato=medio; else (MEDIA[clave]=MEDIA[clave]||[]).push(medio);
+        ok++;
+      }catch(e){ console.warn('medio rechazado',f.name,e); toast('No se pudo procesar el archivo'); }
+    }
+    if(!ok) return;
+    if(await guardarMedios()){
+      renderCarousels();
+      toast(ok===1?'Agregado':ok+' archivos agregados');
+    }
+    pinta();
+  };
+
+  pinta();
+}
+
 async function adminSettings(m){
   m.innerHTML=`<div class="admin-topbar"><div><h1>Ajustes</h1><div class="sub">Configuración</div></div></div>
     <div class="a-form" style="max-width:520px">
@@ -6185,6 +6545,7 @@ async function init(){
   if(S.mode) $$('#daynight button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
   applyLang(S.lang);     // renders grid + cart + wa
   updateFavUI();
+  await leerMedios();    // retrato, fotos y videos que Luis subio desde el panel
   renderCarousels();     // Luis photos + cuts
   applyCatFromURL();     // B4: aterrizar ya filtrado si la URL trae ?cat=
 
