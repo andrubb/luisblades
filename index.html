@@ -3619,6 +3619,22 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 /* ---------- Supabase (same project; placeholder anon key) ---------- */
 const SUPABASE_URL = 'https://qpqlacqwdkcpavaixpyj.supabase.co';
 const SUPABASE_ANON_KEY = 'REPLACE_WITH_YOUR_SUPABASE_ANON_KEY';
+
+/* SHA-256 con sal. La sal evita que el hash se pueda buscar en tablas
+   publicas de hashes comunes. */
+const PASS_SALT='bp:v2:';
+async function hashPass(txt){
+  const buf=new TextEncoder().encode(PASS_SALT+String(txt||''));
+  const dig=await crypto.subtle.digest('SHA-256',buf);
+  return [...new Uint8Array(dig)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+/* si quedo una contrasena en claro de la version anterior, se migra a hash
+   y se borra: no tiene sentido cerrar la puerta y dejar la llave puesta */
+(async()=>{ try{
+  const vieja=localStorage.getItem('bp_admin_pass');
+  if(vieja){ localStorage.setItem('bp_admin_hash', await hashPass(vieja));
+             localStorage.removeItem('bp_admin_pass'); }
+}catch(_){} })();
 let sb = null;
 try { if (window.supabase && SUPABASE_ANON_KEY.indexOf('REPLACE') === -1) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
 catch(e){ console.warn('Supabase init skipped', e); }
@@ -3637,7 +3653,15 @@ const S = {
   cart: JSON.parse(localStorage.getItem('bp_cart') || '[]'),
   favs: JSON.parse(localStorage.getItem('bp_favs') || '[]'),
   whatsapp: localStorage.getItem('bp_whatsapp') || '50672164901',
-  adminPass: localStorage.getItem('bp_admin_pass') || 'Blades1317',
+  /* La contrasena YA NO viaja en claro. Se guarda su hash SHA-256 con sal,
+     asi que ver el codigo fuente no la revela.
+     LIMITE HONESTO: sigue siendo verificacion en cliente. Un atacante
+     decidido puede saltarse la comprobacion editando el JS en su propio
+     navegador — eso solo lo arregla mover la validacion a un servidor.
+     Lo que esto SI resuelve es que la contrasena sea legible por cualquiera
+     que abra "ver codigo fuente", que era el problema real. */
+  adminHash: localStorage.getItem('bp_admin_hash')
+             || '950b432bac873084dc72b52555d8d07133503b1d6eaf51a52f5a3a07110a8f61',
   adminTab: 'dash',
   adminSel: new Set(), adminQ:'', adminCat:'all', adminStock:'all',
   editingId: null,
@@ -5516,7 +5540,11 @@ function renderAdmin(){
       <div class="err" id="aerr"></div>
       <div class="hint">Acceso vía #admin · ESC para cerrar</div>
     </div></div>`;
-    const go=()=>{ if($('#apass').value===S.adminPass){ sessionStorage.setItem('bp_admin','1'); renderAdmin(); } else $('#aerr').textContent='Contraseña incorrecta'; };
+    const go=async()=>{
+      const h=await hashPass($('#apass').value);
+      if(h===S.adminHash){ sessionStorage.setItem('bp_admin','1'); renderAdmin(); }
+      else $('#aerr').textContent='Contraseña incorrecta';
+    };
     $('#alogin').addEventListener('click',go);
     $('#apass').addEventListener('keydown',e=>{ if(e.key==='Enter')go(); });
     setTimeout(()=>$('#apass').focus(),60);
@@ -5727,7 +5755,7 @@ function saveProduct(isNew,id){
   persistProducts(); syncUp(prod); S.editingId=null; S.adminTab='prod'; renderAdmin(); refresh(false); updateCart();
   renderFeatured(); renderFinder(); if(window.__fxReady) buildCuratorCross();   // curator strip reflects edits immediately
 }
-function adminSettings(m){
+async function adminSettings(m){
   m.innerHTML=`<div class="admin-topbar"><div><h1>Ajustes</h1><div class="sub">Configuración</div></div></div>
     <div class="a-form" style="max-width:520px">
       <div class="a-sect">Contacto</div>
@@ -5745,12 +5773,14 @@ function adminSettings(m){
       <div class="a-form-actions"><button class="btn btn-blue" id="s_save">Guardar</button></div>
       <div class="a-note" style="margin-top:18px">La contraseña es una protección básica del lado del cliente, no seguridad real. Para datos sensibles usa las políticas RLS de Supabase.</div>
     </div>`;
-  $('#s_save').addEventListener('click',()=>{
+  /* async: el hash usa crypto.subtle, que es asincrono */
+  $('#s_save').addEventListener('click',async()=>{
     S.whatsapp=$('#s_wa').value.replace(/\D/g,''); localStorage.setItem('bp_whatsapp',S.whatsapp);
     S.hours=$('#s_hours').value.trim(); localStorage.setItem('bp_hours',S.hours);
     const md=$('#s_mode').value; if(md) localStorage.setItem('bp_mode_default',md); else localStorage.removeItem('bp_mode_default');
     const dl=$('#s_lang').value; localStorage.setItem('bp_lang',dl);
-    const np=$('#s_pass').value.trim(); if(np){ S.adminPass=np; localStorage.setItem('bp_admin_pass',np); }
+    const np=$('#s_pass').value.trim();
+    if(np){ S.adminHash=await hashPass(np); localStorage.setItem('bp_admin_hash',S.adminHash); }
     refreshWA(); refreshHours(); applyLang(dl); toast('Guardado'); renderAdmin();
   });
 }
