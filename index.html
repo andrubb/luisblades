@@ -2309,6 +2309,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   display:grid;grid-template-columns:repeat(5,1fr);
   align-items:center;
   border-radius:22px;
+  /* sin backdrop-filter el vidrio no existe: se cae a un solido opaco */
   background:rgba(14,14,16,.86);
   border:1px solid rgba(242,244,246,.14);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 18px 44px -18px rgba(0,0,0,.9);
@@ -2318,10 +2319,73 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   will-change:transform;
 }
 .appbar.show{transform:translateY(0)}
+
+/* ===================================================================
+   VIDRIO LIQUIDO — la barra deja de ser "un rectangulo translucido" y
+   pasa a comportarse como material.
+
+   Lo que separa el vidrio de iOS de un backdrop-filter suelto son tres
+   cosas, y aqui estan las tres:
+
+   1. EL BORDE NO ES UN BORDE. En el vidrio real la luz se concentra en
+      el canto: arriba brilla, el centro se apaga, abajo rebota un poco.
+      Un `border` de un color plano no puede hacer eso, asi que el canto
+      se dibuja con un degradado enmascarado (::after) — la tecnica de
+      "borde con degradado" con mask-composite.
+
+   2. HAY REFLEJO Y SE MUEVE. Un vidrio quieto se lee como plastico. Una
+      banda especular recorre la superficie muy despacio (::before), sin
+      parar nunca. Es lo que hace que parezca que hay luz alrededor.
+
+   3. PROFUNDIDAD EN DOS SOMBRAS. Una amplia y difusa (la ambiental) y
+      otra corta y cerrada justo debajo (la de contacto). Con una sola
+      la pieza flota sin peso; con las dos se apoya.
+   =================================================================== */
 @supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .appbar{background:rgba(14,14,16,.62);
-    -webkit-backdrop-filter:blur(20px) saturate(170%);
-            backdrop-filter:blur(20px) saturate(170%);}
+  .appbar{
+    background:linear-gradient(180deg,rgba(30,30,34,.52),rgba(10,10,12,.66));
+    border:0;
+    -webkit-backdrop-filter:blur(26px) saturate(200%) brightness(1.06);
+            backdrop-filter:blur(26px) saturate(200%) brightness(1.06);
+    box-shadow:
+      inset 0  1px 0 rgba(255,255,255,.20),   /* filo superior iluminado */
+      inset 0 -1px 0 rgba(0,0,0,.42),         /* filo inferior en sombra */
+      0 26px 52px -20px rgba(0,0,0,.86),      /* sombra ambiental */
+      0  8px 16px -10px rgba(0,0,0,.70);      /* sombra de contacto */
+    isolation:isolate;
+  }
+  /* 2 · el reflejo que nunca se detiene */
+  .appbar::before{
+    content:'';position:absolute;inset:0;border-radius:inherit;
+    pointer-events:none;z-index:0;
+    background:linear-gradient(112deg,
+      rgba(255,255,255,0) 34%,
+      rgba(255,255,255,.11) 44%,
+      rgba(255,255,255,.16) 50%,
+      rgba(255,255,255,.05) 57%,
+      rgba(255,255,255,0) 66%);
+    background-size:280% 100%;
+    background-repeat:no-repeat;
+    animation:vidrio-reflejo 11s linear infinite;
+  }
+  /* 1 · el canto lenticular */
+  .appbar::after{
+    content:'';position:absolute;inset:0;border-radius:inherit;
+    pointer-events:none;z-index:2;padding:1px;
+    background:linear-gradient(180deg,
+      rgba(255,255,255,.40) 0%,
+      rgba(255,255,255,.10) 26%,
+      rgba(255,255,255,.02) 55%,
+      rgba(255,255,255,.14) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;
+            mask-composite:exclude;
+  }
+}
+@keyframes vidrio-reflejo{
+  from{background-position:160% 0}
+  to  {background-position:-60% 0}
 }
 @media(min-width:900px){ .appbar{display:none} }
 
@@ -2343,14 +2407,30 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .ab-tx{opacity:.9;white-space:nowrap}
 
 /* indicador que se desliza bajo la pestana activa */
+/* La pastilla activa es vidrio ella misma, no una mancha de color: tiene
+   su propio filo iluminado arriba y su sombra dentro abajo.
+   El muelle importa. iOS no mueve estas cosas con una curva que frena y
+   ya: llega, se pasa un pelo y vuelve. Esa correccion minima es lo que
+   hace que se sienta fisico en vez de programado. */
 .ab-ind{
   position:absolute;z-index:0;top:6px;bottom:6px;left:0;width:20%;
   border-radius:16px;
-  background:linear-gradient(160deg,rgba(200,135,58,.30),rgba(200,135,58,.10));
-  border:1px solid rgba(200,135,58,.34);
+  background:linear-gradient(163deg,
+    rgba(255,255,255,.17) 0%,
+    rgba(200,135,58,.30) 46%,
+    rgba(200,135,58,.11) 100%);
+  border:1px solid rgba(255,255,255,.17);
+  box-shadow:
+    inset 0  1px 0 rgba(255,255,255,.34),
+    inset 0 -2px 7px rgba(0,0,0,.26),
+    0 7px 15px -7px rgba(0,0,0,.62);
   transform:translateX(0);
-  transition:transform .55s var(--e-expo);
+  transition:transform .62s cubic-bezier(.34,1.42,.52,1);
   pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){
+  /* sin rebote: llega y se queda */
+  .ab-ind{transition:transform .3s linear}
 }
 /* contador */
 .ab-badge[hidden]{display:none}   /* display:flex le ganaba a [hidden] */
@@ -2709,6 +2789,32 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     background:linear-gradient(150deg,rgba(245,241,234,.10),rgba(200,135,58,.09) 52%,rgba(92,26,27,.08));
   }
 }
+/* El mismo reflejo que recorre la barra recorre las burbujas: es lo que
+   convierte una forma translucida en algo con luz encima. Sin el, el
+   vidrio se lee como plastico por muy bien que este el desenfoque.
+   Hereda el play-state del padre, asi que respeta la pausa fuera de
+   pantalla en vez de seguir animando donde nadie mira. */
+.blob::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(118deg,
+    rgba(255,255,255,0) 30%,
+    rgba(255,255,255,.20) 46%,
+    rgba(255,255,255,.26) 51%,
+    rgba(255,255,255,.06) 58%,
+    rgba(255,255,255,0) 70%);
+  background-size:260% 100%;
+  background-repeat:no-repeat;
+  animation:vidrio-reflejo 8s linear infinite;
+  animation-play-state:inherit;
+}
+.blob-div-alt .blob::before{animation-duration:10s;animation-delay:-3s}
+.bd-sm .blob::before{animation-duration:6.5s;animation-delay:-1.5s}
+.bd-lg .blob::before{animation-duration:12s;animation-delay:-4s}
+@media(prefers-reduced-motion:reduce){
+  /* el brillo se queda, pero quieto en una posicion favorecedora */
+  .blob::before{animation:none;background-position:38% 0}
+}
 @media(prefers-reduced-motion:no-preference){
   /* Mas rapido y mas amplio que antes: pediste que se notara. Tres capas
      simultaneas con ciclos primos entre si (6/5/4s) para que la
@@ -2768,13 +2874,80 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   -webkit-mask-image:radial-gradient(120% 78% at 50% 46%, transparent 18%, #000 72%);
           mask-image:radial-gradient(120% 78% at 50% 46%, transparent 18%, #000 72%);
 }
-.flux-foot{
-  position:relative;z-index:1;width:100%;
-  height:clamp(230px,30vw,360px);
+/* ===================================================================
+   FIRMA — la banda de contornos con el credito encima.
+   Antes la banda era solo un traspaso al pie; ahora sostiene algo, que
+   es la unica razon decente para que una decoracion ocupe 300px de alto.
+   =================================================================== */
+.firma{
+  position:relative;
+  display:grid;place-items:center;
+  height:clamp(300px,38vw,420px);
   margin-bottom:-2px;      /* sin costura con el pie */
+  overflow:hidden;
+  background:var(--noir);
+  isolation:isolate;
+}
+.flux-foot{
+  position:absolute;inset:0;z-index:0;width:100%;height:100%;
 }
 /* sin WebGL2 el canvas queda vacio: se le da un fondo digno */
 .flux-foot{background:linear-gradient(100deg,var(--noir),#1a1a1c 55%,var(--noir))}
+/* El texto necesita separarse del relieve o se pierde entre las curvas.
+   Un velo radial apaga el centro sin borrar los contornos de los bordes,
+   que es donde el efecto luce. */
+/* Un radial de 72% de ancho tapaba la banda ENTERA: a esa medida el
+   circulo sobrepasa los bordes del movil y lo que se veia era un
+   rectangulo negro. El velo tiene que ser un charco bajo el texto, no
+   una cortina: mas chico, mas suave y transparente antes de llegar a
+   los lados, que es donde el relieve luce. */
+.firma::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(44% 40% at 50% 50%,
+    rgba(11,11,12,.74) 0%, rgba(11,11,12,.34) 52%, rgba(11,11,12,0) 100%);
+}
+.firma-txt{
+  position:relative;z-index:2;
+  display:grid;justify-items:center;gap:9px;
+  padding:0 20px;text-align:center;
+}
+.firma-linea{
+  width:1px;height:clamp(26px,5vw,42px);
+  background:linear-gradient(transparent,rgba(224,201,166,.55));
+  margin-bottom:4px;
+}
+.firma-eyebrow{
+  font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(224,201,166,.72);
+}
+.firma-nom{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--font-display);
+  font-size:clamp(27px,6.4vw,44px);
+  line-height:1.05;letter-spacing:.01em;
+  color:var(--bone);text-decoration:none;
+  padding-bottom:3px;
+  background-image:linear-gradient(var(--amber-hot),var(--amber-hot));
+  background-repeat:no-repeat;
+  background-position:0 100%;
+  background-size:0% 1px;
+  transition:background-size .5s var(--e-expo), color .4s var(--e-quart);
+}
+.firma-nom svg{
+  width:.52em;height:.52em;flex:none;
+  color:var(--amber-hot);
+  transition:transform .5s var(--e-expo);
+}
+.firma-nom:hover,.firma-nom:focus-visible{color:#fff;background-size:100% 1px;outline:none}
+.firma-nom:hover svg,.firma-nom:focus-visible svg{transform:translate(3px,-3px)}
+.firma-nom:focus-visible{outline:1px solid var(--amber-hot);outline-offset:8px;border-radius:2px}
+.firma-nota{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(242,244,246,.42);
+}
+@media(prefers-reduced-motion:reduce){
+  .firma-nom,.firma-nom svg{transition:none}
+}
 @media(prefers-reduced-motion:reduce){ .flux-hero{opacity:.16} }
 
 /* ===================================================================
@@ -3651,7 +3824,28 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 </main>
 
 <!-- ============================ FOOTER ============================ -->
-<canvas class="flux flux-foot" aria-hidden="true"></canvas>
+<!-- ===================== FIRMA =====================
+     La banda de contornos ya estaba aqui haciendo de transicion al pie.
+     En vez de anadir otra seccion mas y alargar la pagina, el credito se
+     apoya SOBRE ella: la banda deja de ser solo decoracion y pasa a tener
+     un motivo para existir. -->
+<section class="firma" aria-label="Créditos del sitio">
+  <canvas class="flux flux-foot" aria-hidden="true"></canvas>
+  <div class="firma-txt">
+    <span class="firma-linea" aria-hidden="true"></span>
+    <span class="firma-eyebrow">Diseño y desarrollo</span>
+    <a class="firma-nom" href="https://andrew-portfolio-andrubbs-projects.vercel.app/"
+       target="_blank" rel="noopener noreferrer">
+      <span>Andrew Jiménez</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+      </svg>
+    </a>
+    <span class="firma-nota">Ver portafolio</span>
+  </div>
+</section>
+
 <footer id="footer">
   <div class="wrap">
     <div class="foot-inner">
@@ -5335,8 +5529,14 @@ function setupFluxResto(){
   }
   /* pie — hueso sobre noir. Bandas anchas y borde muy blando: es donde
      mas se notaba la trama y donde el usuario pidio mas cuerpo. */
-  if(pie)  crearFlux(pie ,[0.043,0.043,0.047],[0.96,0.945,0.918],
-                     movil?0.30:0.58, movil?8.0:12.0, 0.020, movil?1.0:0.8);
+  /* Mas resolucion que antes en movil (1.0 -> 1.4). A 1.0 el buffer iba a
+     pixeles CSS, asi que en un telefono 3x cada pixel del shader se
+     estiraba por tres y los contornos salian con escalones. La banda es
+     pequena y esta bajo el pliegue: el coste extra se paga solo.
+     Y una banda mas: con el credito encima, un relieve mas fino se lee
+     como grabado y no como mancha. */
+  if(pie)  window.__fluxPie=crearFlux(pie ,[0.043,0.043,0.047],[0.96,0.945,0.918],
+                     movil?0.30:0.58, movil?9.0:12.0, 0.018, movil?1.4:1.0);
 }
 
 /* ===================================================================
@@ -6490,7 +6690,18 @@ function initAnim(){
 /* Espera a que el navegador haya PINTADO de verdad. Un solo rAF encola
    trabajo para el proximo frame; el segundo se ejecuta ya con ese frame
    en pantalla, que es el momento real en que el usuario ve algo. */
-const trasPintar=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const trasPintar=()=>new Promise(res=>{
+  let hecho=false;
+  const ya=()=>{ if(hecho) return; hecho=true; res(); };
+  requestAnimationFrame(()=>requestAnimationFrame(ya));
+  /* RESPALDO OBLIGATORIO. En una pestana que no esta a la vista —abierta
+     en segundo plano, o restaurada al reabrir el navegador— rAF no se
+     ejecuta NUNCA. Sin esta red, todo lo que va detras se quedaba
+     esperando para siempre: ni catalogo, ni medios, ni animaciones. La
+     pagina se recuperaba al mirarla, pero hasta entonces estaba muerta.
+     250ms es mas que suficiente para dos frames reales. */
+  setTimeout(ya, 250);
+});
 
 /* La coreografia CSS del hero dura ~1.5s y es lo primero que ve el
    usuario. Montar ScrollTrigger encima de ella era lo que la trababa
