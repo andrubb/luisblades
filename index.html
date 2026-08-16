@@ -6543,15 +6543,33 @@ function setupEvents(){
   // esc
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeModal(); $('#mmenu').classList.remove('show'); $('#searchbar').classList.remove('open'); if($('#admin').classList.contains('show'))closeAdmin(); } });
   // footer category quick-links → activate matching filter pill + scroll to catalog
-  $$('[data-cat-link]').forEach(a=>a.addEventListener('click',e=>{
+  $$('[data-cat-link]').forEach(a=>a.addEventListener('click',async e=>{
     e.preventDefault();
     const cat=a.dataset.catLink;
     const pill=$(`#filterBar .pill[data-filter="${cat}"]`);
     if(pill) pill.click();
     // B4: la categoria queda en la URL para poder compartir/recargar el filtro
     try{ history.replaceState(null,'', '?cat='+encodeURIComponent(cat)+'#catalog'); }catch(_){}
-    document.getElementById('catalog').scrollIntoView(
-      {behavior: reduceMotion() ? 'auto' : 'smooth'});   // regla dura 3
+    const destino=document.getElementById('catalog');
+    if(!destino) return;
+    /* Mismo fallo que tenia applyCatFromURL: filtrar RE-DIBUJA la rejilla y
+       cambia la altura de la pagina, asi que saltar en el mismo tick
+       apuntaba a una posicion que dejaba de ser valida un instante
+       despues. Medido pulsando el enlace desde el pie: se quedaba a
+       9120px del catalogo. Se espera al primer pintado. */
+    await trasPintar();
+    /* Y desde el pie hasta el catalogo hay unos 17.000px. Un
+       desplazamiento suave a esa distancia son varios segundos viendo
+       pasar la pagina entera, que no es elegante: es lento. Suave cuando
+       el destino esta cerca, directo cuando esta lejos. */
+    /* OJO con 'auto': el CSS declara html{scroll-behavior:smooth}, y
+       'auto' significa "lo que diga el CSS", o sea SUAVE. Por eso el
+       salto desde el pie se quedaba a medio camino: eran 17.000px de
+       animacion suave que la rejilla, al recalcular su altura, cortaba
+       en seco a los 8.400px. El valor que salta de verdad es 'instant'. */
+    const lejos = Math.abs(destino.getBoundingClientRect().top) > innerHeight*3;
+    destino.scrollIntoView(
+      {behavior: (reduceMotion()||lejos) ? 'instant' : 'smooth'});   // regla dura 3
   }));
   // admin triggers
   let clk=0,tm; $('#footLogo').addEventListener('click',e=>{ e.preventDefault(); clk++; clearTimeout(tm); tm=setTimeout(()=>clk=0,600); if(clk>=3){ clk=0; openAdmin(); } else if(clk===1){ /* allow normal nav after delay */ setTimeout(()=>{ if(clk===1){ location.hash='#top'; clk=0; } },280); } });
@@ -6881,7 +6899,7 @@ async function init(){
 /* B4 — si la URL trae ?cat=, aplicar ese filtro al aterrizar.
    Se valida contra las pills existentes: una categoria inventada se ignora
    en silencio en vez de dejar el catalogo vacio. */
-function applyCatFromURL(){
+async function applyCatFromURL(){
   let cat=null;
   try{ cat=new URLSearchParams(location.search).get('cat'); }catch(_){ return; }
   if(!cat) return;
@@ -6889,7 +6907,26 @@ function applyCatFromURL(){
   if(!pill) return;                      // categoria desconocida -> no tocar nada
   pill.click();
   const target=document.getElementById('catalog');
-  if(target) target.scrollIntoView({behavior:'auto',block:'start'});
+  if(!target) return;
+  /* EL SALTO TIENE QUE OCURRIR CON LA MAQUETACION YA ASENTADA.
+     Estaba roto y no se veia: al aterrizar en ?cat=Designer#catalog la
+     pagina se quedaba en y=110 con el catalogo 3431px mas abajo. El
+     motivo es que scrollIntoView se llamaba en el mismo tick que
+     pill.click(), cuando la rejilla acababa de repintarse y todavia no
+     tenia altura: se calculaba un destino que dejaba de ser valido al
+     instante siguiente.
+     Se salta tras el primer pintado y se corrige una vez mas un poco
+     despues, porque las fichas terminan de asentar altura al entrar.
+     trasPintar() ya trae red de seguridad por temporizador, asi que esto
+     tampoco se cuelga en una pestana de fondo. */
+  /* 'instant', no 'auto': con html{scroll-behavior:smooth} en el CSS,
+     'auto' anima, y al aterrizar queremos estar ya en el catalogo, no
+     verlo llegar. */
+  const ir=()=>target.scrollIntoView({behavior:'instant',block:'start'});
+  await trasPintar();
+  ir();
+  await new Promise(r=>setTimeout(r,280));
+  ir();
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
