@@ -9,26 +9,64 @@
 <meta name="description" content="Blades Privé — una selección privada de fragancias Designer, Niche y Árabes. Carved by the blade. Finished by the scent." />
 
 <!-- ===================== FONTS =====================
+     NOTA SOBRE EL COLON (₡): el bloque U+20A0-20AB se ha quitado a
+     proposito del unicode-range de los subconjuntos latin-ext. Medido:
+     el simbolo aparece 17 veces en los precios y era LO UNICO que
+     obligaba a descargar bodoni-latin-ext-normal.woff2 — 25KB de fuente
+     entera por un glifo. Sin ese rango, el colon lo dibuja la fuente del
+     sistema (Didot/Georgia/serif, ya en la cascada) y el subconjunto no
+     se pide. El euro (U+20AC) sigue cubierto por el subconjunto latin,
+     asi que no se pierde nada que la pagina use.
+
      Bodoni Moda esta AUTOALOJADA y precargada. Motivo medido: con la
      fuente en Google el LCP se reseteaba de ~1.0s a ~4.0s cuando entraba
      el swap — el area de tinta del elemento crecia de 15576 a 20944 con
      el MISMO rect, la firma inconfundible de un cambio de tipografia.
      Desde nuestro origen y con preload, el swap ocurre antes de que el
-     LCP se asiente. Jost y Archivo siguen en Google: no son el LCP. -->
+     LCP se asiente.
+
+     JOST Y ARCHIVO TAMBIEN SE AUTOALOJAN YA. El motivo no son los bytes
+     (60KB frente a 77KB, poca cosa) sino la CADENA EN SERIE que imponia
+     Google: habia que resolver DNS de fonts.googleapis.com, negociar TLS,
+     bajar el CSS, parsearlo, y SOLO ENTONCES se descubrian las URLs de
+     los .woff2 — en otro origen mas, fonts.gstatic.com, con su propio DNS
+     y TLS. Cuatro pasos antes del primer byte de fuente. Declaradas aqui,
+     el navegador las conoce mientras parsea la cabecera.
+     Los bloques @font-face son COPIA LITERAL de los que servia Google,
+     con la url cambiada: mismo peso, mismo unicode-range, mismo render.
+     Se descartan los subconjuntos cirilico (la pagina es es/en) y
+     latin-ext (ver la nota del colon, arriba). -->
 <link rel="preload" as="font" type="font/woff2" crossorigin
       href="assets/fonts/bodoni-latin-normal.woff2">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- non-blocking font CSS: paint starts on fallback serif, swaps in (display=swap) -->
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Archivo:wght@800;900&display=swap" rel="stylesheet"></noscript>
+<link rel="preload" as="font" type="font/woff2" crossorigin
+      href="assets/fonts/jost-latin.woff2">
 
 <style>
+/* ---- Jost y Archivo autoalojadas (ver nota de arriba) ---- */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:800;font-display:swap;
+  src:url(assets/fonts/archivo-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:900;font-display:swap;
+  src:url(assets/fonts/archivo-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Jost';font-style:normal;font-weight:300;font-display:swap;
+  src:url(assets/fonts/jost-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Jost';font-style:normal;font-weight:400;font-display:swap;
+  src:url(assets/fonts/jost-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Jost';font-style:normal;font-weight:500;font-display:swap;
+  src:url(assets/fonts/jost-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Jost';font-style:normal;font-weight:600;font-display:swap;
+  src:url(assets/fonts/jost-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+
 /* ---- Bodoni Moda autoalojada (ver nota de LCP arriba) ---- */
 @font-face{font-family:'Bodoni Moda';font-style:italic;
   font-weight:400 700;font-display:swap;
   src:url(assets/fonts/bodoni-latin-ext-italic.woff2) format('woff2');
-  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:'Bodoni Moda';font-style:italic;
   font-weight:400 700;font-display:swap;
   src:url(assets/fonts/bodoni-latin-italic.woff2) format('woff2');
@@ -36,7 +74,7 @@
 @font-face{font-family:'Bodoni Moda';font-style:normal;
   font-weight:400 900;font-display:swap;
   src:url(assets/fonts/bodoni-latin-ext-normal.woff2) format('woff2');
-  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF}
 @font-face{font-family:'Bodoni Moda';font-style:normal;
   font-weight:400 900;font-display:swap;
   src:url(assets/fonts/bodoni-latin-normal.woff2) format('woff2');
@@ -3224,7 +3262,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="logo" aria-label="Luis Blades — Blades Privé">
-      <img src="assets/luis-blades-logo.png" fetchpriority="high" width="180" height="180" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
+      <img src="assets/luis-blades-logo.webp" fetchpriority="high" width="180" height="180" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
     </a>
 
     <div class="nav-links">
@@ -3455,7 +3493,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="1" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v1" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v1" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Dior</div>
@@ -3471,7 +3509,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="2" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v2" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v2" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Chanel</div>
@@ -3487,7 +3525,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="3" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v3" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v3" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Tom Ford</div>
@@ -3503,7 +3541,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="4" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v4" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v4" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Yves Saint Laurent</div>
@@ -3519,7 +3557,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="5" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v5" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v5" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Giorgio Armani</div>
@@ -3535,7 +3573,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="6" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v0" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v0" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Versace</div>
@@ -3551,7 +3589,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="7" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v1" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v1" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Prada</div>
@@ -3567,7 +3605,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="8" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v2" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v2" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Givenchy</div>
@@ -3583,7 +3621,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="9" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v3" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v3" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Valentino</div>
@@ -3599,7 +3637,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="10" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v1" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v1" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Hermès</div>
@@ -3615,7 +3653,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="11" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v2" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v2" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Maison Margiela</div>
@@ -3631,7 +3669,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <button class="fav" data-fav="12" aria-label="Favorito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"></path></svg>
       </button>
-      <img class="ph-img ph-v3" src="assets/perfume-placeholder.jpg" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">
+      <img class="ph-img ph-v3" src="assets/perfume-placeholder.webp" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'assets/perfume-placeholder.jpg')">
     </div>
     <div class="card-body">
       <div class="card-brand">Byredo</div>
@@ -3724,7 +3762,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <section class="ed-break" aria-label="Blades Privé">
   <div class="wrap ed-inner reveal">
     <span class="ed-sweep" aria-hidden="true"></span>
-    <img class="ed-photo" src="assets/perfume-placeholder.jpg" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1177">
+    <img class="ed-photo" src="assets/perfume-placeholder.webp" onerror="this.onerror=null;this.src=&quot;assets/perfume-placeholder.jpg&quot;" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1177">
     <svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
       <rect x="49" y="9" width="22" height="15" rx="1.5"/>
       <path d="M53 24h14v8h-14z"/>
@@ -3748,7 +3786,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     <div class="eye-grid">
       <div class="eye-visual" aria-hidden="true">
         <!-- Luis's real wordmark as the section's visual anchor (same asset as nav/footer) -->
-        <img class="eye-logo" src="assets/luis-blades-logo.png" alt="" width="500" height="500" loading="lazy" decoding="async">
+        <img class="eye-logo" src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-blades-logo.png&quot;" alt="" width="500" height="500" loading="lazy" decoding="async">
         <span class="eye-tint"></span>
       </div>
       <div class="eye-text">
@@ -3888,7 +3926,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
         </div>
       </div>
       <a href="#top" class="logo" id="footLogo" style="align-items:center">
-        <img src="assets/luis-blades-logo.png" onerror="this.onerror=null;this.src='assets/luis-blades-logo.svg'" alt="Luis Blades">
+        <img src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
       </a>
       <p class="foot-tag">Carved by the blade. Finished by the scent.</p>
       <div class="foot-soc">
@@ -4942,7 +4980,26 @@ const BOTTLE = `<svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="cu
 </svg>`;
 
 function toast(msg){const t=$('#toast');$('#toastMsg').textContent=msg;t.classList.add('show');clearTimeout(window._t);window._t=setTimeout(()=>t.classList.remove('show'),2000);}
-const PH_SRC='assets/perfume-placeholder.jpg';
+/* WebP con el raster original de respaldo. Medido sobre los propios
+   archivos: el logo pasa de 46KB a 11KB y el placeholder de 59 a 29,
+   con diferencia maxima de 8/255 en el logo (imperceptible: es tinta
+   negra sobre blanco) y media de 1.17 en la foto.
+   No se usa <picture> a proposito: meteria un elemento entre el padre y
+   el <img> y hay selectores CSS que cuentan con esa relacion directa.
+   La cadena onerror hace el mismo trabajo sin tocar la estructura. */
+const PH_SRC='assets/perfume-placeholder.webp';
+const PH_FALLBACK='assets/perfume-placeholder.jpg';
+
+/* Respaldo en dos pasos: primero el raster original, y si tampoco esta,
+   el frasco dibujado en SVG. Como funcion y no como onerror anidados en
+   el HTML, que se repetian quince veces y eran ilegibles. */
+window.__imgRespaldo=function(el, alternativa){
+  el.onerror=function(){
+    el.onerror=null;
+    if(window.__BOTTLE) el.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE));
+  };
+  el.src=alternativa;
+};
 /* Pending-photo products share ONE licensed photograph. To stop 680 identical
    frames reading as a copy-paste wall, each card gets a deterministic tonal +
    framing variant (0-5) derived from its own id — same asset, different crop
@@ -4950,7 +5007,7 @@ const PH_SRC='assets/perfume-placeholder.jpg';
 function phVariant(p){ const k=String(p.id||p.name||''); let h=0; for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0; return h%6; }
 function imgFor(p){
   if(p.image_url) return `<img src="${p.image_url}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
-  return `<img class="ph-img ph-v${phVariant(p)}" src="${PH_SRC}" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
+  return `<img class="ph-img ph-v${phVariant(p)}" src="${PH_SRC}" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'${PH_FALLBACK}')">`;
 }
 window.__BOTTLE = BOTTLE;
 
