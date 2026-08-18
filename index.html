@@ -128,7 +128,14 @@
   /* jerarquia funcional sobre noir */
   --on-noir-1:rgba(245,241,234,.96);
   --on-noir-2:rgba(245,241,234,.62);
-  --on-noir-3:rgba(245,241,234,.38);
+  /* Sube de .38 a .52 por accesibilidad, no por gusto. Medido en
+     produccion: a .38 el eyebrow del hero (10px), la tagline (13px) y
+     la pista de scroll (9px) quedaban en 3.25:1, y WCAG AA pide 4.5
+     para texto de ese tamano. A .52 son 5.18:1. Tambien afecta a las
+     etiquetas inactivas de la barra, que son NAVEGACION y agradecen
+     leerse: la distincion activo/inactivo la siguen marcando el hueso
+     lleno, la pastilla y la escala del icono. */
+  --on-noir-3:rgba(245,241,234,.52);
 
   /* curvas propias — nada de ease/linear */
   --e-expo:cubic-bezier(.16,1,.3,1);        /* salida expo: reveals */
