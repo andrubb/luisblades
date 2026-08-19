@@ -880,6 +880,14 @@ footer{border-top:2px solid #000}
 h1,h2,h3,h4{text-wrap:balance}
 .hero .tagline{text-wrap:balance}   /* "Carved by the blade. / Finished by the scent." — never a widowed word */
 .shead p,.about-body,.enc-note,.modal-desc{text-wrap:pretty}
+/* text-wrap:balance esta pensado para titulares de 2 a 4 lineas. Cuando
+   hay mas, Chrome abandona el equilibrado y devuelve un desfleque PEOR
+   que el corriente: medido 666·418·693·678 en un parrafo de #about, con
+   la linea de 418 px en medio. Los parrafos que toman .display solo por
+   su escala tipografica no deben heredar el equilibrado.
+   Importa doble aqui: splitLines() hornea los saltos que mida, asi que un
+   mal salto medido se queda para siempre. */
+p.display,.about-body.display,.enc-note.display{text-wrap:pretty}
 
 /* ---- universal press feedback — tap-first (mobile has no hover) ---- */
 .btn{transition:background .5s var(--ease),color .5s var(--ease),border-color .5s var(--ease),transform .12s var(--press)}
@@ -5816,9 +5824,59 @@ function setupFluxResto(){
    cada linea y se envuelve cada una en su mascara. Asi el revelado sigue
    la maquetacion real y no una aproximacion.
    =================================================================== */
+/* El texto tal como venia, antes de hornear ningun salto.
+   Imprescindible para poder volver a partir: los .ln-in se pegan sin
+   espacio entre si, asi que el textContent de un parrafo YA partido
+   devuelve "…donde laprecision…". Se captura una sola vez por elemento. */
+const textoIntacto=new WeakMap();
+function textoDe(el){
+  if(textoIntacto.has(el)) return textoIntacto.get(el);
+  const yaPartido=el.querySelector('.ln-in');
+  const bruto=yaPartido
+    ? [...el.querySelectorAll('.ln-in')].map(x=>x.textContent.trim()).join(' ')
+    : el.textContent;
+  const limpio=bruto.split(/[\s\u00a0]+/).filter(Boolean).join(' ');
+  textoIntacto.set(el,limpio);
+  return limpio;
+}
+/* Comprobacion de cordura del horneado.
+   Medir las palabras y despues recomponerlas como texto plano no da
+   exactamente la misma linea: envolver cada palabra en su propio elemento
+   cambia el moldeado (kerning y ligaduras entre cajas, redondeo de
+   subpixeles). Cuando la diferencia se acumula, una linea horneada no
+   cabe y se parte DENTRO de su mascara — se ve un salto que el DOM niega.
+   En lugar de confiar en la medicion se comprueba el resultado: si una
+   linea ocupa mas de una caja, su ultima palabra baja a la siguiente.
+   Converge siempre, porque cada vuelta le quita una palabra. */
+function cuadraLineas(el){
+  const cs=getComputedStyle(el);
+  let lh=parseFloat(cs.lineHeight);
+  if(!(lh>0)) lh=parseFloat(cs.fontSize)*1.4;
+  if(!(lh>0)) return;
+  const limite=lh*1.6;                 // una caja y media: margen holgado
+  const nuevaMascara=()=>{
+    const m=document.createElement('span'); m.className='ln-mask';
+    const i=document.createElement('span'); i.className='ln-in';
+    m.appendChild(i); el.appendChild(m); return i;
+  };
+  let vueltas=0;
+  for(let i=0;i<el.children.length;i++){
+    const dentro=el.children[i].querySelector('.ln-in');
+    if(!dentro) continue;
+    while(dentro.getBoundingClientRect().height>limite && vueltas++<60){
+      const ws=dentro.textContent.split(' ').filter(Boolean);
+      if(ws.length<2) break;           // una sola palabra: no cabe y no hay nada que hacer
+      const ultima=ws.pop();
+      dentro.textContent=ws.join(' ');
+      const sig=el.children[i+1] && el.children[i+1].querySelector('.ln-in');
+      if(sig) sig.textContent=ultima+' '+sig.textContent;
+      else nuevaMascara().textContent=ultima;
+    }
+  }
+}
 function splitLines(el){
-  if(!el || el.dataset.lined) return [];
-  const txt=el.textContent.replace(/\s+/g,' ').trim();
+  if(!el) return [];   // se PUEDE volver a partir: es justo lo que arregla el desfleque
+  const txt=textoDe(el);
   if(!txt || txt.length>600) return [];        // parrafos enormes: no compensa
   const guardaHTML=el.innerHTML;
   // se marca palabra por palabra para poder medir su posicion vertical
@@ -5837,6 +5895,7 @@ function splitLines(el){
   el.innerHTML = lineas.map(L=>'<span class="ln-mask"><span class="ln-in">'+
     L.join(' ')+'</span></span>').join('');
   el.dataset.lined='1';
+  cuadraLineas(el);
   return [...el.querySelectorAll('.ln-in')];
 }
 
@@ -5856,10 +5915,16 @@ function buildLineReveals(){
     const el=$(sel); if(!el) return;
     const lineas=splitLines(el);
     if(!lineas.length) return;
+    /* Si ya se revelo, se vuelve a partir pero NO se vuelve a animar:
+       re-particionamos por culpa de las fuentes o de un cambio de ancho,
+       y hacer que el texto que el lector ya tiene delante se desvanezca
+       y vuelva a entrar seria peor que el salto mal medido. */
+    if(el.dataset.revelado){ gsap.set(lineas,{yPercent:0,opacity:1}); return; }
     lineTls.push(gsap.from(lineas,{
       yPercent:112, opacity:0,
       duration:.9, ease:'expo.out',
       stagger:.085,
+      onComplete(){ el.dataset.revelado='1'; },
       scrollTrigger:{trigger:el,start:'top 88%',
         toggleActions:'play none none none', refreshPriority:-80}
     }));
@@ -6926,9 +6991,28 @@ function queueRefresh(){ if(!window.ScrollTrigger||_refreshing) return; clearTim
   _rq=setTimeout(()=>{ _refreshing=true; ScrollTrigger.sort(); ScrollTrigger.refresh();
     setTimeout(()=>{_refreshing=false;},80);   // ignore RO echoes that refresh() itself provokes
   },150); }
+/* Vuelve a partir las lineas y luego recoloca los disparadores.
+   Se llama cuando cambia algo que cambia DONDE cae cada salto. */
+function repartirLineas(){
+  if(!window.gsap || typeof buildLineReveals!=='function') return;
+  try{ buildLineReveals(); }catch(e){ console.warn('no se pudieron repartir las lineas',e); }
+  queueRefresh();
+}
+/* Solo el ANCHO importa. En movil la altura del viewport cambia cada vez
+   que se esconde la barra de direcciones, y repartir en cada uno de esos
+   avisos seria trabajo puro sin ningun cambio de salto. */
+let _anchoPrev=window.innerWidth, _rl=null;
+window.addEventListener('resize',()=>{
+  if(window.innerWidth===_anchoPrev) return;
+  _anchoPrev=window.innerWidth;
+  clearTimeout(_rl); _rl=setTimeout(repartirLineas,220);
+},{passive:true});
+
 function armSettleRefresh(){
   if(!window.ScrollTrigger) return;
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(queueRefresh);
+  /* fonts.ready es EL momento critico: hasta aqui se midio con la fuente
+     de respaldo, que tiene otro ancho por caracter que Bodoni Moda. */
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(repartirLineas);
   Promise.allSettled($$('img[src]').map(im=>im.decode?im.decode():Promise.resolve())).then(queueRefresh);
   window.addEventListener('load',queueRefresh,{once:true});
   // Observe ONLY content-driven heights (grid, finder). NOT #featured — its height is
