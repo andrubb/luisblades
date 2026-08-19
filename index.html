@@ -3462,6 +3462,27 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .bulk-x{width:44px;height:44px}
   /* barra de accion en lote: tres iconos que se apretaban a 41x42 */
   .bulk-acts button{flex:0 0 44px;height:44px;display:flex;align-items:center;justify-content:center}
+
+  /* ---- LAS BURBUJAS, SIN REPINTAR ----
+     Medido a 390x844 con CPU 4x: apagarlas del todo quitaba hasta 37
+     puntos de fotogramas perdidos. No se quitan —son lo mas pedido—, se
+     quita lo que cuesta.
+     blob-morph anima border-radius, que es una propiedad de PINTADO: en
+     un elemento con backdrop-filter obliga a repintarlo y a volver a
+     recortar el fondo filtrado en cada fotograma. blob-breathe anima
+     scale, que obliga a re-rasterizar ese fondo a otro tamano.
+     Se quedan el cristal, el canto, el reflejo, el flotado y el paralaje
+     —todo transform, que resuelve el compositor sin repintar—, y cada
+     burbuja conserva su silueta organica, ya fija. En un telefono, con la
+     burbuja ademas desplazandose, la diferencia entre una silueta que
+     muta y una que no es practicamente invisible; la de fluidez no. */
+  .blob{
+    animation:blob-float 5s var(--e-drift) infinite alternate;
+    will-change:transform;
+  }
+  .blob-div-alt .blob{animation-duration:6s;animation-delay:-1.5s}
+  .bd-sm .blob{animation-duration:4.2s;animation-delay:-.6s}
+  .bd-lg .blob{animation-duration:6.5s;animation-delay:-2s}
   .admin-shell .btn,
   .a-form-actions .btn,
   .a-img-remove,
@@ -3489,6 +3510,58 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .a-img-remove{font-size:.72rem}
   .bulk-bar .bulk-n{font-size:.70rem}
 }
+
+/* ===================================================================
+   LA AURORA, SIN DESENFOQUE NI ESCALA — solo en pantallas de dedo.
+
+   Medido a 390x844 con la CPU estrangulada 4x: apagar la aurora quitaba
+   hasta 30 puntos de fotogramas perdidos, el segundo mayor coste de la
+   pagina despues de las burbujas.
+
+   Son circulos de hasta 88vw con filter:blur(46-60px) ANIMADOS con
+   scale(). Cada fotograma hay que volver a rasterizar un desenfoque
+   enorme a otro tamano. Y el desenfoque era ademas casi redundante: el
+   fondo de cada aurora ya es un radial-gradient que muere en transparent
+   al 66%, o sea que YA es suave por construccion.
+
+   Aqui se queda el degradado y el desplazamiento —que el compositor
+   resuelve sin repintar— y se van el blur y el scale.
+
+   VA AL FINAL DE LA HOJA A PROPOSITO: las reglas .aurora .au-N que ponen
+   el blur y la deriva tienen la misma especificidad (0,2,0), asi que la
+   unica forma de ganarles sin !important es ir despues. Un intento
+   anterior quedo colocado antes y no hizo absolutamente nada.
+   =================================================================== */
+@media (pointer: coarse), (max-width: 899px){
+  /* Sin filtro — pero entonces el degradado tiene que apagarse solo
+     DENTRO del elemento, o el border-radius lo corta en seco y aparece un
+     disco con borde recto (paso: se veia un disco ambar en la esquina).
+     Con closest-side el 100% del degradado es el borde mas cercano, asi
+     que la parada transparente al 100% no deja color que cortar por
+     ningun lado. Los centros vuelven al medio por el mismo motivo. */
+  .aurora .au-1,.aurora .au-2,.aurora .au-3,.aurora .au-4,.aurora .au-5{filter:none}
+  .aurora .au-1{background:radial-gradient(circle closest-side at 50% 50%,var(--amber-hot) 0%,var(--amber) 40%,transparent 100%)}
+  .aurora .au-2{background:radial-gradient(circle closest-side at 50% 50%,var(--oxblood) 0%,transparent 100%)}
+  .aurora .au-3{background:radial-gradient(circle closest-side at 50% 50%,var(--teal) 0%,transparent 100%)}
+  .aurora .au-4{background:radial-gradient(circle closest-side at 50% 50%,var(--celeste) 0%,transparent 100%)}
+  .aurora .au-5{background:radial-gradient(circle closest-side at 50% 50%,var(--plum) 0%,transparent 100%)}
+  .aurora .au-1{animation:au-a2 21s var(--e-drift) infinite alternate}
+  .aurora .au-2{animation:au-b2 27s var(--e-drift) infinite alternate}
+  .aurora .au-3{animation:au-c2 24s var(--e-drift) infinite alternate}
+  .aurora .au-4{animation:au-d2 19s var(--e-drift) infinite alternate}
+  .aurora .au-5{animation:au-e2 31s var(--e-drift) infinite alternate}
+  html.anim .aurora .au-1{animation:au-in  1.9s var(--e-quart) .30s both, au-a2 21s var(--e-drift) 2.2s infinite alternate}
+  html.anim .aurora .au-2{animation:au-in2 1.9s var(--e-quart) .42s both, au-b2 27s var(--e-drift) 2.4s infinite alternate}
+  html.anim .aurora .au-3{animation:au-in3 2.1s var(--e-quart) .54s both, au-c2 24s var(--e-drift) 2.6s infinite alternate}
+  html.anim .aurora .au-4{animation:au-in4 2.1s var(--e-quart) .66s both, au-d2 19s var(--e-drift) 2.8s infinite alternate}
+  html.anim .aurora .au-5{animation:au-in5 2.3s var(--e-quart) .22s both, au-e2 31s var(--e-drift) 3s   infinite alternate}
+}
+/* las mismas derivas, sin el scale que obliga a re-rasterizar */
+@keyframes au-a2{from{transform:translate3d(0,0,0)} to{transform:translate3d(-13vw,9vh,0)}}
+@keyframes au-b2{from{transform:translate3d(0,0,0)} to{transform:translate3d(11vw,-8vh,0)}}
+@keyframes au-c2{from{transform:translate3d(0,0,0)} to{transform:translate3d(9vw,-12vh,0)}}
+@keyframes au-d2{from{transform:translate3d(0,0,0)} to{transform:translate3d(-8vw,10vh,0)}}
+@keyframes au-e2{from{transform:translate3d(0,0,0)} to{transform:translate3d(7vw,-9vh,0)}}
 </style>
 </head>
 
@@ -7254,7 +7327,13 @@ function initAnim(){
        sube ganando presencia, asi la cara llega a su punto justo cuando la
        linea esta centrada en pantalla. */
     const eb=$('.ed-break');
-    if(eb && $('.ed-photo')){
+    /* En el telefono la foto se queda quieta. Es una imagen grande con
+       filter y mask-image: las dos cosas la sacan a una superficie de
+       composicion propia, y animarle la opacidad en cada fotograma
+       obliga a recomponerla entera. Medido con CPU 4x, valia 25 puntos
+       de fotogramas perdidos. Se conserva todo su aspecto; solo se
+       pierde el desplazamiento, que ahi casi no se aprecia. */
+    if(eb && $('.ed-photo') && !isMob()){
       gsap.timeline({scrollTrigger:{trigger:eb,start:'top 85%',end:'bottom 15%',scrub:.4,refreshPriority:-25}})
         /* En PIXELES, no en yPercent. La foto se centra con top:50% +
            translate(-50%,-50%), y GSAP lee ese -50% como yPercent:-50.
@@ -7263,9 +7342,18 @@ function initAnim(){
            eso Luis salia bajo, cortado, y la vinneta caia sobre el cielo
            vacio en vez de sobre el. Con y en px, GSAP conserva el -50 y
            solo suma encima. */
-        .fromTo('.ed-photo',{y:24,scale:1.02,opacity:.16},
-                            {y:-18,scale:1.10,opacity:.34,ease:'none'},0)
+        /* Sin scale: es una imagen grande con mascara y filtro, y
+           escalarla en cada fotograma obliga a re-rasterizar las tres
+           cosas. Medido, valia hasta 25 puntos de fotogramas perdidos.
+           El desplazamiento en y da la misma sensacion de profundidad. */
+        .fromTo('.ed-photo',{y:34,opacity:.16},
+                            {y:-26,opacity:.34,ease:'none'},0)
         .fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none'},0);
+    } else if(eb && $('.ed-sweep')){
+      /* el barrido si se queda en movil: es solo transform, lo resuelve
+         el compositor sin repintar nada */
+      gsap.fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none',
+        scrollTrigger:{trigger:eb,start:'top 85%',end:'bottom 15%',scrub:.4,refreshPriority:-25}});
     }
     // TRES MUNDOS blocks — cascade in after the title unpins
     gsap.from('.worlds-grid .world',{opacity:0,y:FX.rise(),duration:FX.dur,ease:FX.ease,stagger:FX.block,
