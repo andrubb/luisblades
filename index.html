@@ -1843,11 +1843,14 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 /* the same photograph as the memory image on the ink plate */
 .ed-photo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(74vw,540px);height:auto;object-fit:contain;pointer-events:none;
+  width:min(70vw,480px);height:auto;object-fit:contain;pointer-events:none;
   opacity:.30;filter:grayscale(1) contrast(1.08) brightness(1.05);
-  object-position:center 26%;
-  -webkit-mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%);
-          mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%)}
+  /* La vinneta se centra donde de verdad esta el sujeto en la foto ya
+     recortada —46% a lo ancho, porque el se sienta a la izquierda del
+     encuadre, y 50% a lo alto— y se abre un poco para que le quepa el
+     cuerpo entero sin cortarlo. */
+  -webkit-mask-image:radial-gradient(62% 60% at 46% 50%,#000 34%,transparent 80%);
+          mask-image:radial-gradient(62% 60% at 46% 50%,#000 34%,transparent 80%)}
 .ed-inner .bottle{opacity:.05}   /* the drawn bottle steps back behind the photo */
 
 /* ---- 6 · MOBILE: thresholds and slabs scale down, never disappear ---- */
@@ -1922,49 +1925,60 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    =================================================================== */
 .hero-scrim{
   position:absolute;inset:0;z-index:1;pointer-events:none;
+  /* EL VELO SE RETIRA: QUE SE VEA EL CAMPO.
+     Este velo se escribio cuando la tinta no tenia sombra propia y habia
+     que domar el fondo ENTERO para que se leyera. Su columna izquierda
+     llegaba a rgba(11,11,12,.90) y no bajaba de .34 hasta el 54% del
+     ancho: apagaba dos tercios de la portada, y por eso el diseno
+     generativo solo se apreciaba en el lado derecho.
+
+     Desde que cada letra lleva halo, esa columna sobra: el halo hace el
+     trabajo LOCALMENTE, pegado al glifo, en vez de globalmente sobre media
+     pantalla. Comparado a 1440x900 con el campo congelado —las tres tomas
+     sobre el MISMO fotograma, porque si no cada una sale con otra cresta—:
+       velo anterior  el campo solo se leia a la derecha
+       velo al 45%    se ve entero y comodo
+       sin velo       mucho mas rico, y el texto SIGUE leyendose
+     Asi que no se le baja la opacidad: se reescribe. Fuera la columna.
+     Queda una mancha ancha y sin borde detras del bloque de titular, y las
+     bandas de los bordes, donde vive la interfaz. */
   background:
-    /* FOCO BAJO EL TITULAR. Medido donde hay tinta de verdad: bajo las
-       letras de PRIVE el campo llegaba a rgb(169,142,113) y el titular se
-       quedaba en 2.72:1. Una elipse oscura centrada en el bloque de texto
-       lo asienta sin aplanar la mitad izquierda entera — es lo que hace un
-       cartel de cine, y de paso da profundidad. */
-    radial-gradient(62% 46% at 30% 46%,
-      rgba(11,11,12,.80) 0%,
-      rgba(11,11,12,.46) 46%,
-      rgba(11,11,12,0)   100%),
-    /* columna izquierda: sostiene el eje, PRIVE, el subtitulo y el CTA */
-    linear-gradient(100deg,
-      rgba(11,11,12,.90) 0%,
-      rgba(11,11,12,.72) 28%,
-      rgba(11,11,12,.34) 54%,
-      rgba(11,11,12,0)   82%),
-    /* banda inferior: sostiene DESLIZA y la firma de la derecha. Se alarga
-       porque la firma vive al 78% de altura, fuera del alcance anterior. */
+    /* foco bajo el titular: ancho, suave y sin borde. Asienta el texto,
+       no apaga el campo. */
+    radial-gradient(80% 64% at 24% 50%,
+      rgba(11,11,12,.44) 0%,
+      rgba(11,11,12,.22) 44%,
+      rgba(11,11,12,0)   76%),
+    /* banda inferior: sostiene DESLIZA y la firma de la derecha */
     linear-gradient(to top,
-      rgba(11,11,12,.88) 0%,
-      rgba(11,11,12,.60) 12%,
-      rgba(11,11,12,.30) 27%,
-      rgba(11,11,12,0)   48%),
-    /* pestana superior: sostiene el rotulo de la esquina */
+      rgba(11,11,12,.60) 0%,
+      rgba(11,11,12,.22) 12%,
+      rgba(11,11,12,0)   32%),
+    /* pestana superior: sostiene la barra y el rotulo de la esquina */
     linear-gradient(to bottom,
-      rgba(11,11,12,.74) 0%,
-      rgba(11,11,12,.26) 11%,
-      rgba(11,11,12,0)   28%);
+      rgba(11,11,12,.56) 0%,
+      rgba(11,11,12,.15) 10%,
+      rgba(11,11,12,0)   24%);
 }
+
 /* En movil el texto ocupa el ancho completo, asi que el velo lateral
    estorba: manda el vertical. */
 @media(max-width:899px){
+  /* En el telefono el texto ocupa el ancho completo y hay menos campo que
+     ensenar, asi que el velo sigue mandando en vertical — pero mucho mas
+     suelto que antes: subia hasta el 72% de la altura con .06 y no dejaba
+     respirar ni la franja central. */
   .hero-scrim{
     background:
       linear-gradient(to top,
-        rgba(11,11,12,.88) 0%,
-        rgba(11,11,12,.62) 22%,
-        rgba(11,11,12,.30) 46%,
-        rgba(11,11,12,.06) 72%),
+        rgba(11,11,12,.70) 0%,
+        rgba(11,11,12,.38) 20%,
+        rgba(11,11,12,.12) 42%,
+        rgba(11,11,12,0)   62%),
       linear-gradient(to bottom,
-        rgba(11,11,12,.80) 0%,
-        rgba(11,11,12,.30) 14%,
-        rgba(11,11,12,0)   34%);
+        rgba(11,11,12,.62) 0%,
+        rgba(11,11,12,.18) 13%,
+        rgba(11,11,12,0)   30%);
   }
 }
 
@@ -4080,7 +4094,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
          sostiene es la persona, no el producto. Va la toma pensativa: el
          tratamiento fantasma (escala de grises + mascara radial) la
          convierte en atmosfera sin que compita con la linea. -->
-    <img class="ed-photo" src="assets/luis-foto-2.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-foto-2.jpg&quot;" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1124">
+    <img class="ed-photo" src="assets/luis-foto-2.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-foto-2.jpg&quot;" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="821">
     <p class="ed-line" data-i18n="ed_line">Un aroma no se ve. Se recuerda.</p>
   </div>
 </section>
@@ -7242,8 +7256,15 @@ function initAnim(){
     const eb=$('.ed-break');
     if(eb && $('.ed-photo')){
       gsap.timeline({scrollTrigger:{trigger:eb,start:'top 85%',end:'bottom 15%',scrub:.4,refreshPriority:-25}})
-        .fromTo('.ed-photo',{yPercent:8,scale:1.02,opacity:.14},
-                            {yPercent:-6,scale:1.12,opacity:.34,ease:'none'},0)
+        /* En PIXELES, no en yPercent. La foto se centra con top:50% +
+           translate(-50%,-50%), y GSAP lee ese -50% como yPercent:-50.
+           Animar yPercent lo SOBRESCRIBIA, el centrado vertical
+           desaparecia y la foto colgaba hacia abajo desde el medio: por
+           eso Luis salia bajo, cortado, y la vinneta caia sobre el cielo
+           vacio en vez de sobre el. Con y en px, GSAP conserva el -50 y
+           solo suma encima. */
+        .fromTo('.ed-photo',{y:24,scale:1.02,opacity:.16},
+                            {y:-18,scale:1.10,opacity:.34,ease:'none'},0)
         .fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none'},0);
     }
     // TRES MUNDOS blocks — cascade in after the title unpins
