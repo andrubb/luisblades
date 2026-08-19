@@ -1351,7 +1351,28 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 .mmenu.show{visibility:visible;pointer-events:auto}
 .mmenu:not(.show){transform:translateY(calc(-100% - var(--fw-tb) - 4px))}
 @media(prefers-reduced-motion:reduce){
-  .mmenu{transition:none}      /* regla dura 3: sin movimiento, solo aparece/desaparece */
+  .mmenu{transition:none}
+}
+/* --- los enlaces ENTRAN, no viajan con el panel ---
+   Antes todo el contenido se desplazaba solidario con la losa. Ahora el
+   panel aterriza primero y los enlaces suben detras, uno a uno. El
+   retardo del primero (.20s) es justo lo que tarda el panel en llegar:
+   asi el escalonado empieza cuando hay donde aterrizar, no antes.
+   En CSS y no en GSAP: el menu tiene que abrirse aunque la libreria de
+   animacion no llegue nunca. */
+.mmenu > a,.mmenu .mfoot{
+  opacity:0;transform:translateY(15px);
+  transition:opacity .46s var(--e-quart), transform .46s var(--e-quart);
+}
+.mmenu.show > a,.mmenu.show .mfoot{opacity:1;transform:none}
+.mmenu.show > a:nth-of-type(1){transition-delay:.20s}
+.mmenu.show > a:nth-of-type(2){transition-delay:.27s}
+.mmenu.show > a:nth-of-type(3){transition-delay:.34s}
+.mmenu.show > a:nth-of-type(n+4){transition-delay:.40s}
+.mmenu.show .mfoot{transition-delay:.44s}
+@media(prefers-reduced-motion:reduce){
+  .mmenu > a,.mmenu .mfoot{opacity:1;transform:none;transition:none}
+      /* regla dura 3: sin movimiento, solo aparece/desaparece */
 }
 .float-wa{right:calc(18px + var(--fw-lr));bottom:calc(18px + var(--fw-tb) + env(safe-area-inset-bottom))}
 .to-top{left:calc(18px + var(--fw-lr));bottom:calc(18px + var(--fw-tb) + env(safe-area-inset-bottom))}
@@ -2914,7 +2935,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   position:relative;display:block;
   width:clamp(130px,24vw,230px);aspect-ratio:1;
   background:linear-gradient(150deg,rgba(245,241,234,.16),rgba(200,135,58,.14) 52%,rgba(92,26,27,.12));
-  border:1px solid rgba(245,241,234,.30);
+  /* sin filo propio: el canto lo dibuja ::after, que si sabe de donde
+     viene la luz. Un borde uniforme aplanaba la forma. */
+  border:0;
   box-shadow:inset 0 2px 0 rgba(255,255,255,.42),
              inset 0 -3px 0 rgba(0,0,0,.20),
              inset 0 0 30px rgba(255,255,255,.10),
@@ -2952,6 +2975,64 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   animation-play-state:inherit;
   will-change:transform;
 }
+/* ---- EL CANTO ----
+   Un anillo de degradado conico recortado con mask-composite, la misma
+   tecnica del canto de la barra inferior. La rueda arranca arriba a la
+   izquierda, que es de donde viene la luz en toda la pagina: brilla ahi,
+   se apaga abajo a la derecha, y por el camino se abre en ambar por un
+   lado y en celeste por el otro. Esa separacion de color por los cantos
+   es lo que distingue el vidrio grueso del plastico.
+   Hereda border-radius, asi que sigue la silueta mientras muta. */
+.blob::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  pointer-events:none;z-index:3;padding:1.6px;
+  background:conic-gradient(from 208deg,
+    rgba(255,255,255,.62)  0deg,
+    rgba(200,135,58,.38)  62deg,    /* dispersion calida */
+    rgba(255,255,255,.06) 148deg,   /* el lado en sombra */
+    rgba(174,198,216,.34) 246deg,   /* dispersion fria */
+    rgba(255,255,255,.58) 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+}
+/* ---- ALGO QUE REFRACTAR ----
+   Detras de cada burbuja, un rescoldo muy tenue: dos manchas de color a
+   baja opacidad que la lente recoge, desenfoca y deforma al pasar por
+   encima. Es LO QUE CONVIERTE el tinte en vidrio; sin esto el
+   backdrop-filter no tiene materia sobre la que trabajar.
+   Va en absoluto para no entrar en la rejilla del contenedor, y por
+   debajo de la burbuja. */
+.blob-div::before{
+  content:'';position:absolute;inset:2% 4%;
+  pointer-events:none;z-index:0;
+  /* SIN filter:blur(). El padre lleva content-visibility:auto, que
+     implica contain:paint, y eso corta en seco la caida suave del
+     desenfoque justo en el borde de la caja: el halo se convertia en una
+     banda rectangular con filo, visible cruzando toda la pantalla.
+     Un radial que acaba en transparent ya es suave por construccion;
+     el blur no anadia nada y costaba un filtro por burbuja. */
+  background:
+    radial-gradient(42% 48% at 33% 36%, rgba(200,135,58,.17), transparent 72%),
+    radial-gradient(36% 42% at 70% 62%, rgba(174,198,216,.12), transparent 74%),
+    radial-gradient(28% 32% at 54% 78%, rgba(245,241,234,.06), transparent 76%);
+}
+.blob{z-index:1}
+/* ---- LA CAUSTICA ----
+   Un vidrio grueso no solo proyecta sombra: concentra la luz que lo
+   atraviesa y deja una mancha clara justo debajo. Sin ella la burbuja
+   parece pegada al fondo; con ella parece que flota por delante. */
+.blob-div::after{
+  content:'';position:absolute;left:50%;top:64%;
+  width:clamp(150px,26vw,260px);height:clamp(34px,6vw,58px);
+  transform:translate(-50%,0);
+  pointer-events:none;z-index:0;
+  /* tambien sin blur, por lo mismo: el radial ya cae solo */
+  background:radial-gradient(50% 50% at 50% 50%,
+    rgba(245,241,234,.09) 0%, rgba(200,135,58,.06) 48%, transparent 78%);
+}
+.bd-lg .blob-div::after,.blob-div.bd-lg::after{width:clamp(210px,36vw,340px)}
 .blob-div-alt .blob::before{animation-duration:10s;animation-delay:-3s}
 .bd-sm .blob::before{animation-duration:6.5s;animation-delay:-1.5s}
 .bd-lg .blob::before{animation-duration:12s;animation-delay:-4s}
@@ -3103,8 +3184,21 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    =================================================================== */
 .bd-sm .blob{width:clamp(96px,17vw,150px)}
 .bd-lg .blob{width:clamp(190px,34vw,320px)}
-.bd-left {justify-items:start;padding-left:clamp(10px,7vw,90px)}
-.bd-right{justify-items:end;  padding-right:clamp(10px,7vw,90px)}
+/* a 390 px, una burbuja de 281 anclada al lado no cabe entera aunque se
+   le de margen: ahi se centra y se le recorta un poco el tamano. */
+@media(max-width:520px){
+  .bd-lg{justify-items:center;padding-left:30px;padding-right:30px}
+  .bd-lg .blob{width:min(clamp(190px,34vw,320px), calc(100vw - 132px))}
+}
+/* 56 px, no 27: medido a 390 congelando la animacion en doce fases del
+   ciclo, cuatro burbujas de ocho quedaban cortadas en recto contra el
+   borde (la mayor, 51 px fuera). overflow-x:clip evitaba el scroll, por
+   eso nunca habia saltado — pero el corte parte el canto lenticular por
+   la mitad y eso ya no se lee como sangrado, sino como fallo.
+   La excursion real es 28 px de flotado lateral mas un 8 % del ancho por
+   lado al respirar (escala 1.16). */
+.bd-left {justify-items:start;padding-left:56px}
+.bd-right{justify-items:end;  padding-right:56px}
 /* En escritorio el desplazamiento lateral se leia como piezas sueltas en
    sitios arbitrarios. Con el ancho de pantalla la composicion pide eje
    central: todas vuelven al centro y solo varian de tamano. */
@@ -3619,6 +3713,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 </section>
 
 <!-- ============================ 03 · CATALOG ============================ -->
+
+<!-- hueco finder -> catalogo: no habia nada entre el buscador y la rejilla -->
+<div class="blob-div bd-sm bd-right" aria-hidden="true"><span class="blob"></span></div>
 <section class="section" id="catalog" style="padding-top:clamp(56px,9vw,90px)">
   <div class="wrap">
     <div class="shead reveal">
@@ -3932,6 +4029,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 </section>
 
 <!-- ================== EDITORIAL BREAK — mood only ================== -->
+
+<!-- hueco encargos -> plancha: prepara la entrada a la foto de Luis -->
+<div class="blob-div bd-left" aria-hidden="true"><span class="blob"></span></div>
 <section class="ed-break" aria-label="Blades Privé">
   <div class="wrap ed-inner reveal">
     <span class="ed-sweep" aria-hidden="true"></span>
@@ -3978,6 +4078,9 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <div class="celeste-rule" aria-hidden="true"><span></span></div>
 
 <!-- ===================== LUIS — EL HOMBRE DETRÁS + SUS CORTES ===================== -->
+
+<!-- hueco sobre-Luis -> sus fotos -->
+<div class="blob-div blob-div-alt bd-right" aria-hidden="true"><span class="blob"></span></div>
 <section class="section man" id="luis">
   <div class="wrap">
     <div class="shead reveal">
@@ -5899,6 +6002,37 @@ function splitLines(el){
   return [...el.querySelectorAll('.ln-in')];
 }
 
+/* Las burbujas flotan EN PROFUNDIDAD, no pegadas a la pagina: al bajar,
+   cada una se desplaza a distinta velocidad que el contenido y el ojo lee
+   que estan por delante. Es la diferencia entre un adorno pegado al fondo
+   y un objeto suspendido.
+
+   El desplazamiento va en el CONTENEDOR, nunca en la burbuja: la burbuja
+   ya tiene tres animaciones propias sobre transform (flotado, respiracion
+   y morfeo) y escribirle encima desde GSAP las mataria. Dos capas, cada
+   una con su trabajo.
+
+   Solo transform y sin pin: lo resuelve el compositor sin repintar, y el
+   presupuesto de pines (maximo tres en toda la pagina) queda intacto. */
+let blobPx=[];
+function buildBlobParallax(){
+  if(!window.gsap||!window.ScrollTrigger||reduceMotion()) return;
+  blobPx.forEach(t=>{ if(t.scrollTrigger) t.scrollTrigger.kill(); t.kill(); });
+  blobPx=[];
+  $$('.blob-div').forEach((d,i)=>{
+    /* las grandes viajan mas: parecen estar mas cerca */
+    const hondo = d.classList.contains('bd-lg') ? 88
+                : d.classList.contains('bd-sm') ? 44 : 64;
+    /* alternando el sentido, dos burbujas seguidas no se mueven en bloque */
+    const signo = (i % 2) ? -1 : 1;
+    blobPx.push(gsap.fromTo(d,
+      {y: hondo*signo},
+      {y: -hondo*signo, ease:'none',
+       scrollTrigger:{trigger:d, start:'top bottom', end:'bottom top',
+         scrub:.55, refreshPriority:-90}}));
+  });
+}
+
 /* Revelado por linea con ScrollTrigger. Sin pin, sin reverse: es texto
    de lectura y borrarlo al subir seria hostil. */
 let lineTls=[];
@@ -6796,9 +6930,21 @@ function setupEvents(){
   $('#cartClose').addEventListener('click',closeCart);
   $('#checkoutBtn').addEventListener('click',checkout);
   $('#overlay').addEventListener('click',()=>{ closeCart(); closeModal(); });
-  $('#menuBtn').addEventListener('click',()=>$('#mmenu').classList.add('show'));
-  $('#mmenuClose').addEventListener('click',()=>$('#mmenu').classList.remove('show'));
-  $$('#mmenu a').forEach(a=>a.addEventListener('click',()=>$('#mmenu').classList.remove('show')));
+  /* El menu ocupa toda la pantalla en fijo, pero el documento de detras
+     seguia haciendo scroll: al arrastrar sobre el panel se veia moverse
+     el fondo. El modal, el carrito y el panel de admin ya bloqueaban;
+     este se habia quedado fuera. */
+  const abreMenu=()=>{ $('#mmenu').classList.add('show'); document.body.style.overflow='hidden'; };
+  const cierraMenu=()=>{
+    $('#mmenu').classList.remove('show');
+    /* el scroll solo se devuelve si no queda otra capa abierta encima */
+    const tapado=['#modal','#cart','#admin'].some(sel=>{ const e=$(sel); return e && e.classList.contains('show'); });
+    if(!tapado) document.body.style.overflow='';
+  };
+  window.__cierraMenu=cierraMenu;
+  $('#menuBtn').addEventListener('click',abreMenu);
+  $('#mmenuClose').addEventListener('click',cierraMenu);
+  $$('#mmenu a').forEach(a=>a.addEventListener('click',cierraMenu));
   // search
   const sbar=$('#searchbar'), si=$('#searchInput');
   const openSearch=()=>{ sbar.classList.add('open'); setTimeout(()=>si.focus(),120); };
@@ -6820,7 +6966,7 @@ function setupEvents(){
   window.addEventListener('scroll',()=>{ const y=window.scrollY; $('#nav').classList.toggle('scrolled',y>20); $('#toTop').classList.toggle('show',y>600); },{passive:true});
   $('#toTop').addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   // esc
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeModal(); $('#mmenu').classList.remove('show'); $('#searchbar').classList.remove('open'); if($('#admin').classList.contains('show'))closeAdmin(); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeModal(); (window.__cierraMenu||(()=>{}))(); $('#mmenu').classList.remove('show'); $('#searchbar').classList.remove('open'); if($('#admin').classList.contains('show'))closeAdmin(); } });
   // footer category quick-links → activate matching filter pill + scroll to catalog
   $$('[data-cat-link]').forEach(a=>a.addEventListener('click',async e=>{
     e.preventDefault();
@@ -7072,6 +7218,7 @@ function initAnim(){
     buildFinderIn();   // C1 — entrada del quiz
     buildWorldsType(); // C2 — numerales + reveal palabra a palabra
     buildBeats();      // C4 — 4 beats, 4 mecanicas distintas
+    buildBlobParallax();// el vidrio flota en profundidad, no pegado
     buildLineReveals();// texto que ENTRA por linea, no que se enciende
     window.__fxReady=true;
     ScrollTrigger.sort();   // creation order ≠ page order (how builds before curator) — sort by refreshPriority
