@@ -783,6 +783,32 @@ input[type=range]::-moz-range-thumb{width:28px;height:28px}
 /* ---- HERO ---- */
 .hero h1{color:#000}
 .hero-eyebrow,.hero h1,.hero .sub,.hero .tagline,.hero .cta{position:relative;z-index:1}
+/* ---- EL HALO DE LA TINTA ----
+   El haz diagonal de la portada pasa POR ENCIMA del velo, y donde cruza
+   una letra el contraste se hundia: 2,62:1 en PRIVE, 2,04:1 en el
+   subtitulo y 1,36:1 en la etiqueta de abajo (medido solo sobre la tinta,
+   a 390 px). Como el texto ya es hueso puro y no puede ser mas blanco, la
+   sombra viaja con la letra: asi la sostiene sea lo que sea que pase por
+   detras, sin tocar el haz, que es lo que le da vida a la portada.
+   Radio corto: en un titular de 117 px un halo ancho se lee como niebla. */
+.hero h1{
+  text-shadow:
+    0 1px 2px rgba(11,11,12,.55),
+    0 2px 14px rgba(11,11,12,.42);
+}
+.hero .sub{
+  text-shadow:
+    0 1px 2px rgba(11,11,12,.62),
+    0 2px 10px rgba(11,11,12,.46);
+}
+.hero .tagline,.hero .hero-eyebrow,.hero-rail,.hero .scroll-cue small{
+  text-shadow:
+    0 1px 2px rgba(11,11,12,.78),
+    0 1px 7px rgba(11,11,12,.58);
+}
+@media(prefers-reduced-motion:reduce){
+  /* el halo no es movimiento: se queda igual */
+}
 .hero .tagline::after{content:"";display:block;width:min(440px,72vw);height:1px;background:#000;margin:26px auto 0}
 .hero .cta .btn:hover{background:#000;border-color:#000;color:#fff}
 .hero::before{content:"B";position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);z-index:0;
@@ -1995,7 +2021,21 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   font-size:clamp(.9rem,2.4vw,1.05rem);
 }
 .hero .tagline::after{background:var(--chrome-2);opacity:.5}
-.hero .sec-num{background:var(--bone);color:var(--noir)}
+/* El numeral del hero era un rectangulo MACIZO en hueso. Sobre el campo
+   ambar leia como una caja sin terminar, y ademas competia con el rotulo
+   que va justo debajo. Pasa al mismo lenguaje que el resto de la portada
+   —filete fino y tinta hueso, como el marco y como el boton—, con un
+   velo apenas perceptible detras para que se sostenga sobre las crestas
+   claras del campo sin volver a ser un bloque. */
+.hero .sec-num{
+  background:rgba(11,11,12,.34);
+  color:rgba(245,241,234,.92);
+  border:1px solid rgba(245,241,234,.30);
+  padding:7px 12px 6px;
+  border-radius:2px;
+  -webkit-backdrop-filter:blur(6px);
+          backdrop-filter:blur(6px);
+}
 .hero .scroll-cue small,.hero .scroll-cue .chev{color:rgba(245,241,234,.86)}
 .hero .scroll-cue small{font-size:.68rem;letter-spacing:.26em}
 .hero .scroll-cue .ln{background:linear-gradient(var(--chrome-2),transparent)}
