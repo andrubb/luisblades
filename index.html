@@ -1380,12 +1380,26 @@ body{background:var(--bg);padding:var(--fw-tb) var(--fw-lr);position:relative}
 .hero::after{display:none}                      /* old centred vertical rule retired */
 .hero::before{left:auto;right:-4%;top:44%;transform:translate(0,-50%);opacity:.022;font-size:40vw}
 @media(max-width:899px){
-  .hero{grid-template-columns:1fr;column-gap:0}
-  .hero-eyebrow{grid-column:1;justify-self:start;text-align:left;max-width:none;
+  /* ORDEN DE LECTURA. Estaba al reves: la firma vivia en la fila 4 y la
+     pista de scroll en la 3, asi que "Desliza" aparecia ANTES que la firma
+     de marca. Y como la rejilla solo declaraba tres filas, la cuarta se
+     creaba sola y la fila 1fr del medio abria un hueco muerto de casi 350px
+     entre el CTA y lo de abajo.
+     Ahora las cuatro filas estan declaradas y el orden es el que se lee:
+     rotulo -> titular -> firma -> desliza, con el titular absorbiendo el
+     aire sobrante en vez de dejarlo tirado en medio. */
+  .hero{
+    grid-template-columns:1fr;
+    grid-template-rows:auto 1fr auto auto;
+    column-gap:0;
+  }
+  .hero-eyebrow{grid-row:1;grid-column:1;justify-self:start;text-align:left;max-width:none;
     white-space:normal;padding-right:0}
-  .hero .tagline{grid-column:1;grid-row:4;justify-self:start;text-align:left;margin-top:22px}
+  .hero-main{grid-row:2;align-self:center}
+  .hero .tagline{grid-column:1;grid-row:3;justify-self:start;text-align:left;
+    margin:0 0 20px;max-width:30ch}
   .hero .tagline::after{margin-left:0}
-  .hero .scroll-cue{grid-row:3;grid-column:1;margin-top:26px}
+  .hero .scroll-cue{grid-row:4;grid-column:1;margin:0 0 2px}
 }
 
 /* ---- AMBIENT PARTICLES — "scent trailing in the air" ----
@@ -1775,7 +1789,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 /* the same photograph as the memory image on the ink plate */
 .ed-photo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:min(74vw,540px);height:auto;object-fit:contain;pointer-events:none;
-  opacity:.16;filter:grayscale(1) contrast(1.15);
+  opacity:.30;filter:grayscale(1) contrast(1.08) brightness(1.05);
+  object-position:center 26%;
   -webkit-mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%);
           mask-image:radial-gradient(58% 58% at 50% 46%,#000 32%,transparent 78%)}
 .ed-inner .bottle{opacity:.05}   /* the drawn bottle steps back behind the photo */
@@ -1845,14 +1860,69 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   background:linear-gradient(90deg,transparent,rgba(242,244,246,.32),transparent);
 }
 
+/* ===================================================================
+   VELO DEL HERO — la capa que hace legible todo lo demas.
+   Va en z-index 1: por encima del campo, la aurora y las motas (todas en
+   0) y por debajo del texto (.hero > * esta en 2).
+   =================================================================== */
+.hero-scrim{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    /* FOCO BAJO EL TITULAR. Medido donde hay tinta de verdad: bajo las
+       letras de PRIVE el campo llegaba a rgb(169,142,113) y el titular se
+       quedaba en 2.72:1. Una elipse oscura centrada en el bloque de texto
+       lo asienta sin aplanar la mitad izquierda entera — es lo que hace un
+       cartel de cine, y de paso da profundidad. */
+    radial-gradient(62% 46% at 30% 46%,
+      rgba(11,11,12,.80) 0%,
+      rgba(11,11,12,.46) 46%,
+      rgba(11,11,12,0)   100%),
+    /* columna izquierda: sostiene el eje, PRIVE, el subtitulo y el CTA */
+    linear-gradient(100deg,
+      rgba(11,11,12,.90) 0%,
+      rgba(11,11,12,.72) 28%,
+      rgba(11,11,12,.34) 54%,
+      rgba(11,11,12,0)   82%),
+    /* banda inferior: sostiene DESLIZA y la firma de la derecha. Se alarga
+       porque la firma vive al 78% de altura, fuera del alcance anterior. */
+    linear-gradient(to top,
+      rgba(11,11,12,.88) 0%,
+      rgba(11,11,12,.60) 12%,
+      rgba(11,11,12,.30) 27%,
+      rgba(11,11,12,0)   48%),
+    /* pestana superior: sostiene el rotulo de la esquina */
+    linear-gradient(to bottom,
+      rgba(11,11,12,.74) 0%,
+      rgba(11,11,12,.26) 11%,
+      rgba(11,11,12,0)   28%);
+}
+/* En movil el texto ocupa el ancho completo, asi que el velo lateral
+   estorba: manda el vertical. */
+@media(max-width:899px){
+  .hero-scrim{
+    background:
+      linear-gradient(to top,
+        rgba(11,11,12,.88) 0%,
+        rgba(11,11,12,.62) 22%,
+        rgba(11,11,12,.30) 46%,
+        rgba(11,11,12,.06) 72%),
+      linear-gradient(to bottom,
+        rgba(11,11,12,.80) 0%,
+        rgba(11,11,12,.30) 14%,
+        rgba(11,11,12,0)   34%);
+  }
+}
+
 /* --- eje vertical en el margen izquierdo: rompe la simetria --- */
 .hero-rail{
   position:absolute;z-index:2;left:2px;top:50%;
   transform:translateY(-50%) rotate(180deg);
   writing-mode:vertical-rl;
   font-family:var(--font-struct);font-weight:800;
-  font-size:9px;letter-spacing:.42em;
-  color:var(--on-noir-3);
+  /* de 9px a 11px y del tono mas tenue a uno con presencia: a .52 sobre
+     las crestas del campo daba 2.36:1, por debajo del minimo. */
+  font-size:11px;letter-spacing:.40em;
+  color:rgba(245,241,234,.78);
   pointer-events:none;user-select:none;
 }
 
@@ -1876,23 +1946,29 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .hero h1 .hl{display:inline-block;will-change:transform}
 .hero .sub{
   font-family:var(--font-display);font-style:italic;font-weight:400;
-  font-size:clamp(1.05rem,4.6vw,1.7rem);
-  color:var(--on-noir-2);
-  margin-top:.9rem;max-width:22ch;text-align:left;
+  /* sube de 1.05-1.7rem a 1.3-2.15rem, y de .62 a .96 de tinta: medido a
+     2.58:1 sobre las crestas, por debajo del minimo hasta para texto
+     grande. */
+  font-size:clamp(1.3rem,5.2vw,2.15rem);
+  color:var(--on-noir-1);
+  margin-top:1.05rem;max-width:22ch;text-align:left;
 }
 .hero .hero-eyebrow{
-  color:var(--on-noir-3);font-weight:600;text-align:left;
+  color:rgba(245,241,234,.90);font-weight:600;text-align:left;
+  font-size:.74rem;letter-spacing:.30em;
   margin-top:44px;              /* despeja el slab 01, medido: colisionaba */
   padding-left:2px;
 }
 @media(min-width:900px){ .hero .hero-eyebrow{margin-top:0} }
 .hero .tagline{
-  color:var(--on-noir-3);font-family:var(--font-display);font-style:italic;
+  color:rgba(245,241,234,.92);font-family:var(--font-display);font-style:italic;
   text-transform:none;letter-spacing:.02em;
+  font-size:clamp(.9rem,2.4vw,1.05rem);
 }
 .hero .tagline::after{background:var(--chrome-2);opacity:.5}
 .hero .sec-num{background:var(--bone);color:var(--noir)}
-.hero .scroll-cue small,.hero .scroll-cue .chev{color:var(--on-noir-3)}
+.hero .scroll-cue small,.hero .scroll-cue .chev{color:rgba(245,241,234,.86)}
+.hero .scroll-cue small{font-size:.68rem;letter-spacing:.26em}
 .hero .scroll-cue .ln{background:linear-gradient(var(--chrome-2),transparent)}
 /* MARCA DE AGUA "B" ELIMINADA DEL HERO — decision de rendimiento medida.
    Era el elemento LCP (HEADER.hero::before, rect 102x156) y su area de
@@ -3360,6 +3436,14 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
        No son adorno: son el aroma que no se ve, ocupando el aire. -->
   <!-- CAMPO FLUIDO: shader WebGL2. Ver nota tecnica en el JS. -->
   <canvas class="flux flux-hero" aria-hidden="true"></canvas>
+  <!-- VELO DIRECCIONAL. El campo llega a rgb(179,167,154) en sus crestas y
+       el texto es hueso (245): eso son 2.09:1, practicamente invisible.
+       En vez de apagar el campo entero —que era lo epico— se oscurece SOLO
+       por donde pasa el texto: la columna izquierda, la banda de abajo y
+       una pestana arriba. El centro-derecha, donde no hay una sola letra,
+       sigue ardiendo igual. De paso le da cuerpo: un degradado direccional
+       es lo que separa un fondo plano de una foto iluminada. -->
+  <span class="hero-scrim" aria-hidden="true"></span>
   <span class="aurora" aria-hidden="true">
     <i class="au au-1"></i><i class="au au-2"></i><i class="au au-3"></i>
     <i class="au au-4"></i><i class="au au-5"></i>
@@ -3769,15 +3853,12 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <section class="ed-break" aria-label="Blades Privé">
   <div class="wrap ed-inner reveal">
     <span class="ed-sweep" aria-hidden="true"></span>
-    <img class="ed-photo" src="assets/perfume-placeholder.webp" onerror="this.onerror=null;this.src=&quot;assets/perfume-placeholder.jpg&quot;" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1177">
-    <svg class="bottle" viewBox="0 0 120 170" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round" aria-hidden="true">
-      <rect x="49" y="9" width="22" height="15" rx="1.5"/>
-      <path d="M53 24h14v8h-14z"/>
-      <path d="M53 32c-12 4-13 13-13 22v92c0 7 5 11 12 11h16c7 0 12-4 12-11V54c0-9-1-18-13-22"/>
-      <line class="accent" x1="40" y1="92" x2="80" y2="92"/>
-      <line class="accent" x1="40" y1="98" x2="80" y2="98"/>
-      <line x1="46" y1="120" x2="74" y2="120" stroke-opacity=".5"/>
-    </svg>
+    <!-- Esta seccion existe para sostener una foto de LUIS, no un frasco.
+         "Un aroma no se ve. Se recuerda." habla de memoria, y quien la
+         sostiene es la persona, no el producto. Va la toma pensativa: el
+         tratamiento fantasma (escala de grises + mascara radial) la
+         convierte en atmosfera sin que compita con la linea. -->
+    <img class="ed-photo" src="assets/luis-foto-2.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-foto-2.jpg&quot;" alt="" aria-hidden="true" loading="lazy" decoding="async" width="900" height="1124">
     <p class="ed-line" data-i18n="ed_line">Un aroma no se ve. Se recuerda.</p>
   </div>
 </section>
@@ -5844,7 +5925,22 @@ async function loadProducts(){
   if(ov){ try{ const a=JSON.parse(ov); if(a&&a.length) return a; }catch(e){} }
   return PERFUMES.concat(IMPORTED).map(p=>({...p}));
 }
-function persistProducts(){ localStorage.setItem('bp_products', JSON.stringify(S.products)); }
+/* localStorage tiene cuota (~5 MB) y aqui se guarda el catalogo ENTERO.
+   Antes esto reventaba en silencio: Luis pulsaba Guardar, no pasaba nada
+   visible, y el cambio se perdia al recargar. Ahora se entera. */
+function persistProducts(){
+  try{
+    localStorage.setItem('bp_products', JSON.stringify(S.products));
+    return true;
+  }catch(e){
+    const conFoto=S.products.filter(p=>String(p.image_url||'').startsWith('data:')).length;
+    console.warn('no se pudo guardar el catalogo',e);
+    toast(conFoto>1
+      ? 'Sin espacio: hay '+conFoto+' fotos guardadas en este dispositivo. Quitá alguna y volvé a intentar.'
+      : 'No se pudo guardar en este dispositivo. Puede que el almacenamiento esté lleno.');
+    return false;
+  }
+}
 
 /* ===================================================================
    CATALOG — compute, render, paginate, day/night sort
@@ -6356,7 +6452,27 @@ function adminForm(m){
   ['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
   drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f)readImg(f); });
-  function readImg(f){ const r=new FileReader(); r.onload=ev=>{ $('#f_img').value=ev.target.result; setPrev(ev.target.result); }; r.readAsDataURL(f); }
+  /* La version anterior metia la foto CRUDA con readAsDataURL. Una foto de
+     movil son 3-6 MB, el catalogo entero se guarda en localStorage y la
+     cuota son ~5 MB: a la primera o segunda foto, a Luis le fallaba el
+     guardado sin decirle por que. Ahora pasa por el mismo compresor que el
+     panel de Medios (1200px de lado mayor, WebP): una foto de producto
+     queda en 60-120 KB y se ven cabales, porque en la ficha se muestra a
+     350px como mucho. */
+  async function readImg(f){
+    if(!/^image\//.test(f.type)){ toast('Ese archivo no es una imagen'); return; }
+    const drop=$('#f_drop'); const antes=drop? drop.textContent : '';
+    if(drop) drop.textContent='Procesando la foto…';
+    try{
+      const {src}=await comprimeImagen(f, 1200, 0.82);
+      $('#f_img').value=src; setPrev(src);
+      const kb=Math.round((src.length*0.75)/1024);
+      toast('Foto lista · '+kb+' KB');
+    }catch(e){
+      console.warn('no se pudo procesar la imagen',e);
+      toast('No se pudo procesar esa foto. Probá con otra.');
+    }finally{ if(drop) drop.textContent=antes; }
+  }
   function setPrev(url){ const pv=$('#f_prev'); pv.innerHTML = url?`<img src="${url}" style="width:100%;height:100%;object-fit:contain" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE; }
   if($('#aDel')) $('#aDel').addEventListener('click',()=>{ if(confirm('¿Eliminar esta fragancia?')){ S.products=S.products.filter(x=>x.id!==p.id); persistProducts(); syncDel(p.id); back(); refresh(false); } });
   $('#aSave').addEventListener('click',()=>saveProduct(isNew,p.id));
@@ -6773,11 +6889,17 @@ function initAnim(){
       scrollTrigger:{trigger:'.celeste-rule',start:'top 88%',once:true}});
     // Mechanic 6 — EL MISMO OJO: gsap.matchMedia-managed (desktop fade-in / mobile wipe)
     buildEye();
-    // ED-BREAK — the ink plate breathes: bottle drifts/brightens + a light sweep, scrub-tied
+    /* ED-BREAK — la plancha respira. Antes el scrub movia el frasco
+       dibujado; ese frasco se retiro porque la seccion existe para sostener
+       una foto de Luis, no un producto. La animacion pasa a la foto, con
+       valores propios de un retrato: entra desde abajo un poco encogida y
+       sube ganando presencia, asi la cara llega a su punto justo cuando la
+       linea esta centrada en pantalla. */
     const eb=$('.ed-break');
-    if(eb){
+    if(eb && $('.ed-photo')){
       gsap.timeline({scrollTrigger:{trigger:eb,start:'top 85%',end:'bottom 15%',scrub:.4,refreshPriority:-25}})
-        .fromTo('.ed-inner .bottle',{y:60,scale:.96,opacity:.06},{y:-40,scale:1.05,opacity:.17,ease:'none'},0)
+        .fromTo('.ed-photo',{yPercent:8,scale:1.02,opacity:.14},
+                            {yPercent:-6,scale:1.12,opacity:.34,ease:'none'},0)
         .fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none'},0);
     }
     // TRES MUNDOS blocks — cascade in after the title unpins
