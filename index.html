@@ -3259,6 +3259,80 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .med-quitar,.med-soltar{transition:none}
   .med-quitar:hover{transform:none}
 }
+
+/* ===================================================================
+   PANEL DE ADMIN EN EL TELEFONO — ergonomia tactil.
+
+   Auditado a 390px sobre el panel real. Lo que se encontro y por que
+   importa cuando quien lo usa es Luis, de pie en la barberia, con una
+   mano:
+
+   · Los deslizadores de intensidad, duracion y proyeccion median
+     308x2 px. El pulgar se VE grande, pero la pista es la altura del
+     input: dos pixeles. Tocar la pista para saltar a un valor era
+     imposible; habia que agarrar el pulgar exacto.
+   · Las casillas de seleccion, 22x22. Los iconos de accion, 40x40.
+     Los chips, 40 de alto. Todos por debajo de los 44x44 que pide
+     Apple y de los 48 de Material.
+   · Etiquetas y rotulos entre 9 y 11px: legibles en un monitor,
+     incomodos en un telefono a pulso.
+
+   Se corrige por TIPO DE PUNTERO, no por ancho de pantalla: lo que
+   manda es si el dedo es el instrumento, no cuantos pixeles hay.
+   =================================================================== */
+/* Se dispara por puntero grueso O por pantalla angosta: el emulador de
+   Chrome no reporta pointer:coarse aunque emule un telefono, y una ventana
+   angosta en un portatil tactil merece el mismo trato. */
+@media (pointer: coarse), (max-width: 899px) {
+  /* la pista pasa a medir 44 de alto pero SE SIGUE VIENDO fina: el
+     carril se pinta como fondo centrado, no como altura del elemento */
+  .a-slider input[type=range]{
+    height:44px;
+    background:linear-gradient(var(--border),var(--border)) no-repeat center / 100% 3px;
+    border-radius:0;
+  }
+  .a-slider input[type=range]::-webkit-slider-thumb{width:30px;height:30px}
+  .a-slider input[type=range]::-moz-range-thumb{width:30px;height:30px}
+
+  /* la casilla se ve igual de fina, pero su zona de toque llega a 44 */
+  .a-check{position:relative}
+  .a-check::after{content:"";position:absolute;inset:-11px;border-radius:10px}
+
+  .a-chip{min-height:44px;padding:11px 16px;font-size:.72rem}
+  .a-ico{width:44px;height:44px}
+  /* en la fila de producto los dos iconos viven en un flex apretado y
+     se encogian a 41x42 aunque pidieran 44: se les prohibe encoger */
+  .a-acts .a-ico{flex:0 0 44px;height:44px}
+  .bulk-x{width:44px;height:44px}
+  /* barra de accion en lote: tres iconos que se apretaban a 41x42 */
+  .bulk-acts button{flex:0 0 44px;height:44px;display:flex;align-items:center;justify-content:center}
+  .admin-shell .btn,
+  .a-form-actions .btn,
+  .a-img-remove,
+  .admin-exit{min-height:44px}
+  .a-img-remove{padding:11px 14px}
+
+  /* rotulos y etiquetas: de 9-11px a un minimo comodo a pulso */
+  .admin-main .a-sect{font-size:.80rem}
+  .admin-main .field label{font-size:.78rem}
+  .admin-main .block-label{font-size:.78rem}
+  .admin-tabs button{font-size:.66rem}
+  .admin-main .a-note{font-size:.84rem}
+
+  /* --- lo que Luis LEE, no solo lo que toca ---
+     La marca en la lista estaba a .56rem = 8.96px reales. Es un estilo de
+     rotulo, correcto en un monitor; en la mano, buscando un frasco entre
+     setenta, no se lee. Sube junto con el resto de microtexto util. */
+  .a-item .info .b{font-size:.72rem;letter-spacing:.16em}
+  .a-item .info .p{font-size:.78rem}
+  /* el nombre se truncaba con puntos suspensivos en una sola linea: en un
+     telefono eso esconde justo la parte que distingue dos frascos de la
+     misma casa. Se le permiten dos lineas. */
+  .a-item .info .n{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .admin-exit{font-size:.72rem}
+  .a-img-remove{font-size:.72rem}
+  .bulk-bar .bulk-n{font-size:.70rem}
+}
 </style>
 </head>
 
