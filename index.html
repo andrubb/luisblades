@@ -4994,6 +4994,12 @@ function toast(msg){const t=$('#toast');$('#toastMsg').textContent=msg;t.classLi
    No se usa <picture> a proposito: meteria un elemento entre el padre y
    el <img> y hay selectores CSS que cuentan con esa relacion directa.
    La cadena onerror hace el mismo trabajo sin tocar la estructura. */
+/* El retrato de Luis viene con el sitio. El panel de Medios sigue pudiendo
+   reemplazarlo, pero ya no hace falta que alguien suba algo para que su
+   seccion tenga cara. */
+const LUIS_RETRATO='assets/luis-retrato.webp';
+const LUIS_RETRATO_FALLBACK='assets/luis-retrato.jpg';
+
 const PH_SRC='assets/perfume-placeholder.webp';
 const PH_FALLBACK='assets/perfume-placeholder.jpg';
 
@@ -5023,15 +5029,17 @@ window.__BOTTLE = BOTTLE;
    Swapping in real media later is one line per item in the arrays below.
    =================================================================== */
 
-// REPLACE: paste real image URLs or base64 here once Andrew uploads Luis's photos.
-// Each '' is a placeholder slot — replacing one line with a URL swaps that photo in.
+/* Fotos reales de la sesion de Luis. Van como assets del repo y no por el
+   panel de Medios porque el panel guarda en IndexedDB, que es por
+   dispositivo: estas tienen que verlas todos los que entren al sitio.
+   Si Luis sube otras desde el panel, las suyas mandan por encima. */
 const luisPhotos = [
-  '', // photo 1
-  '', // photo 2
-  '', // photo 3
-  '', // photo 4
-  '', // photo 5
-  ''  // photo 6
+  'assets/luis-foto-1.webp',   // sentado, brazos cruzados
+  'assets/luis-foto-2.webp',   // sentado, ajustandose los lentes
+  '', // libre
+  '', // libre
+  '', // libre
+  ''  // libre
 ];
 
 /* -------------------------------------------------------------------
@@ -5039,9 +5047,10 @@ const luisPhotos = [
    (compressed H.264, 720p, <3MB — HandBrake "Fast 720p30" + Web Optimized),
    or '' for the intentional placeholder treatment.
    ------------------------------------------------------------------- */
-// REPLACE: paste real photo/clip URLs of Luis's barbershop work here.
+/* La foto del oficio: Luis trabajando, no posando. Es la unica del lote
+   que muestra el trabajo, y por eso abre la cuadricula. */
 const luisCuts = [
-  '', // corte 1
+  'assets/luis-corte-1.webp', // navaja en mano, en la barberia
   '', // corte 2
   '', // corte 3
   '', // corte 4
@@ -5177,8 +5186,14 @@ function renderCarousels(){
      generica se lee como error, no como diseno. */
   const fig=$('#retratoLuis'), rim=$('#retratoImg');
   if(fig && rim){
-    if(MEDIA.retrato && MEDIA.retrato.src){ rim.src=MEDIA.retrato.src; fig.hidden=false; }
-    else { rim.removeAttribute('src'); fig.hidden=true; }
+    /* lo que suba Luis manda; si no hay nada, el retrato que viene con el
+       sitio. Solo se oculta si tampoco existiera ese, que no es el caso. */
+    const src=(MEDIA.retrato && MEDIA.retrato.src) || LUIS_RETRATO;
+    if(src){
+      if(rim.getAttribute('src')!==src) rim.src=src;
+      if(!MEDIA.retrato) rim.onerror=()=>{ rim.onerror=null; rim.src=LUIS_RETRATO_FALLBACK; };
+      fig.hidden=false;
+    } else { rim.removeAttribute('src'); fig.hidden=true; }
   }
   /* Las fotos del panel mandan; los huecos de luisPhotos solo se usan
      para completar hasta seis y que el carrusel no quede cojo. */
@@ -5189,7 +5204,9 @@ function renderCarousels(){
     subidas.map((m,i)=> m.tipo==='video'
         ? `<div class="car-item"><video src="${m.src}" muted loop playsinline autoplay preload="metadata" aria-label="Luis Blades ${i+1}"></video></div>`
         : `<div class="car-item"><img src="${m.src}" alt="Luis Blades ${i+1}" loading="lazy" decoding="async"></div>`).join('')
-    + Array.from({length:huecos},()=>`<div class="car-item">${PH_PHOTO()}</div>`).join('');
+    + luisPhotos.slice(0, huecos).map((u,j)=> u
+        ? `<div class="car-item"><img src="${u}" alt="Luis Blades en su sesion ${j+1}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('.webp','.jpg')"></div>`
+        : `<div class="car-item">${PH_PHOTO()}</div>`).join('');
   setupCarousels(); renderCuts();
 }
 
