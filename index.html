@@ -3351,6 +3351,8 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    DENTRO de la rejilla, no encima: asi el sitio donde se suelta el
    archivo es el mismo sitio donde aparecera.
    =================================================================== */
+.respaldo-acciones{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 2px}
+.respaldo-acciones .btn{flex:1 1 auto;min-width:190px;justify-content:center;cursor:pointer}
 .med-grupo{margin-bottom:30px}
 /* Nota en texto pelado, no en caja. Tres cajas de aviso seguidas pesaban
    mas que el contenido y esto tiene que leerse de un vistazo. */
@@ -3648,7 +3650,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 <nav class="nav" id="nav">
   <div class="nav-inner">
     <a href="#top" class="logo" aria-label="Luis Blades — Blades Privé">
-      <img src="assets/luis-blades-logo.webp" fetchpriority="high" width="180" height="180" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
+      <img data-logo="1" src="assets/luis-blades-logo.webp" fetchpriority="high" width="180" height="180" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
     </a>
 
     <div class="nav-links">
@@ -4183,7 +4185,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
     <div class="eye-grid">
       <div class="eye-visual" aria-hidden="true">
         <!-- Luis's real wordmark as the section's visual anchor (same asset as nav/footer) -->
-        <img class="eye-logo" src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-blades-logo.png&quot;" alt="" width="500" height="500" loading="lazy" decoding="async">
+        <img class="eye-logo" data-logo="1" src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src=&quot;assets/luis-blades-logo.png&quot;" alt="" width="500" height="500" loading="lazy" decoding="async">
         <span class="eye-tint"></span>
       </div>
       <div class="eye-text">
@@ -4326,7 +4328,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
         </div>
       </div>
       <a href="#top" class="logo" id="footLogo" style="align-items:center">
-        <img src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
+        <img data-logo="1" src="assets/luis-blades-logo.webp" onerror="this.onerror=null;this.src='assets/luis-blades-logo.png'" alt="Luis Blades">
       </a>
       <p class="foot-tag">Carved by the blade. Finished by the scent.</p>
       <div class="foot-soc">
@@ -5463,7 +5465,14 @@ const luisCuts = [
    asi cada escritura es atomica — no puede quedar medio guardado.
    =================================================================== */
 const MEDIA_DB='bp_media', MEDIA_ALM='medios', MEDIA_CLAVE='v1';
-let MEDIA={retrato:null, fotos:[], cortes:[]};
+/* LA FORMA, declarada UNA vez. Todo lo que lee o escribe MEDIA se deriva
+   de aqui: si manana se anade un grupo, se toca esta linea y nada mas.
+   Antes las claves estaban escritas a mano en tres sitios distintos y
+   anadir dos grupos rompio los tres. */
+const MEDIA_FORMA={retrato:null, fotos:[], cortes:[], aroma:null, logo:null};
+const mediaVacio=()=>{ const o={}; for(const k in MEDIA_FORMA)
+  o[k]=Array.isArray(MEDIA_FORMA[k])?[]:null; return o; };
+let MEDIA=mediaVacio();
 
 /* ===================================================================
    NINGUNA ESPERA DEL ARRANQUE PUEDE SER INFINITA.
@@ -5500,7 +5509,16 @@ async function leerMedios(){
       t.onsuccess=()=>res(t.result); t.onerror=()=>rej(t.error);
     });
     if(v && typeof v==='object'){
-      MEDIA={retrato:v.retrato||null, fotos:Array.isArray(v.fotos)?v.fotos:[], cortes:Array.isArray(v.cortes)?v.cortes:[]};
+      /* Se reconstruye a partir de MEDIA_FORMA, no con las claves a mano: la
+       version anterior listaba retrato/fotos/cortes una por una, asi que la
+       foto del aroma y el logo se guardaban bien y se perdian al recargar. */
+      const leido=mediaVacio();
+      for(const k in leido){
+        leido[k] = Array.isArray(leido[k])
+          ? (Array.isArray(v[k]) ? v[k] : [])
+          : (v[k] || null);
+      }
+      MEDIA=leido;
     }
   }catch(e){ console.warn('medios: no se pudieron leer',e); }
   return MEDIA;
@@ -5574,7 +5592,30 @@ async function archivoAMedio(file){
 
 const PH_PHOTO=()=>`<div class="car-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3 7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3z"/><circle cx="12" cy="12.5" r="3.5"/></svg><span>${S.lang==='es'?'Foto':'Photo'}</span></div>`;
 
+/* Las dos piezas que no viven en un carrusel: la foto de la plancha del
+   aroma y el logo. Se aplican aparte porque no son una lista, son un
+   sitio fijo cada una — pero se guardan en el mismo sitio que el resto,
+   asi Luis las cambia desde el mismo panel.
+   Si no hay nada subido no se toca el src: se queda el archivo que trae
+   el sitio, con su cadena de respaldo webp -> jpg/png intacta. */
+function aplicaMediosFijos(){
+  const foto=$('.ed-photo');
+  if(foto && MEDIA.aroma && MEDIA.aroma.src && foto.getAttribute('src')!==MEDIA.aroma.src){
+    foto.onerror=null;                 // ya no hay respaldo que buscar
+    foto.src=MEDIA.aroma.src;
+    foto.removeAttribute('width'); foto.removeAttribute('height');
+  }
+  if(MEDIA.logo && MEDIA.logo.src){
+    $$('[data-logo]').forEach(im=>{
+      if(im.getAttribute('src')===MEDIA.logo.src) return;
+      im.onerror=null;
+      im.src=MEDIA.logo.src;
+    });
+  }
+}
+
 function renderCarousels(){
+  aplicaMediosFijos();
   /* El retrato solo existe si hay retrato. Un marco vacio con silueta
      generica se lee como error, no como diseno. */
   const fig=$('#retratoLuis'), rim=$('#retratoImg');
@@ -6908,7 +6949,11 @@ const GRUPOS=[
   {clave:'fotos',   titulo:'Fotos',           unico:false, acepta:'image/*,video/*',
    nota:'El carrusel de su sección. Se pueden subir varias a la vez.'},
   {clave:'cortes',  titulo:'Videos y cortes', unico:false, acepta:'image/*,video/*',
-   nota:'La cuadrícula «Sus Cortes». Acepta fotos y videos (máx. 40MB cada uno).'}
+   nota:'La cuadrícula «Sus Cortes». Acepta fotos y videos (máx. 40MB cada uno).'},
+  {clave:'aroma',   titulo:'Foto de «Un aroma no se ve»', unico:true, acepta:'image/*',
+   nota:'La foto que se ve detrás de esa frase, a media página. Sale en blanco y negro y con viñeta: funciona mejor una foto tuya de medio cuerpo, centrada.'},
+  {clave:'logo',    titulo:'Logo', unico:true, acepta:'image/*',
+   nota:'Se cambia en los tres sitios a la vez: la barra de arriba, «El mismo ojo» y el pie. Conviene un PNG con fondo transparente.'}
 ];
 
 function fichaMedio(g,item){
@@ -6983,8 +7028,11 @@ function adminMedios(m){
       b.addEventListener('click',async ()=>{
         const g=b.dataset.grupo, id=b.dataset.quitar;
         if(!confirm('¿Quitar este archivo?')) return;
-        if(g==='retrato') MEDIA.retrato=null;
-        else MEDIA[g]=(MEDIA[g]||[]).filter(x=>x.id!==id);
+        /* Se decide por la FORMA del valor, no por el nombre del grupo:
+           comparando con 'retrato' a mano, quitar la foto del aroma o el
+           logo intentaba filtrar algo que no es una lista. */
+        if(Array.isArray(MEDIA[g])) MEDIA[g]=MEDIA[g].filter(x=>x.id!==id);
+        else MEDIA[g]=null;
         await guardarMedios(); renderCarousels(); toast('Quitado'); pinta();
       });
     });
@@ -6996,12 +7044,16 @@ function adminMedios(m){
     toast(archivos.length>1?'Procesando '+archivos.length+' archivos…':'Procesando…');
     let ok=0;
     for(const f of archivos){
-      /* el retrato es uno solo: el primero valido gana y se corta */
+      /* un grupo 'unico' admite uno solo: el primero valido gana y se corta */
       if(g.unico && ok) break;
       try{
         const medio=await archivoAMedio(f);
         if(!medio) continue;
-        if(g.unico) MEDIA.retrato=medio; else (MEDIA[clave]=MEDIA[clave]||[]).push(medio);
+        /* MEDIA[clave], no MEDIA.retrato. Estaba con la clave escrita a
+           mano y funcionaba de casualidad porque el retrato era el unico
+           grupo 'unico' que existia; en cuanto hubo mas —la foto del aroma
+           y el logo— subir a cualquiera de ellos escribia en el retrato. */
+        if(g.unico) MEDIA[clave]=medio; else (MEDIA[clave]=MEDIA[clave]||[]).push(medio);
         ok++;
       }catch(e){ console.warn('medio rechazado',f.name,e); toast('No se pudo procesar el archivo'); }
     }
@@ -7014,6 +7066,101 @@ function adminMedios(m){
   };
 
   pinta();
+}
+
+/* ===================================================================
+   RESPALDO — descargar y restaurar.
+   Todo lo de Luis vive solo en este navegador. Un archivo suelto es lo
+   unico que le deja cambiar de telefono o volver de un accidente.
+   =================================================================== */
+const RESPALDO_CLAVES=['bp_products','bp_whatsapp','bp_hours','bp_lang','bp_mode_default','bp_admin_hash'];
+
+function armaRespaldo(){
+  const ajustes={};
+  RESPALDO_CLAVES.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) ajustes[k]=v; });
+  /* El catalogo solo llega a localStorage cuando Luis edita algo. Si
+     nunca lo toco, la clave no existe y el respaldo se iba SIN catalogo.
+     Se toma entonces el que hay en memoria: asi el archivo siempre es
+     completo, lo haya editado o no. */
+  if(ajustes.bp_products===undefined && Array.isArray(S.products)){
+    try{ ajustes.bp_products=JSON.stringify(S.products); }catch(e){}
+  }
+  return {formato:'blades-prive-respaldo', version:1,
+          fecha:new Date().toISOString(), ajustes, medios:MEDIA};
+}
+
+/* cuanto ocupa, en numeros que se entienden */
+function resumenRespaldo(){
+  /* Se cuenta lo que va A IR en el respaldo, no lo que hay en
+     localStorage: si Luis nunca edito un perfume esa clave no existe y el
+     resumen le decia "0 perfumes", que es alarmante y ademas falso. */
+  let productos=0;
+  try{ productos=(JSON.parse(armaRespaldo().ajustes.bp_products||'[]')||[]).length; }catch(e){}
+  const archivos=(MEDIA.retrato?1:0)+(MEDIA.aroma?1:0)+(MEDIA.logo?1:0)
+    +((MEDIA.fotos||[]).length)+((MEDIA.cortes||[]).length);
+  let bytes=0;
+  try{ bytes=JSON.stringify(armaRespaldo()).length; }catch(e){}
+  const mb=bytes/1048576;
+  return {productos, archivos, peso: mb>=1 ? mb.toFixed(1)+' MB' : Math.max(1,Math.round(bytes/1024))+' KB'};
+}
+
+function descargarRespaldo(){
+  let txt;
+  try{ txt=JSON.stringify(armaRespaldo()); }
+  catch(e){ console.warn('no se pudo armar el respaldo',e); toast('No se pudo armar el respaldo'); return; }
+  const d=new Date(), p=x=>String(x).padStart(2,'0');
+  const nombre='blades-prive-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'.json';
+  try{
+    const url=URL.createObjectURL(new Blob([txt],{type:'application/json'}));
+    const a=document.createElement('a');
+    a.href=url; a.download=nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+    /* se revoca tarde: en algunos navegadores revocar de inmediato corta
+       la descarga a medias */
+    setTimeout(()=>URL.revokeObjectURL(url), 8000);
+    toast('Respaldo descargado');
+  }catch(e){
+    console.warn('la descarga fallo',e);
+    toast('Tu navegador no dejó descargar. Probá desde otro.');
+  }
+}
+
+async function restaurarRespaldo(file){
+  if(!file) return;
+  let datos;
+  try{ datos=JSON.parse(await file.text()); }
+  catch(e){ toast('Ese archivo no se pudo leer'); return; }
+  if(!datos || datos.formato!=='blades-prive-respaldo'){
+    toast('Ese archivo no es un respaldo de Blades Privé'); return;
+  }
+  const a=datos.ajustes||{}, m=datos.medios||{};
+  let nProd=0;
+  try{ nProd=(JSON.parse(a.bp_products||'[]')||[]).length; }catch(e){}
+  const nArch=(m.retrato?1:0)+(m.aroma?1:0)+(m.logo?1:0)
+    +((m.fotos||[]).length)+((m.cortes||[]).length);
+  const cuando=datos.fecha? new Date(datos.fecha).toLocaleDateString('es-CR') : 'fecha desconocida';
+  if(!confirm('Restaurar el respaldo del '+cuando+'?\n\n'
+    +nProd+' perfumes y '+nArch+' archivos.\n\n'
+    +'Esto REEMPLAZA lo que hay ahora en este teléfono.')) return;
+
+  try{
+    RESPALDO_CLAVES.forEach(k=>{
+      if(Object.prototype.hasOwnProperty.call(a,k)) localStorage.setItem(k,a[k]);
+    });
+    /* los medios se normalizan contra la forma actual: un respaldo viejo
+       puede no traer los grupos que se anadieron despues */
+    const nuevo=mediaVacio();
+    for(const k in nuevo){
+      nuevo[k]=Array.isArray(nuevo[k]) ? (Array.isArray(m[k])?m[k]:[]) : (m[k]||null);
+    }
+    MEDIA=nuevo;
+    await guardarMedios();
+    toast('Respaldo restaurado');
+    setTimeout(()=>location.reload(), 700);
+  }catch(e){
+    console.warn('no se pudo restaurar',e);
+    toast('No se pudo restaurar. ¿Queda espacio en el teléfono?');
+  }
 }
 
 async function adminSettings(m){
@@ -7033,6 +7180,17 @@ async function adminSettings(m){
       <div class="field"><label>Cambiar contraseña</label><input id="s_pass" type="text" placeholder="Nueva contraseña (dejar vacío = sin cambio)"></div>
       <div class="a-form-actions"><button class="btn btn-blue" id="s_save">Guardar</button></div>
       <div class="a-note" style="margin-top:18px">La contraseña es una protección básica del lado del cliente, no seguridad real. Para datos sensibles usa las políticas RLS de Supabase.</div>
+
+      <div class="a-sect" style="margin-top:30px">Respaldo</div>
+      <p class="med-nota">Todo lo que subís vive <b>solo en este teléfono</b>. Si borrás los datos del navegador o cambiás de equipo, se pierde. Descargá un respaldo de vez en cuando y guardalo donde quieras: es un archivo que podés volver a cargar acá mismo.</p>
+      <div class="respaldo-acciones">
+        <button class="btn btn-blue" id="s_bajar" type="button">Descargar respaldo</button>
+        <label class="btn" id="s_subirLbl" for="s_subir" role="button" tabindex="0">Restaurar desde un archivo
+          <input type="file" id="s_subir" accept="application/json,.json" hidden>
+        </label>
+      </div>
+      <p class="med-nota" id="s_resumen" style="margin-top:10px"></p>
+      <div class="a-note" style="margin-top:14px">En iPhone, si la página no está agregada a la pantalla de inicio, Safari puede borrar todo esto tras una semana sin abrirla. Agregarla desde <b>Compartir → Agregar a inicio</b> lo evita.</div>
     </div>`;
   /* async: el hash usa crypto.subtle, que es asincrono */
   $('#s_save').addEventListener('click',async()=>{
@@ -7043,6 +7201,24 @@ async function adminSettings(m){
     const np=$('#s_pass').value.trim();
     if(np){ S.adminHash=await hashPass(np); localStorage.setItem('bp_admin_hash',S.adminHash); }
     refreshWA(); refreshHours(); applyLang(dl); toast('Guardado'); renderAdmin();
+  });
+
+  /* ---- respaldo ---- */
+  const r=resumenRespaldo();
+  const res=$('#s_resumen');
+  if(res) res.textContent='Ahora mismo: '+r.productos+' perfumes · '+r.archivos+' archivos · '+r.peso;
+  const bajar=$('#s_bajar');
+  if(bajar) bajar.addEventListener('click',descargarRespaldo);
+  const subir=$('#s_subir');
+  if(subir) subir.addEventListener('change',async e=>{
+    const f=e.target.files && e.target.files[0];
+    e.target.value='';
+    await restaurarRespaldo(f);
+  });
+  /* la etiqueta hace de boton, asi que tambien tiene que responder al teclado */
+  const lbl=$('#s_subirLbl');
+  if(lbl) lbl.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); subir && subir.click(); }
   });
 }
 async function syncUp(p){ try{ await cargarSupabase(); if(sb) await sb.from('perfumes').upsert(p); }catch(e){ console.warn('upsert skipped',e); } }
