@@ -3683,7 +3683,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   <div class="searchbar" id="searchbar">
     <div class="inner">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="text" id="searchInput" data-i18n-ph="search_ph" placeholder="Buscar por nombre o casa…" autocomplete="off">
+      <input type="text" id="searchInput" data-i18n-ph="search_ph" placeholder="Buscar por nombre o casa…" autocomplete="off" aria-label="Buscar perfumes" data-i18n-aria="search_aria">
       <button class="clear" id="searchClear" data-i18n="search_close">Cerrar</button>
     </div>
   </div>
@@ -4459,7 +4459,7 @@ const S = {
 const STR = {
   es:{
     nav_collection:'Colección', nav_orders:'Encargos', nav_about:'Sobre Luis',
-    search_ph:'Buscar por nombre o casa…', search_close:'Cerrar',
+    search_ph:'Buscar por nombre o casa…', search_aria:'Buscar perfumes', search_close:'Cerrar',
     hero_eyebrow:'Une sélection privée · San José', hero_sub:'Una selección privada de aroma.',
     hero_cta:'Explorar la Colección', scroll:'Desliza',
     cat_eyebrow:'La Colección', cat_title:'Aromas seleccionados',
@@ -4536,7 +4536,7 @@ const STR = {
   },
   en:{
     nav_collection:'Collection', nav_orders:'Special Orders', nav_about:'About Luis',
-    search_ph:'Search by name or house…', search_close:'Close',
+    search_ph:'Search by name or house…', search_aria:'Search perfumes', search_close:'Close',
     hero_eyebrow:'A private selection · San José', hero_sub:'A private selection of scent.',
     hero_cta:'Explore the Collection', scroll:'Scroll',
     cat_eyebrow:'The Collection', cat_title:'A curated edit',
@@ -6672,6 +6672,10 @@ function applyLang(lang){
   S.lang=lang; localStorage.setItem('bp_lang',lang); document.documentElement.lang=lang;
   $$('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(T()[k]!==undefined) el.textContent=T()[k]; });
   $$('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(T()[k]!==undefined) el.placeholder=T()[k]; });
+  /* el nombre accesible tambien se traduce: un aria-label en espanol
+     dentro de la version en ingles es peor que no tenerlo, porque el
+     lector de pantalla lo anuncia con el idioma equivocado */
+  $$('[data-i18n-aria]').forEach(el=>{ const k=el.getAttribute('data-i18n-aria'); if(T()[k]!==undefined) el.setAttribute('aria-label',T()[k]); });
   $$('[data-i18n-html]').forEach(el=>{ const k=el.getAttribute('data-i18n-html'); if(T()[k]!==undefined) el.innerHTML=T()[k]; });
   $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
   refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts(); renderFinder(); refreshHours(); renderStats();
