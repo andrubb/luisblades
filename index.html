@@ -5413,8 +5413,49 @@ window.__imgRespaldo=function(el, alternativa){
    framing variant (0-5) derived from its own id — same asset, different crop
    and warmth, so the grid still reads as a set of individual objects. */
 function phVariant(p){ const k=String(p.id||p.name||''); let h=0; for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))>>>0; return h%6; }
+/* ===================================================================
+   LA FOTO DE UN PERFUME — de donde sale.
+
+   1. lo que Luis subio o pego por el panel (image_url)   <- manda
+   2. el archivo del repo, si existe: assets/perfumes/<slug>.webp
+   3. nada -> el marcador de posicion
+
+   El slug se arma con marca + nombre, sin acentos ni signos:
+     "Dior" + "Sauvage Elixir"  ->  dior-sauvage-elixir
+   =================================================================== */
+function slugFoto(p){
+  /* Marca + nombre + genero + concentracion. NO el tamano, a proposito:
+     Acqua di Gio EDT de 100 y de 200 ml son el MISMO frasco y comparten
+     foto, mientras que la version de dama y la de caballero son frascos
+     distintos y no deben compartirla. Medido sobre el inventario real:
+       marca+nombre ................... 583 claves, 65 colisiones
+       +genero+concentracion .......... 629 claves, 41 colisiones
+       +tamano ........................ 677 claves,  3 colisiones
+     Con genero y concentracion, las 41 que quedan son justo el mismo
+     frasco en otro tamano — que es lo que se busca. Las 3 ultimas son
+     filas repetidas del inventario, no variantes. */
+  return ((p.brand||'')+' '+(p.name||'')+' '+(p.gender||'')+' '+(p.concentration||''))
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')   // fuera acentos
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+/* Los slugs que TIENEN archivo. Lo reescribe tools/fotos.mjs escaneando
+   assets/perfumes/. Sin esta lista, los cientos de perfumes sin foto
+   dispararian un 404 cada uno solo por intentarlo.
+   INICIO-FOTOS */
+const FOTOS = new Set([]);
+/* FIN-FOTOS */
+function fotoDe(p){
+  if(!p) return '';
+  if(p.image_url) return p.image_url;
+  const sl = slugFoto(p);
+  return FOTOS.has(sl) ? 'assets/perfumes/'+sl+'.webp' : '';
+}
+
 function imgFor(p){
-  if(p.image_url) return `<img src="${p.image_url}" alt="" loading="lazy" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
+  const foto=fotoDe(p);
+  if(foto) return `<img src="${foto}" alt="" loading="lazy" decoding="async" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`;
   return `<img class="ph-img ph-v${phVariant(p)}" src="${PH_SRC}" alt="" loading="lazy" decoding="async" width="900" height="1177" onerror="__imgRespaldo(this,'${PH_FALLBACK}')">`;
 }
 window.__BOTTLE = BOTTLE;
@@ -6647,7 +6688,7 @@ function updateCart(){
   if(!S.cart.length){ body.innerHTML=`<div class="cart-empty">${BOTTLE}<p>${tr('cart_empty')}</p><button class="btn" onclick="closeCart();document.getElementById('catalog').scrollIntoView()">${tr('cart_browse')}</button></div>`; foot.style.display='none'; return; }
   foot.style.display='block';
   body.innerHTML=S.cart.map(it=>`<div class="cart-item">
-    <div class="ci-img">${it.image_url?`<img src="${it.image_url}" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
+    <div class="ci-img">${fotoDe(it)?`<img src="${fotoDe(it)}" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
     <div><div class="ci-brand">${it.brand}</div><div class="ci-name">${it.name}</div><div class="ci-vol">${it.vol} ml</div><div class="ci-price">${fmt(it.price)}</div>
       <div class="qty"><button onclick="changeQty('${it.key}',-1)">−</button><span>${it.qty}</span><button onclick="changeQty('${it.key}',1)">+</button></div></div>
     <button class="ci-remove" onclick="removeItem('${it.key}')">${tr('cart_remove')}</button>
@@ -6769,7 +6810,7 @@ function aItemHTML(p){
   const sel=S.adminSel.has(p.id);
   return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
     <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
-    <div class="a-thumb">${p.image_url?`<img src="${p.image_url}" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
+    <div class="a-thumb">${fotoDe(p)?`<img src="${fotoDe(p)}" loading="lazy" decoding="async" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
     <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
     <div class="a-acts">
       <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -6843,7 +6884,7 @@ function adminForm(m){
       <div class="a-sect">Imagen</div>
       <div class="block-label" style="margin:8px 0 12px;color:var(--muted)">Subir desde dispositivo (o URL arriba)</div>
       <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px">
-        <div class="a-thumb a-imgprev" id="f_prev">${p.image_url?`<img src="${p.image_url}" style="width:100%;height:100%;object-fit:contain" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
+        <div class="a-thumb a-imgprev" id="f_prev">${fotoDe(p)?`<img src="${fotoDe(p)}" style="width:100%;height:100%;object-fit:contain" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:BOTTLE}</div>
         <div style="flex:1"><div class="a-drop" id="f_drop">Toca para elegir o arrastra una imagen aquí<input type="file" id="f_file" accept="image/*" style="display:none"></div>
           <button type="button" class="a-img-remove" id="f_rmimg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Quitar imagen — usar silueta</button>
         </div>
