@@ -6476,6 +6476,21 @@ function lazyVideos(){
      ve igual de viva. */
   const TOPE=()=>innerWidth>=900?3:2;
   let pendiente=0;
+
+  /* SOLTAR LA FUENTE. Medido en 4G lenta: al recorrer la rejilla los
+     siete videos acaban con su .src puesto y se quedan los siete
+     descargando a la vez (networkState 2) sin datos suficientes
+     (readyState 0) PARA SIEMPRE — cada uno recibe un septimo de la
+     linea. Limitar cuantos se reproducen no arregla eso: hay que
+     limitar cuantos se DESCARGAN. Al soltarla el video vuelve a su
+     poster, que es un fotograma del propio corte, asi que no se nota. */
+  function suelta(v){
+    if(!v.src) return;
+    v.pause();
+    delete v.dataset.esperando;
+    v.removeAttribute('src');
+    v.load();                 /* cancela la descarga y deja el poster */
+  }
   function reparte(){
     if(pendiente) return;
     pendiente=requestAnimationFrame(()=>{
@@ -6486,17 +6501,42 @@ function lazyVideos(){
         return {it, dentro:r.bottom>0&&r.top<innerHeight,
           d:Math.abs(r.top+r.height/2-centro)};
       }).filter(o=>o.dentro).sort((a,b)=>a.d-b.d);
+      const activos=new Set();
       vistos.forEach((o,i)=>{
         const v=o.it.querySelector('video'); if(!v) return;
         if(i<TOPE()){
+          activos.add(v);
+          if(v.__soltar){ clearTimeout(v.__soltar); v.__soltar=0; }
           if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }
-          const play=()=>{ if(v.readyState>=3) v.play().catch(()=>{}); };
-          if(v.readyState>=3) play(); else v.addEventListener('canplay',play,{once:true});
-        } else if(!v.paused) v.pause();
+          /* con fuente pero sin datos y sin descarga en marcha: la
+             cancelaron al salir de pantalla, hay que volver a pedirla.
+             Sin esto se espera un "canplay" que no llegara nunca. */
+          else if(v.readyState===0 && v.networkState!==2) v.load();
+          if(v.readyState>=3){ v.play().catch(()=>{}); }
+          else if(!v.dataset.esperando){
+            /* la marca evita apilar un oyente nuevo en cada reparto */
+            v.dataset.esperando='1';
+            v.addEventListener('canplay',()=>{
+              delete v.dataset.esperando;
+              /* no se reproduce a ciegas: para cuando llegan los datos
+                 la rejilla puede haberse movido y este ya no ser de los
+                 mas centrados. Que lo decida el reparto. */
+              reparte();
+            },{once:true});
+          }
+        }
       });
-      /* lo que salio de pantalla, parado */
-      items.forEach(it=>{ if(!vistos.some(o=>o.it===it)){
-        const v=it.querySelector('video'); if(v&&!v.paused) v.pause(); } });
+      /* Todo lo demas: parado, y soltando su descarga si no vuelve
+         pronto. El retraso importa: en un desplazamiento rapido un
+         video entra y sale del grupo varias veces por segundo, y soltar
+         y volver a pedir en cada oscilacion seria peor que no soltar. */
+      items.forEach(it=>{
+        const v=it.querySelector('video'); if(!v||activos.has(v)) return;
+        if(!v.paused) v.pause();
+        if(v.src&&!v.__soltar) v.__soltar=setTimeout(()=>{
+          v.__soltar=0; suelta(v);
+        },1500);
+      });
     });
   }
   addEventListener('scroll', reparte, {passive:true});
