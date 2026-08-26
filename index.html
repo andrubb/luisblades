@@ -5479,19 +5479,28 @@ const luisPhotos = [
 ];
 
 /* -------------------------------------------------------------------
-   SUS CORTES — gallery grid. Each slot takes an image URL, or a .mp4 URL
-   (compressed H.264, 720p, <3MB — HandBrake "Fast 720p30" + Web Optimized),
-   or '' for the intentional placeholder treatment.
+   SUS CORTES — rejilla. Cada hueco admite la ruta de una imagen, la de
+   un .mp4 (H.264, 1080x1920, ~2-4MB) o '' para el marcador con la
+   navaja. Cada .mp4 necesita un .jpg con el MISMO nombre al lado: es su
+   poster, y se deriva solo.
    ------------------------------------------------------------------- */
-/* La foto del oficio: Luis trabajando, no posando. Es la unica del lote
-   que muestra el trabajo, y por eso abre la cuadricula. */
+/* EL ORDEN NO ES EL DE LA CARPETA.
+   Abre la foto del oficio —Luis trabajando, no posando: es la unica que
+   muestra el trabajo en vez del resultado—. Segunda va la unica pieza
+   con aire editorial, de pie y fuera de la silla. Y detras los siete
+   videos, que son todos el mismo plano: el corte terminado girando
+   despacio. Puestos juntos esa repeticion es una virtud —la rejilla se
+   lee como una serie— pero solo si algo distinto abre. */
 const luisCuts = [
-  'assets/luis-corte-1.webp', // navaja en mano, en la barberia
-  '', // corte 2
-  '', // corte 3
-  '', // corte 4
-  '', // corte 5
-  ''  // corte 6
+  'assets/luis-corte-1.webp',      // navaja en mano, en la barberia
+  'media/cortes/corte-6976.webp',  // retrato: mechon teal, de pie
+  'media/cortes/corte-4874.mp4',   // rizos, degradado medio
+  'media/cortes/corte-9290.mp4',   // textura corta con linea marcada
+  'media/cortes/corte-5314.mp4',   // crop claro, degradado
+  'media/cortes/corte-8562.mp4',   // flequillo texturizado
+  'media/cortes/corte-5075.mp4',   // punta texturizada, taper
+  'media/cortes/corte-6554.mp4',   // rizos con barba
+  'media/cortes/corte-6846.mp4'    // rizos largos con barba
 ];
 
 /* ===================================================================
@@ -5701,7 +5710,13 @@ function renderCuts(){
     const i=subidos.length+j;
     const n=String(i+1).padStart(2,'0');
     if(!u) return `<div class="cut-cell"><div class="cut-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20 20 4l-2.2-2.2L4 15.6z"/><path d="m13.4 8.4 2.2 2.2"/></svg><span>${tr('cut_label')} ${n}</span></div></div>`;
-    if(/\.mp4($|\?)/i.test(u)) return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
+    /* El poster sale del propio nombre del video: corte-x.mp4 -> corte-x.jpg.
+       Derivarlo evita una segunda lista que mantener a mano y que se
+       desincronice — si el video existe, su poster existe. */
+    if(/\.mp4($|\?)/i.test(u)){
+      const post=u.replace(/\.mp4($|\?)/i, '.jpg$1');
+      return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
+    }
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
   lazyVideos(); queueRefresh();
