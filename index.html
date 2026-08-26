@@ -6519,15 +6519,22 @@ function lazyVideos(){
              cancelaron al salir de pantalla, hay que volver a pedirla.
              Sin esto se espera un "canplay" que no llegara nunca. */
           else if(v.readyState===0 && v.networkState!==2) v.load();
-          if(v.readyState>=3){ v.play().catch(()=>{}); }
-          else if(!v.dataset.esperando){
-            /* la marca evita apilar un oyente nuevo en cada reparto */
+          /* SE PIDE, NO SE ESPERA. Con preload="metadata" el navegador
+             baja la cabecera y para: no sigue hasta que alguien pide
+             reproducir. Esperar a "canplay" sin haberlo pedido es
+             esperar algo que nadie va a provocar — medido contra
+             produccion: diecisiete segundos en readyState 0 con la
+             linea libre. play() le dice que siga; el bufferiza lo que
+             necesite y arranca cuando pueda, que es su trabajo. */
+          if(v.src) v.play().catch(()=>{});
+          if(v.src&&!v.dataset.esperando){
+            /* la marca evita apilar un oyente nuevo en cada reparto.
+               Este oyente ya no sirve para arrancar ESTE video —de eso
+               se encarga play()— sino para volver a repartir cuando
+               tenga datos, y que le toque al siguiente de la fila. */
             v.dataset.esperando='1';
             v.addEventListener('canplay',()=>{
               delete v.dataset.esperando;
-              /* no se reproduce a ciegas: para cuando llegan los datos
-                 la rejilla puede haberse movido y este ya no ser de los
-                 mas centrados. Que lo decida el reparto. */
               reparte();
             },{once:true});
           }
