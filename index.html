@@ -3598,11 +3598,11 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    Con una imagen de verdad debajo, la celda no puede quedarse vacia
    pase lo que pase con el video: ni al soltarlo, ni mientras carga, ni
    con el modo de bajo consumo bloqueando la reproduccion. */
-.cut-cell .cut-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cut-cell video.con-poster{position:absolute;inset:0;opacity:0;transition:opacity .5s var(--ease)}
-.cut-cell video.con-poster.viendo{opacity:1}
+.cut-cell .cut-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:1;transition:opacity .5s var(--ease);pointer-events:none}
+.cut-cell.viendo .cut-poster{opacity:0}
 @media(prefers-reduced-motion:reduce){
-  .cut-cell video.con-poster{opacity:1;transition:none}
+  .cut-cell .cut-poster{transition:none}
 }
 </style>
 </head>
@@ -5794,7 +5794,14 @@ function renderCuts(){
          celda no puede quedarse vacia pase lo que pase.
          La imagen va aria-hidden: el nombre accesible lo pone el
          video, y repetirlo seria leerlo dos veces. */
-      return `<div class="cut-cell" data-video><img class="cut-poster" src="${post}" alt="" aria-hidden="true" loading="lazy" decoding="async"><video class="con-poster" muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
+      /* LA FOTO VA ENCIMA, no debajo. Un <video> con opacity:0 no se
+         decodifica —Chrome lo da por invisible— y entonces nunca
+         llega a reproducir, nunca se hace visible: un circulo
+         cerrado. Asi el video conserva su opacidad y se decodifica
+         con normalidad; la foto lo tapa y se desvanece al arrancar.
+         Ademas sigue cubriendo el blanco que deja WebKit al soltar
+         la fuente, y el caso del modo de bajo consumo. */
+      return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video><img class="cut-poster" src="${post}" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>`;
     }
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
@@ -6483,9 +6490,9 @@ function lazyVideos(){
   if(reduceMotion()){
     items.forEach(it=>{ const v=it.querySelector('video'); if(!v) return;
       v.loop=false; v.controls=true;
-      /* aqui el video SI se ensena: lleva sus controles y su propio
-         poster, y hace falta verlos para poder pedirlo */
-      v.classList.remove('con-poster');
+      /* aqui la foto de encima estorba: el video lleva sus controles y
+         su propio poster, y hacen falta a la vista para poder pedirlo */
+      const f=it.querySelector('.cut-poster'); if(f) f.remove();
       /* preload="metadata" sigue puesto: esto pide la cabecera, no el
          video entero, y sin fuente los controles no harian nada */
       if(!v.src&&v.dataset.src) v.src=v.dataset.src;
@@ -6513,7 +6520,7 @@ function lazyVideos(){
     if(!v.src) return;
     v.pause();
     delete v.dataset.esperando;
-    v.classList.remove('viendo');   /* vuelve a verse la foto de debajo */
+    v.closest('.cut-cell').classList.remove('viendo');  /* vuelve la foto */
     v.removeAttribute('src');
     /* OJO: en WebKit esto NO devuelve el poster, deja el elemento sin
        nada que pintar. Por eso hay una <img> debajo. */
@@ -6527,9 +6534,12 @@ function lazyVideos(){
   items.forEach(it=>{
     const v=it.querySelector('video'); if(!v||v.dataset.enganchado) return;
     v.dataset.enganchado='1';
-    v.addEventListener('playing',()=>v.classList.add('viendo'));
-    v.addEventListener('pause',()=>v.classList.remove('viendo'));
-    v.addEventListener('emptied',()=>v.classList.remove('viendo'));
+    /* La clase va en la CELDA porque lo que se desvanece es la foto,
+       no el video. El video no se toca nunca: en cuanto se le baja la
+       opacidad deja de decodificarse. */
+    v.addEventListener('playing',()=>it.classList.add('viendo'));
+    v.addEventListener('pause',()=>it.classList.remove('viendo'));
+    v.addEventListener('emptied',()=>it.classList.remove('viendo'));
     /* El modo de bajo consumo de iOS bloquea toda reproduccion
        automatica, incluso sin sonido. Tocar la celda es lo que uno
        intenta al ver una foto que deberia moverse. */
