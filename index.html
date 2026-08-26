@@ -1062,7 +1062,7 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
   font-size:clamp(1.5rem,5.4vw,2.4rem);line-height:1.35;color:var(--text);letter-spacing:.01em;max-width:22ch}
 
 /* ---- SUS CORTES — gallery grid (placeholder-intentional) ---- */
-.cuts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,2vw,20px)}
+.cuts-grid{--cg:clamp(10px,2vw,20px);display:grid;grid-template-columns:repeat(2,1fr);gap:var(--cg)}
 @media(min-width:900px){.cuts-grid{grid-template-columns:repeat(3,1fr)}}
 .cut-cell{aspect-ratio:4/5;border-radius:10px;overflow:hidden;position:relative;
   background:linear-gradient(160deg,#fff 0%,#eef2f5 50%,#dde7ee 100%);box-shadow:var(--shadow-card)}
@@ -3564,6 +3564,31 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @keyframes au-c2{from{transform:translate3d(0,0,0)} to{transform:translate3d(9vw,-12vh,0)}}
 @keyframes au-d2{from{transform:translate3d(0,0,0)} to{transform:translate3d(-8vw,10vh,0)}}
 @keyframes au-e2{from{transform:translate3d(0,0,0)} to{transform:translate3d(7vw,-9vh,0)}}
+
+/* ---- EN FOTO — la pareja ----
+   Dos piezas en una rejilla de tres columnas dejan un hueco que se lee
+   como que falta algo. A dos columnas y grandes se lee como una pareja
+   elegida, que es lo que es: es todo el material de corte que hay. */
+.cuts-grid.pareja{grid-template-columns:repeat(2,1fr)}
+@media(min-width:900px){.cuts-grid.pareja{grid-template-columns:repeat(2,1fr);max-width:820px;margin-inline:auto}}
+.cuts-grid.pareja .cut-cell{aspect-ratio:4/5}
+.cuts-head+.cuts-grid+.cuts-head{margin-top:clamp(38px,6vw,72px)}
+
+/* ---- LA ULTIMA FILA ----
+   Siete piezas en tres columnas caen 3+3+1, y esa celda suelta con dos
+   huecos al lado se lee como que falta material. Se centra.
+   No se cuentan piezas a mano —el modo admin deja subir mas—: la regla
+   dice "soy la ultima y ademas abro fila", que es justo la definicion de
+   huerfana. Con 8 en movil o 9 en escritorio no se cumple y no hace nada.
+   Van separadas por anchura a proposito: 9 es impar, asi que la regla de
+   dos columnas la alcanzaria en escritorio, donde 9 llena tres exactas. */
+@media(max-width:899.98px){
+  .cuts-grid:not(.pareja)>.cut-cell:last-child:nth-child(2n+1){
+    grid-column:1/-1;justify-self:center;width:calc((100% - var(--cg))/2)}
+}
+@media(min-width:900px){
+  .cuts-grid:not(.pareja)>.cut-cell:last-child:nth-child(3n+1){grid-column:2}
+}
 </style>
 </head>
 
@@ -4241,6 +4266,12 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
       <h3 data-i18n="cuts_title">Sus Cortes</h3>
     </div>
     <div class="cuts-grid reveal" id="cutsGrid"></div>
+
+    <div class="cuts-head reveal">
+      <span class="eyebrow" data-i18n="fotos_eyebrow">En detalle</span>
+      <h3 data-i18n="fotos_title">En Foto</h3>
+    </div>
+    <div class="cuts-grid pareja reveal" id="fotosGrid"></div>
   </div>
 </section>
 
@@ -4482,6 +4513,7 @@ const STR = {
     foot_made:'Hecho en Costa Rica', admin_entry:'Modo Admin',
     man_eyebrow:'El Hombre Detrás', man_title:'Luis Blades', man_sub:'El barbero y curador detrás de cada elección.',
     cuts_eyebrow:'Su oficio', cuts_title:'Sus Cortes',
+    fotos_eyebrow:'En detalle', fotos_title:'En Foto',
     cart_title:'Tu selección', cart_items:'artículos', cart_subtotal:'Subtotal',
     cart_note:'Coordina entrega o recogida al finalizar.', cart_checkout:'Finalizar por WhatsApp',
     cart_empty:'Tu selección está vacía.', cart_browse:'Ver la colección', cart_remove:'Quitar',
@@ -4559,6 +4591,7 @@ const STR = {
     foot_made:'Made in Costa Rica', admin_entry:'Admin Mode',
     man_eyebrow:'The Man Behind It', man_title:'Luis Blades', man_sub:'The barber and curator behind every choice.',
     cuts_eyebrow:'His craft', cuts_title:'His Cuts',
+    fotos_eyebrow:'In detail', fotos_title:'In Photo',
     cart_title:'Your selection', cart_items:'items', cart_subtotal:'Subtotal',
     cart_note:'Arrange delivery or pickup at checkout.', cart_checkout:'Checkout via WhatsApp',
     cart_empty:'Your selection is empty.', cart_browse:'Browse the collection', cart_remove:'Remove',
@@ -5480,9 +5513,14 @@ const luisPhotos = [
 
 /* -------------------------------------------------------------------
    SUS CORTES — rejilla. Cada hueco admite la ruta de una imagen, la de
-   un .mp4 (H.264, 1080x1920, ~2-4MB) o '' para el marcador con la
-   navaja. Cada .mp4 necesita un .jpg con el MISMO nombre al lado: es su
-   poster, y se deriva solo.
+   un .mp4 o '' para el marcador con la navaja. Cada .mp4 necesita un
+   .jpg con el MISMO nombre al lado: es su poster, y se deriva solo.
+
+   LA RESOLUCION SALE DE UNA MEDIDA, no de una opinion: la celda mide
+   725x907 pixeles REALES en un portatil retina (363 css x dpr 2). Por
+   eso los videos son 720x1280 — practicamente 1:1. A 540 se ampliaban y
+   se veian blandos; a 1080 se descomprimian nueve veces mas pixeles de
+   los que caben y la pagina se atascaba.
    ------------------------------------------------------------------- */
 /* EL ORDEN NO ES EL DE LA CARPETA.
    Abre la foto del oficio —Luis trabajando, no posando: es la unica que
@@ -5491,9 +5529,10 @@ const luisPhotos = [
    videos, que son todos el mismo plano: el corte terminado girando
    despacio. Puestos juntos esa repeticion es una virtud —la rejilla se
    lee como una serie— pero solo si algo distinto abre. */
+/* LOS VIDEOS. Todos el mismo plano —el corte terminado girando
+   despacio—, y puestos juntos esa repeticion es una virtud: la rejilla
+   se lee como una serie. */
 const luisCuts = [
-  'assets/luis-corte-1.webp',      // navaja en mano, en la barberia
-  'media/cortes/corte-6976.webp',  // retrato: mechon teal, de pie
   'media/cortes/corte-4874.mp4',   // rizos, degradado medio
   'media/cortes/corte-9290.mp4',   // textura corta con linea marcada
   'media/cortes/corte-5314.mp4',   // crop claro, degradado
@@ -5501,6 +5540,15 @@ const luisCuts = [
   'media/cortes/corte-5075.mp4',   // punta texturizada, taper
   'media/cortes/corte-6554.mp4',   // rizos con barba
   'media/cortes/corte-6846.mp4'    // rizos largos con barba
+];
+
+/* LAS FOTOS. Dos, que es todo el material de corte que hay hoy: la del
+   oficio —Luis trabajando, no posando— y el unico retrato de pie, fuera
+   de la silla. Van a dos columnas y grandes: dos piezas en una rejilla
+   de tres dejan un hueco que se lee como que falta algo. */
+const luisFotos = [
+  'assets/luis-corte-1.webp',      // navaja en mano, en la barberia
+  'media/cortes/corte-6976.webp'   // retrato: mechon teal, de pie
 ];
 
 /* ===================================================================
@@ -5695,6 +5743,15 @@ function renderCarousels(){
 }
 
 /* barbershop gallery — image-forward cells, razor-mark placeholder when empty */
+function renderFotos(){
+  const g=$('#fotosGrid'); if(!g) return;
+  g.innerHTML=luisFotos.map((u,i)=>{
+    const n=String(i+1).padStart(2,'0');
+    return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy" decoding="async"></div>`;
+  }).join('');
+  queueRefresh();
+}
+
 function renderCuts(){
   const g=$('#cutsGrid'); if(!g) return;
   /* mismo criterio que arriba: lo subido primero, los huecos despues */
@@ -5719,7 +5776,7 @@ function renderCuts(){
     }
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
-  lazyVideos(); queueRefresh();
+  lazyVideos(); renderFotos(); queueRefresh();
 }
 
 /* CURATOR PICKS — is_featured products (bestsellers as fallback), why-line per pick */
@@ -6394,12 +6451,61 @@ function setupCarousels(){
 /* lazy-load + autoplay videos only when scrolled into view */
 function lazyVideos(){
   const items=$$('#cutsGrid [data-video]'); if(!items.length||!('IntersectionObserver'in window))return;
+
+  /* MOVIMIENTO REDUCIDO. Siete videos en bucle arrancando solos es
+     exactamente lo que pide no recibir quien activa esa preferencia.
+     Se quedan en su poster —un fotograma del propio corte, asi que la
+     rejilla se ve igual— y se les da control nativo: quien quiera verlo
+     en movimiento lo pide, y puede pararlo. Y sin bucle: una vez y
+     descansa. */
+  if(reduceMotion()){
+    items.forEach(it=>{ const v=it.querySelector('video'); if(!v) return;
+      v.loop=false; v.controls=true;
+      /* preload="metadata" sigue puesto: esto pide la cabecera, no el
+         video entero, y sin fuente los controles no harian nada */
+      if(!v.src&&v.dataset.src) v.src=v.dataset.src;
+    });
+    return;
+  }
+
+  /* CUANTOS A LA VEZ. Antes se reproducia TODO lo que estuviera medio
+     visible: medido, hasta seis. Seis decodificaciones simultaneas es lo
+     que hunde la fluidez — y nadie mira seis videos a la vez.
+     Se reproducen solo los mas CENTRADOS; el resto se quedan en su
+     poster, que es un fotograma del propio video, asi que la rejilla se
+     ve igual de viva. */
+  const TOPE=()=>innerWidth>=900?3:2;
+  let pendiente=0;
+  function reparte(){
+    if(pendiente) return;
+    pendiente=requestAnimationFrame(()=>{
+      pendiente=0;
+      const centro=innerHeight/2;
+      const vistos=items.map(it=>{
+        const r=it.getBoundingClientRect();
+        return {it, dentro:r.bottom>0&&r.top<innerHeight,
+          d:Math.abs(r.top+r.height/2-centro)};
+      }).filter(o=>o.dentro).sort((a,b)=>a.d-b.d);
+      vistos.forEach((o,i)=>{
+        const v=o.it.querySelector('video'); if(!v) return;
+        if(i<TOPE()){
+          if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }
+          const play=()=>{ if(v.readyState>=3) v.play().catch(()=>{}); };
+          if(v.readyState>=3) play(); else v.addEventListener('canplay',play,{once:true});
+        } else if(!v.paused) v.pause();
+      });
+      /* lo que salio de pantalla, parado */
+      items.forEach(it=>{ if(!vistos.some(o=>o.it===it)){
+        const v=it.querySelector('video'); if(v&&!v.paused) v.pause(); } });
+    });
+  }
+  addEventListener('scroll', reparte, {passive:true});
+  addEventListener('resize', reparte, {passive:true});
+  reparte();
+
   const io=new IntersectionObserver(es=>{ es.forEach(en=>{ const v=en.target.querySelector('video'); if(!v)return;
-    if(en.isIntersecting){                                  // >= 50% in view
-      if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }   // lazy: load only now
-      const play=()=>{ if(v.readyState>=3) v.play().catch(()=>{}); }; // wait until buffered enough (readyState>=3)
-      if(v.readyState>=3) play(); else v.addEventListener('canplay',play,{once:true});
-    } else { v.pause(); }
+    if(en.isIntersecting){ reparte(); }
+    else { v.pause(); }
   }); },{threshold:.5});                                     // autoplay only when at least half visible
   items.forEach(it=>{ io.observe(it); const um=it.querySelector('[data-unmute]'); if(um) um.addEventListener('click',ev=>{ ev.stopPropagation(); const v=it.querySelector('video'); v.muted=!v.muted; um.style.color=v.muted?'':'var(--blue)'; if(!v.muted)v.play().catch(()=>{}); }); });
 }
