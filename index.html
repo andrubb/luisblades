@@ -3589,6 +3589,21 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(min-width:900px){
   .cuts-grid:not(.pareja)>.cut-cell:last-child:nth-child(3n+1){grid-column:2}
 }
+
+/* ---- LA FOTO DEBAJO DEL VIDEO ----
+   Medido en un iPhone real: al soltar la fuente de un <video> (que es
+   lo que hace el tope de descargas al salir de pantalla) WebKit no
+   devuelve el poster — deja la celda EN BLANCO. Y el atributo poster
+   tambien se pierde en cuanto hay datos sin fotograma decodificado.
+   Con una imagen de verdad debajo, la celda no puede quedarse vacia
+   pase lo que pase con el video: ni al soltarlo, ni mientras carga, ni
+   con el modo de bajo consumo bloqueando la reproduccion. */
+.cut-cell .cut-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cut-cell video.con-poster{position:absolute;inset:0;opacity:0;transition:opacity .5s var(--ease)}
+.cut-cell video.con-poster.viendo{opacity:1}
+@media(prefers-reduced-motion:reduce){
+  .cut-cell video.con-poster{opacity:1;transition:none}
+}
 </style>
 </head>
 
@@ -5772,7 +5787,14 @@ function renderCuts(){
        desincronice — si el video existe, su poster existe. */
     if(/\.mp4($|\?)/i.test(u)){
       const post=u.replace(/\.mp4($|\?)/i, '.jpg$1');
-      return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
+      /* El poster va como <img> DEBAJO del video, no solo como
+         atributo. En WebKit, soltar la fuente del video deja la celda
+         en blanco, y el atributo poster tambien se pierde en cuanto
+         hay datos sin fotograma decodificado. Con la foto debajo, la
+         celda no puede quedarse vacia pase lo que pase.
+         La imagen va aria-hidden: el nombre accesible lo pone el
+         video, y repetirlo seria leerlo dos veces. */
+      return `<div class="cut-cell" data-video><img class="cut-poster" src="${post}" alt="" aria-hidden="true" loading="lazy" decoding="async"><video class="con-poster" muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video></div>`;
     }
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
@@ -6461,6 +6483,9 @@ function lazyVideos(){
   if(reduceMotion()){
     items.forEach(it=>{ const v=it.querySelector('video'); if(!v) return;
       v.loop=false; v.controls=true;
+      /* aqui el video SI se ensena: lleva sus controles y su propio
+         poster, y hace falta verlos para poder pedirlo */
+      v.classList.remove('con-poster');
       /* preload="metadata" sigue puesto: esto pide la cabecera, no el
          video entero, y sin fuente los controles no harian nada */
       if(!v.src&&v.dataset.src) v.src=v.dataset.src;
@@ -6488,9 +6513,31 @@ function lazyVideos(){
     if(!v.src) return;
     v.pause();
     delete v.dataset.esperando;
+    v.classList.remove('viendo');   /* vuelve a verse la foto de debajo */
     v.removeAttribute('src');
-    v.load();                 /* cancela la descarga y deja el poster */
+    /* OJO: en WebKit esto NO devuelve el poster, deja el elemento sin
+       nada que pintar. Por eso hay una <img> debajo. */
+    v.load();
   }
+
+  /* El video solo se ensena cuando de verdad se esta moviendo; el resto
+     del tiempo se ve la foto de debajo. Asi no hay ni un instante de
+     hueco entre que se pide la reproduccion y llega el primer
+     fotograma — que en un telefono lento son varios segundos. */
+  items.forEach(it=>{
+    const v=it.querySelector('video'); if(!v||v.dataset.enganchado) return;
+    v.dataset.enganchado='1';
+    v.addEventListener('playing',()=>v.classList.add('viendo'));
+    v.addEventListener('pause',()=>v.classList.remove('viendo'));
+    v.addEventListener('emptied',()=>v.classList.remove('viendo'));
+    /* El modo de bajo consumo de iOS bloquea toda reproduccion
+       automatica, incluso sin sonido. Tocar la celda es lo que uno
+       intenta al ver una foto que deberia moverse. */
+    it.addEventListener('click',()=>{
+      if(!v.src&&v.dataset.src){ v.src=v.dataset.src; v.load(); }
+      if(v.paused) v.play().catch(()=>{});
+    });
+  });
   function reparte(){
     if(pendiente) return;
     pendiente=requestAnimationFrame(()=>{
