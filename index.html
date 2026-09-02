@@ -2743,13 +2743,15 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    pone al empezar la animacion y lo quita al acabar (_appendCards y los
    reveals), que es como se usa. Aqui el propio transform de la
    transicion promueve mientras dura, que es cuando hace falta. */
-@media(hover:hover) and (pointer:fine){
-  #grid .card{transform-style:preserve-3d}
-  #grid .card .card-media{transform:translateZ(0);transition:transform .7s var(--e-expo)}
-}
+/* Ya no hay contexto 3D ni capa promovida POR TARJETA. El levantamiento
+   de abajo solo necesita el perspective de #grid; lo que exigia
+   preserve-3d era el desplazamiento anidado de .card-media, que se
+   retira. Medido con la rejilla cargada a 1440px: eran 108 contextos y
+   108 capas vivas a la vez, en el unico navegador donde se pega. */
 @media(hover:hover){
+  /* Solo la tarjeta bajo el raton se transforma, y solo mientras lo
+     esta: ahi si compensa promoverla. */
   #grid .card:hover{transform:translateZ(26px) rotateX(3deg)}
-  #grid .card:hover .card-media{transform:translateZ(30px)}
 }
 
 /* ===================================================================
@@ -6186,8 +6188,13 @@ function buildCardDevelop(){
     start:'top 92%', once:true, refreshPriority:-90,
     onEnter:b=>{
       b.forEach(el=>el.dataset.dev='1');
+      /* clearProps o la tarjeta se queda con transform:translate(0px,0px)
+         inline PARA SIEMPRE, y un estilo en linea le gana a la regla de
+         :hover: el efecto 3D del catalogo no se renderizaba nunca.
+         _appendCards() ya lo hacia ('all'); aqui faltaba. */
       gsap.fromTo(b,{opacity:0,y:FX.rise()*.6},
-        {opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:{each:FX.item,from:'start'},overwrite:true});
+        {opacity:1,y:0,duration:FX.dur,ease:FX.ease,stagger:{each:FX.item,from:'start'},
+         overwrite:true,clearProps:'opacity,transform'});
       gsap.fromTo(b.map(el=>el.querySelector('.card-media')||el),
         {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
         {filter:'grayscale(0) contrast(1) brightness(1)',duration:.9,ease:'expo.out',
@@ -6199,8 +6206,11 @@ function buildCardDevelop(){
 function developCards(cards,fast){
   if(!cards.length||!window.gsap||reduceMotion()) return;
   cards.forEach(c=>c.dataset.dev='1');
+  /* mismo motivo que en buildCardDevelop: sin clearProps el transform
+     inline sobrevive al reveal y bloquea el :hover */
   gsap.fromTo(cards,{opacity:0,y:fast?10:FX.rise()*.6},
-    {opacity:1,y:0,duration:fast?.3:FX.dur,ease:FX.ease,stagger:fast?FX.item*.6:FX.item,overwrite:true});
+    {opacity:1,y:0,duration:fast?.3:FX.dur,ease:FX.ease,stagger:fast?FX.item*.6:FX.item,
+     overwrite:true,clearProps:'opacity,transform'});
   gsap.fromTo(cards.map(c=>c.querySelector('.card-media')||c),
     {filter:'grayscale(1) contrast(.82) brightness(1.06)'},
     {filter:'grayscale(0) contrast(1) brightness(1)',duration:fast?.55:.9,ease:'expo.out',
