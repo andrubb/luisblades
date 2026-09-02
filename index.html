@@ -1217,7 +1217,12 @@ input:focus-visible,textarea:focus-visible{outline:none}   /* fields keep their 
 /* ---- ed-break: giant soft silhouette behind the line + radial depth ---- */
 .ed-break{position:relative;overflow:hidden;
   background:radial-gradient(130% 100% at 50% 42%,#FBF9F6 46%,#F1ECE4 100%)}
-.ed-inner{min-height:clamp(340px,52vh,520px);justify-content:center}
+/* La altura se ata A LA FOTO, no a un numero. La imagen es 900x821, o
+   sea 0.912 de alto por cada ancho, y su ancho es min(92vw,960px): con
+   esa misma expresion el contenedor mide siempre lo que mide la foto mas
+   un respiro, en cualquier pantalla. Un clamp fijo dejaba 250px de aire
+   muerto en movil (foto de 327 dentro de 574) o la cortaba en escritorio. */
+.ed-inner{min-height:calc(min(92vw,960px) * 0.912 + 48px);justify-content:center}
 .ed-inner .bottle{position:absolute;left:50%;top:50%;transform:translate(-50%,-53%);
   width:min(62vw,430px);opacity:.07;color:var(--text);pointer-events:none}
 .ed-line{position:relative;z-index:1}
@@ -1869,8 +1874,15 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 
 /* the same photograph as the memory image on the ink plate */
 .ed-photo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(70vw,480px);height:auto;object-fit:contain;pointer-events:none;
-  opacity:.30;filter:grayscale(1) contrast(1.08) brightness(1.05);
+  /* AL DOBLE. El tope en px se duplica exacto (480 -> 960); el de vw no
+     puede (70vw x2 son 140vw, mas ancho que la pantalla) y sube a 92vw,
+     que en un movil de 390px da 359px contra 273: 1,31x, el maximo que
+     cabe dejando aire en los bordes. */
+  width:min(92vw,960px);height:auto;object-fit:contain;pointer-events:none;
+  /* La opacidad sube de .30 a .40 con la misma intencion que el tamano:
+     al doble de area pero igual de tenue seguia sin leerse. Sigue por
+     debajo de la linea de texto, que es quien manda en esta seccion. */
+  opacity:.40;filter:grayscale(1) contrast(1.08) brightness(1.05);
   /* La vinneta se centra donde de verdad esta el sujeto en la foto ya
      recortada —46% a lo ancho, porque el se sienta a la izquierda del
      encuadre, y 50% a lo alto— y se abre un poco para que le quepa el
@@ -7875,8 +7887,11 @@ function initAnim(){
            escalarla en cada fotograma obliga a re-rasterizar las tres
            cosas. Medido, valia hasta 25 puntos de fotogramas perdidos.
            El desplazamiento en y da la misma sensacion de profundidad. */
-        .fromTo('.ed-photo',{y:34,opacity:.16},
-                            {y:-26,opacity:.34,ease:'none'},0)
+        /* Los extremos suben con el tamano y con la regla CSS (.40): antes
+           el scrub terminaba en .34 y el movil, que no lleva parallax, se
+           quedaba en el valor de la hoja. Las dos rutas coinciden ahora. */
+        .fromTo('.ed-photo',{y:34,opacity:.20},
+                            {y:-26,opacity:.40,ease:'none'},0)
         .fromTo('.ed-sweep',{xPercent:-160},{xPercent:440,ease:'none'},0);
     } else if(eb && $('.ed-sweep')){
       /* el barrido si se queda en movil: es solo transform, lo resuelve
