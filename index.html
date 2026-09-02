@@ -2281,7 +2281,7 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 #about .about-quote::before{color:rgba(242,244,246,.09)}
 #about .about-body{color:var(--on-noir-2)}
 /* los beats 3 y 4 son display: sobre noir van en bone, no en ink */
-#about .eye-text .beat-3,#about .eye-text .beat-4{color:var(--bone)}
+/* el color de los tiempos 3 y 4 lo fija ahora el bloque de la FASE 4 */
 #about .about-handle{color:var(--amber-hot)}
 #about .soc{color:var(--on-noir-2);border-color:rgba(242,244,246,.22)}
 #about .soc:hover{color:var(--amber-hot);border-color:var(--amber)}
@@ -2505,35 +2505,17 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    Decision: UNA sola voz — Bodoni — en toda la seccion. La jerarquia la
    dan tamano, color y medida de linea, no cambiar de fuente tres veces.
    =================================================================== */
-#about .eye-text .beat{
-  font-family:var(--font-display);
-  font-weight:400;
-  letter-spacing:0;
-  text-transform:none;
-}
-#about .eye-text .beat-2{
-  font-size:clamp(1rem,2.9vw,1.12rem);
-  line-height:1.75;color:var(--on-noir-2);max-width:46ch;
-}
-#about .eye-text .beat-3{
-  font-size:clamp(1.35rem,4.2vw,1.85rem);
-  line-height:1.45;color:var(--bone);max-width:34ch;
-  font-weight:500;margin-top:1.1em;
-}
-#about .eye-text .beat-4{
-  font-size:clamp(1.5rem,4.8vw,2.15rem);
-  line-height:1.38;color:var(--bone);max-width:32ch;
-  font-weight:500;margin-top:1em;font-style:italic;
-}
+/* La tipografia de esta seccion se rehizo al final de la hoja (busca
+   "FASE 4 · EL MISMO OJO"). Lo que habia aqui —una sola voz, Bodoni,
+   para los cuatro parrafos— se quita en vez de pisarse: llevaba #about
+   delante, o sea (1,2,0), y habria ganado a cualquier regla nueva por
+   mucho que fuera despues. Dejar las dos capas obliga a la siguiente
+   persona a adivinar cual manda. */
 /* la frase de cierre se remata en ambar: el unico acento de color del bloque */
 #about .eye-text .beat-4 em,#about .eye-text .beat-4 b{color:var(--amber-hot);font-style:italic;font-weight:500}
-#about .eye-text{gap:14px}
+/* el gap lo fija ahora .eye-text en el bloque de la FASE 4 */
 #about .eye-visual{border-radius:14px}
-@media(min-width:900px){
-  #about .eye-text .beat-2{max-width:52ch}
-  #about .eye-text .beat-3{max-width:38ch}
-  #about .eye-text .beat-4{max-width:34ch}
-}
+/* las medidas de linea las fija ahora el bloque de la FASE 4 */
 #about .aurora-soft{opacity:.75}
 
 /* ===================================================================
@@ -3642,6 +3624,99 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 @media(prefers-reduced-motion:reduce){
   .cut-cell .cut-poster{transition:none}
 }
+/* ===================================================================
+   FASE 4 · EL MISMO OJO — una sola escala y una estructura de verdad.
+
+   Va al final de la hoja porque .about-quote se declaraba cinco veces y
+   .about-body tres: aqui manda el orden, no la cercania.
+
+   LA ESCALA. Dos voces y solo dos, en toda la seccion:
+     Bodoni  -> lo que DECLARA (el numero, el titulo, la tesis)
+     Jost    -> lo que se LEE  (los tres parrafos de prosa)
+   Archivo Black sale de aqui. El ultimo parrafo se eleva con tamano y
+   color —es el aterrizaje del argumento— y no cambiando de tipografia,
+   que era justo lo que hacia que los cuatro parrafos parecieran cuatro
+   piezas distintas pegadas.
+   =================================================================== */
+
+/* ---- estructura: rail de indice + columna de texto ---- */
+.eye-grid{grid-template-columns:1fr;gap:clamp(26px,5vw,44px);align-items:start}
+@media(min-width:900px){
+  .eye-grid{grid-template-columns:minmax(210px,300px) minmax(0,1fr);gap:clamp(40px,5vw,72px)}
+}
+/* el solapamiento a mano desaparece: la rejilla ya separa las columnas */
+.eye-text{margin-left:0;gap:clamp(18px,2.4vw,26px);max-width:64ch}
+.eye-visual{max-width:230px}
+@media(max-width:899px){ .eye-visual{max-width:150px} }
+
+/* ---- el menu de presentacion ---- */
+.eye-head{display:flex;align-items:baseline;gap:14px;margin-bottom:2px}
+.eye-num{font-family:var(--font-display);font-size:.82rem;letter-spacing:.22em;
+  color:var(--blue);opacity:.75;font-variant-numeric:tabular-nums;flex:none}
+.eye-title{font-family:var(--font-display);font-weight:300;font-style:italic;
+  font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.05;letter-spacing:.01em;
+  color:var(--bone);margin:0}
+/* Una letra por span. Solo en el TITULO, nunca en los parrafos: partir
+   prosa en letras multiplica los nodos por cuarenta y no aporta nada que
+   no de ya el reveal de bloque. */
+.eye-char{display:inline-block;white-space:pre}
+@supports (animation-timeline: view()){
+  /* El escalonado sale de correr el FINAL del rango de cada letra, no de
+     un delay: con una linea de tiempo de scroll el delay no significa
+     tiempo. Cuesta cero JS y corre en el compositor. */
+  .eye-char{animation:reveal-rise both;animation-timeline:view();
+    animation-range:entry 0% cover calc(10% + var(--i,0) * 1.5%)}
+}
+
+.eye-menu{display:flex;flex-wrap:wrap;gap:6px 8px;margin:2px 0 6px;padding:0}
+.eye-mi{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+  padding:6px 13px 6px 11px;border:1px solid var(--border);border-radius:999px;
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:var(--font-body);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  transition:border-color .4s var(--ease),color .4s var(--ease),background .4s var(--ease)}
+.eye-mi i{font-family:var(--font-display);font-style:normal;font-size:.66rem;
+  letter-spacing:.1em;opacity:.55;font-variant-numeric:tabular-nums}
+.eye-mi:hover{border-color:var(--blue);color:var(--bone)}
+/* "activo" = su parrafo esta en pantalla. Es progreso de lectura, no una
+   pestana: por eso se enciende solo y tambien se apaga. */
+.eye-mi.on{border-color:var(--blue);color:var(--bone);background:rgba(179,118,44,.10)}
+.eye-mi.on i{opacity:1;color:var(--blue)}
+
+/* ---- LOS CUATRO TIEMPOS ---- */
+.eye-text .beat-1{font-family:var(--font-display);font-weight:300;font-style:normal;
+  font-size:clamp(1.75rem,4.4vw,2.7rem);line-height:1.24;letter-spacing:.01em;
+  color:var(--bone);max-width:20ch;border-left:0;padding-left:0;margin:0 0 .2em}
+.eye-text .beat-1 em{font-style:italic;color:var(--blue)}
+
+.eye-text .beat-2,
+.eye-text .beat-3,
+.eye-text .beat-4{font-family:var(--font-body);font-weight:400;letter-spacing:0}
+.eye-text .beat-2,
+.eye-text .beat-3{font-size:1.02rem;line-height:1.66;color:var(--on-noir-2);max-width:54ch;margin:0}
+/* El aterrizaje. Mas grande y en el tono pleno, con una regla fina que
+   lo separa: es la conclusion del argumento, no un cuarto parrafo mas. */
+.eye-text .beat-4{font-size:clamp(1.12rem,1.9vw,1.28rem);line-height:1.5;color:var(--bone);
+  max-width:46ch;margin:.4em 0 0;padding-top:clamp(16px,2vw,22px);
+  border-top:1px solid var(--border)}
+
+/* La plancha de color detras del logotipo se retira. Es .eye-tint,
+   celeste con mix-blend-mode:screen al 35%: sobre el noir eso da un
+   rectangulo gris claro que a 430px de ancho pasaba por atmosfera, pero
+   a 230px se lee como una caja sin funcion. El logotipo ya va en blanco
+   sobre el fondo y no necesita nada detras. */
+/* El redondeo se conserva: #about .eye-visual lo fija con especificidad
+   de id y, sin la plancha detras, el logotipo enmarcado se lee como una
+   placa deliberada. Lo que sobraba era el relleno, no el marco. */
+.eye-visual{background:none;max-width:190px}
+.eye-visual .eye-tint{display:none}
+.eye-logo{width:100%}
+
+@media(max-width:899px){
+  .eye-visual{max-width:120px}
+  .eye-text .beat-1{max-width:none}
+  .eye-menu{gap:6px}
+  .eye-mi{font-size:.68rem;padding:6px 11px 6px 9px}
+}
 </style>
 </head>
 
@@ -4267,11 +4342,24 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
         <span class="eye-tint"></span>
       </div>
       <div class="eye-text">
-        <span class="eyebrow" data-i18n="about_eyebrow">El mismo ojo</span>
-        <p class="about-quote beat beat-1" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
-        <p class="about-body beat beat-2" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
-        <p class="about-body beat beat-3 display display-4" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
-        <p class="about-body beat beat-4 display display-3" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
+        <!-- MENU DE PRESENTACION. No es decoracion: cada entrada nombra lo
+             que dice su parrafo, se enciende cuando ese parrafo llega, y
+             lleva a el al pulsarla. En una seccion de cuatro tiempos eso
+             es un indice de lectura, no un adorno numerado. -->
+        <div class="eye-head">
+          <span class="eye-num" aria-hidden="true">06</span>
+          <h2 class="eye-title" data-i18n="about_eyebrow" data-partir>El mismo ojo</h2>
+        </div>
+        <nav class="eye-menu" aria-label="Índice de la sección" data-i18n-aria="about_menu_aria">
+          <button type="button" class="eye-mi" data-beat="1"><i aria-hidden="true">01</i><span data-i18n="about_m1">El criterio</span></button>
+          <button type="button" class="eye-mi" data-beat="2"><i aria-hidden="true">02</i><span data-i18n="about_m2">El oficio</span></button>
+          <button type="button" class="eye-mi" data-beat="3"><i aria-hidden="true">03</i><span data-i18n="about_m3">La confianza</span></button>
+          <button type="button" class="eye-mi" data-beat="4"><i aria-hidden="true">04</i><span data-i18n="about_m4">El origen</span></button>
+        </nav>
+        <p class="about-quote beat beat-1" id="eye-b1" data-i18n-html="about_quote">El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em></p>
+        <p class="about-body beat beat-2" id="eye-b2" data-i18n="about_body">Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.</p>
+        <p class="about-body beat beat-3" id="eye-b3" data-i18n="about_body2">Años detrás de la silla construyen algo que no se compra: confianza. Los mismos clientes que le confían su imagen cada quince días fueron los primeros en preguntar por las fragancias que llevaba puestas.</p>
+        <p class="about-body beat beat-4" id="eye-b4" data-i18n="about_body3">Blades Privé nació de esa pregunta. No es una tienda más — es una respuesta personal: una selección corta, curada a mano, de alguien que sabe que el estilo se termina con el aroma.</p>
       <div class="about-soc">
         <a class="soc" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
         <a class="soc" id="tiktok2" href="https://instagram.com/luisblades_" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 3c.3 2.2 1.7 3.9 3.8 4.2v2.6c-1.3.1-2.6-.3-3.8-1v6.2A5.5 5.5 0 1 1 10.5 9.6v2.8a2.8 2.8 0 1 0 2 2.7V3H16Z"/></svg></a>
@@ -4561,6 +4649,8 @@ const STR = {
     enc_name:'Nombre', enc_frag:'Fragancia o descripción', enc_frag_ph:'Ej: Creed Aventus, o algo amaderado',
     enc_budget:'Presupuesto', enc_b1:'Hasta ₡60.000', enc_b2:'₡60.000 – ₡120.000', enc_b3:'₡120.000 – ₡250.000', enc_b4:'Sin límite',
     enc_submit:'Enviar solicitud', enc_toast:'Solicitud lista — abriendo WhatsApp',
+    about_menu_aria:'Índice de la sección',
+    about_m1:'El criterio', about_m2:'El oficio', about_m3:'La confianza', about_m4:'El origen',
     about_eyebrow:'El mismo ojo', about_quote:'El mismo ojo que perfecciona cada corte, <em>curó esta selección.</em>',
     about_body:'Luis trabaja como barbero en Gents Barbershop, San José — donde la precisión es el estándar y cada cliente sale en su mejor versión. Ese mismo criterio, esa misma obsesión por el detalle, eligió cada fragancia de Blades Privé.',
     foot_made:'Hecho en Costa Rica', admin_entry:'Modo Admin',
@@ -4639,6 +4729,8 @@ const STR = {
     enc_name:'Name', enc_frag:'Fragrance or description', enc_frag_ph:'e.g. Creed Aventus, or something woody',
     enc_budget:'Budget', enc_b1:'Up to ₡60.000', enc_b2:'₡60.000 – ₡120.000', enc_b3:'₡120.000 – ₡250.000', enc_b4:'No limit',
     enc_submit:'Send request', enc_toast:'Request ready — opening WhatsApp',
+    about_menu_aria:'Section index',
+    about_m1:'The standard', about_m2:'The craft', about_m3:'The trust', about_m4:'The origin',
     about_eyebrow:'The same eye', about_quote:'The same eye that perfects every cut <em>curated this selection.</em>',
     about_body:'Luis works as a barber at Gents Barbershop, San José — where precision is the standard and every client leaves looking their best. That same judgement, that same obsession with detail, chose every fragrance in Blades Privé.',
     foot_made:'Made in Costa Rica', admin_entry:'Admin Mode',
@@ -6087,6 +6179,55 @@ function buildFinderIn(){
    palabras que entra progresivamente. Se parte a mano en vez de con
    SplitText porque ese plugin no esta disponible en el CDN gratuito;
    el efecto es el mismo y no agrega peso. */
+
+/* ===================================================================
+   FASE 4 · el titulo se parte en letras y el menu sigue la lectura.
+
+   Lenguaje tomado de mabelmarin (medido en vivo: 41 ScrollTriggers,
+   start 'top 82%', sin scrub y SIN UN SOLO PIN; parte titulos, no
+   parrafos). La implementacion NO se copia: alli son 41 triggers de JS,
+   aqui el reveal ya lo hace animation-timeline:view() en el compositor,
+   asi que el escalonado es CSS y esto solo pone los spans.
+   Cero pines nuevos — el presupuesto sigue en 2 de 3.
+   =================================================================== */
+function partirTitulos(){
+  $$('[data-partir]').forEach(el=>{
+    /* El texto de origen se guarda la primera vez: setLang() reescribe
+       textContent en cada cambio de idioma y se llevaria los spans por
+       delante, asi que hay que poder volver a partir desde lo limpio. */
+    if(!el.dataset.limpio) el.dataset.limpio = el.textContent.trim();
+    const txt = el.dataset.limpio;
+    if(reduceMotion()){ el.textContent = txt; return; }
+    el.innerHTML = [...txt].map((c,i)=>
+      '<span class="eye-char" style="--i:'+i+'" aria-hidden="true">'+
+      (c===' '?'&nbsp;':c.replace(/&/g,'&amp;').replace(/</g,'&lt;'))+'</span>').join('');
+    /* El nombre accesible lo pone el aria-label: un lector de pantalla no
+       tiene por que deletrear un titulo partido en spans. */
+    el.setAttribute('aria-label', txt);
+  });
+}
+
+/* El menu se enciende con IntersectionObserver y no con ScrollTrigger:
+   son cuatro elementos y no hace falta meter cuatro triggers mas ni
+   tocar el presupuesto de pines. */
+function menuDeSeccion(){
+  const menu=$('.eye-menu'); if(!menu) return;
+  const items=$$('.eye-mi',menu);
+  items.forEach(b=>b.addEventListener('click',()=>{
+    const p=$('#eye-b'+b.dataset.beat);
+    if(p) p.scrollIntoView({behavior:reduceMotion()?'instant':'smooth',block:'center'});
+  }));
+  if(!('IntersectionObserver' in window)){ items.forEach(b=>b.classList.add('on')); return; }
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      const n=e.target.id.replace('eye-b','');
+      const b=items.find(x=>x.dataset.beat===n);
+      if(b) b.classList.toggle('on', e.isIntersecting);
+    });
+  },{rootMargin:'-25% 0px -25% 0px'});
+  [1,2,3,4].forEach(n=>{ const p=$('#eye-b'+n); if(p) io.observe(p); });
+}
+
 function splitWords(el){
   if(!el || el.dataset.split) return [];
   const txt=(el.textContent||'').trim(); if(!txt) return [];
@@ -7029,6 +7170,9 @@ function applyLang(lang){
   $$('[data-i18n-html]').forEach(el=>{ const k=el.getAttribute('data-i18n-html'); if(T()[k]!==undefined) el.innerHTML=T()[k]; });
   $$('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
   refresh(false); updateCart(); refreshWA(); renderFeatured(); renderCuts(); renderFinder(); refreshHours(); renderStats();
+  /* despues de traducir, no antes: setLang() acaba de reescribir el
+     textContent del titulo y se llevo los spans por delante */
+  partirTitulos();
   // scroll FX bound to re-rendered/re-worded DOM must rebuild (worlds respan, correction headline)
   if(window.__fxReady){ buildWorlds(); buildCuratorCross(); buildHowTitle(); }
   if($('#modal').classList.contains('show')) renderModal();
@@ -8022,6 +8166,7 @@ async function init(){
   S.products=await loadProducts();
   if(S.mode) $$('#daynight button').forEach(b=>b.classList.toggle('on',b.dataset.mode===S.mode));
   applyLang(S.lang);     // renders grid + cart + wa
+  menuDeSeccion();       // el indice de la seccion 06 sigue la lectura
   updateFavUI();
   /* con techo: una IndexedDB bloqueada por otra pestana no puede dejar
      la pagina sin animaciones ni carruseles */
