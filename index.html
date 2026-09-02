@@ -3717,6 +3717,21 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
   .eye-menu{gap:6px}
   .eye-mi{font-size:.68rem;padding:6px 11px 6px 9px}
 }
+
+/* ===================================================================
+   FASE 5 · el credito, mas discreto.
+   .firma-nom estaba en clamp(27px,6.4vw,44px): a 44px es el mismo
+   cuerpo que un titular de seccion, y un credito de autoria compitiendo
+   con los titulos del cliente esta mal jerarquizado. Baja a
+   clamp(15px,2.2vw,20px) —menos de la mitad— y la linea de entrada se
+   acorta con el, o quedaria un tallo largo sosteniendo algo pequeno.
+   LA BANDA NO SE TOCA: .firma conserva su altura y .flux-foot su
+   animacion enteras. Lo que se reduce es el protagonismo del texto,
+   que es exactamente lo que se pidio. */
+.firma-nom{font-size:clamp(15px,2.2vw,20px);gap:7px;padding-bottom:2px}
+.firma-linea{height:clamp(18px,3vw,26px)}
+.firma-eyebrow{font-size:9px;letter-spacing:.24em}
+.firma-txt{gap:7px}
 </style>
 </head>
 
