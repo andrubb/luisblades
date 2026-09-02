@@ -5836,7 +5836,12 @@ function renderCuts(){
        Derivarlo evita una segunda lista que mantener a mano y que se
        desincronice — si el video existe, su poster existe. */
     if(/\.mp4($|\?)/i.test(u)){
-      const post=u.replace(/\.mp4($|\?)/i, '.jpg$1');
+      const post=u.replace(/\.mp4($|\?)/i, '.webp$1');
+      /* El .jpg sigue en el repo como respaldo del <img>: mismo patron que
+         el resto del sitio (webp con raster detras). El atributo poster no
+         admite respaldo, pero solo se usa bajo reduced-motion y ahi WebP
+         esta soportado en todo lo que nos visita. */
+      const respaldo=u.replace(/\.mp4($|\?)/i, '.jpg$1');
       /* El poster va como <img> DEBAJO del video, no solo como
          atributo. En WebKit, soltar la fuente del video deja la celda
          en blanco, y el atributo poster tambien se pierde en cuanto
@@ -5851,7 +5856,15 @@ function renderCuts(){
          con normalidad; la foto lo tapa y se desvanece al arrancar.
          Ademas sigue cubriendo el blanco que deja WebKit al soltar
          la fuente, y el caso del modo de bajo consumo. */
-      return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata" poster="${post}" data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video><img class="cut-poster" src="${post}" alt="" aria-hidden="true" loading="lazy" decoding="async"></div>`;
+      /* EL ATRIBUTO POSTER NO ES LAZY. Se descarga siempre, aunque la
+         rejilla este a cinco pantallas. Medido en produccion: 566 KB en
+         cada visita, el 59% del peso de la pagina. Se pone SOLO bajo
+         reduced-motion, que es donde la <img> de encima se borra y el
+         poster pasa a ser la unica imagen que se ve. Para el resto basta
+         la <img>, que si es lazy; mientras no llega, la celda muestra su
+         degradado con sombra — un estado con forma, no un hueco. */
+      const rm=reduceMotion();
+      return `<div class="cut-cell" data-video><video muted loop playsinline preload="metadata"${rm?` poster="${post}"`:''} data-src="${u}" aria-label="${tr('cut_label')} ${n}"></video><img class="cut-poster" src="${post}" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${respaldo}'"></div>`;
     }
     return `<div class="cut-cell"><img src="${u}" alt="${tr('cut_label')} ${n}" loading="lazy"></div>`;
   }).join('');
