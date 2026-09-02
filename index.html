@@ -673,6 +673,16 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .a-item.sel{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
 .a-item .a-check{align-self:center}
 .a-empty{text-align:center;color:var(--muted);font-family:var(--font-display);font-style:italic;font-size:1.2rem;padding:44px 0}
+/* Pie de la lista paginada. Altura 48px porque es un objetivo tactil y
+   el panel se usa desde el telefono. */
+.a-mas{width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--text);
+  font-family:var(--font-body);font-size:.86rem;letter-spacing:.02em;cursor:pointer;
+  transition:border-color .25s var(--ease), color .25s var(--ease)}
+.a-mas:hover{border-color:var(--blue);color:var(--blue)}
+.a-mas small{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.a-fin{text-align:center;padding:14px 0 4px;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--silver);font-variant-numeric:tabular-nums}
 .bulk-bar{position:fixed;left:12px;right:12px;bottom:calc(62px + env(safe-area-inset-bottom) + 12px);z-index:8;
   background:var(--text);color:var(--bg);border-radius:10px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:10px;
   box-shadow:var(--shadow-float);transform:translateY(220%);transition:transform .42s var(--ease)}
@@ -5525,6 +5535,18 @@ function fotoDe(p){
   return FOTOS_ID.has(p.id) ? 'product-images/'+p.id+'.webp' : '';
 }
 
+/* La miniatura del panel mide 42x52 css y la del carrito 62x78. Servirles
+   el archivo de 640x800 es pedir hasta 256 veces los pixeles que caben:
+   medido, recorrer un tercio de la lista del panel disparaba 225
+   peticiones y 471 MB de bitmap. product-images/mini/ son 160x200, que
+   cubre .a-thumb a dpr 3 y .ci-img a dpr 2, y pesa ~2,4 KB.
+   Solo hay mini de las fotos del repo: lo que sube Luis se sirve tal
+   cual, y es una sola imagen a la vez, no 710. */
+function fotoMini(p){
+  const f=fotoDe(p);
+  return f.startsWith('product-images/') ? f.replace('product-images/','product-images/mini/') : f;
+}
+
 function imgFor(p){
   const foto=fotoDe(p);
   /* La distinción es por RUTA, no por id: si Luis subió su propia foto,
@@ -6950,7 +6972,7 @@ function updateCart(){
   if(!S.cart.length){ body.innerHTML=`<div class="cart-empty">${BOTTLE}<p>${tr('cart_empty')}</p><button class="btn" onclick="closeCart();document.getElementById('catalog').scrollIntoView()">${tr('cart_browse')}</button></div>`; foot.style.display='none'; return; }
   foot.style.display='block';
   body.innerHTML=S.cart.map(it=>`<div class="cart-item">
-    <div class="ci-img">${fotoDe(it)?`<img src="${fotoDe(it)}" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
+    <div class="ci-img">${fotoDe(it)?`<img class="${fotoMini(it).startsWith('product-images/')?'prod-norm':''}" src="${fotoMini(it)}" width="160" height="200" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
     <div><div class="ci-brand">${it.brand}</div><div class="ci-name">${it.name}</div><div class="ci-vol">${it.vol} ml</div><div class="ci-price">${fmt(it.price)}</div>
       <div class="qty"><button onclick="changeQty('${it.key}',-1)">−</button><span>${it.qty}</span><button onclick="changeQty('${it.key}',1)">+</button></div></div>
     <button class="ci-remove" onclick="removeItem('${it.key}')">${tr('cart_remove')}</button>
@@ -7072,7 +7094,7 @@ function aItemHTML(p){
   const sel=S.adminSel.has(p.id);
   return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
     <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
-    <div class="a-thumb">${fotoDe(p)?`<img class="prod-img" src="${fotoDe(p)}" loading="lazy" decoding="async" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
+    <div class="a-thumb">${fotoDe(p)?`<img class="prod-img${fotoMini(p).startsWith('product-images/')?' prod-norm':''}" src="${fotoMini(p)}" width="160" height="200" loading="lazy" decoding="async" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
     <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
     <div class="a-acts">
       <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
@@ -7100,19 +7122,30 @@ function adminProducts(m){
     </div>`;
   const listEl=$('#aList');
   function updateBulk(){ const n=S.adminSel.size; $('#bulkN').textContent=n; $('#bulkBar').classList.toggle('show',n>0); const list=adminFilterList(),ids=list.map(p=>p.id); $('#aSelChk').classList.toggle('on',ids.length>0&&ids.every(id=>S.adminSel.has(id))); }
+  /* 710 filas de una vez es lo que hacia lento el panel aunque la imagen
+     fuese liviana. Se pinta de 40 en 40. El buscador y los filtros de
+     arriba siguen viendo la lista ENTERA, asi que para llegar a una
+     fragancia concreta se busca, no se pagina hasta ella. */
+  const A_PAGINA=40;
+  if(S.adminVer===undefined) S.adminVer=A_PAGINA;
   function paint(){
     const list=adminFilterList();
-    listEl.innerHTML=list.length?list.map(aItemHTML).join(''):'<div class="a-empty">Sin resultados</div>';
+    const trozo=list.slice(0,S.adminVer);
+    const pie = list.length>trozo.length
+      ? `<button class="a-mas" id="aMas" type="button">Mostrar ${Math.min(A_PAGINA,list.length-trozo.length)} más<small>${trozo.length} de ${list.length}</small></button>`
+      : (list.length>A_PAGINA ? `<div class="a-fin">${list.length} de ${list.length}</div>` : '');
+    listEl.innerHTML=list.length?(trozo.map(aItemHTML).join('')+pie):'<div class="a-empty">Sin resultados</div>';
+    const mas=$('#aMas'); if(mas) mas.addEventListener('click',()=>{ S.adminVer+=A_PAGINA; paint(); });
     $$('#aList [data-sel]').forEach(b=>b.addEventListener('click',()=>{ const id=+b.dataset.sel; S.adminSel.has(id)?S.adminSel.delete(id):S.adminSel.add(id); b.classList.toggle('on'); b.closest('.a-item').classList.toggle('sel'); updateBulk(); }));
     $$('#aList [data-edit]').forEach(b=>b.addEventListener('click',()=>{ S.editingId=+b.dataset.edit; S.adminTab='prod'; renderAdminTab(); }));
     $$('#aList [data-del]').forEach(b=>b.addEventListener('click',()=>{ const id=+b.dataset.del,p=S.products.find(x=>x.id===id); if(confirm(`¿Eliminar "${p.brand} ${p.name}"?`)){ S.products=S.products.filter(x=>x.id!==id); S.adminSel.delete(id); persistProducts(); syncDel(id); paint(); updateBulk(); refresh(false); } }));
     updateBulk();
   }
   $('#aAdd').addEventListener('click',()=>{ S.adminTab='add'; S.editingId='new'; renderAdmin(); });
-  $('#aq').addEventListener('input',e=>{ S.adminQ=e.target.value.trim(); paint(); });
+  $('#aq').addEventListener('input',e=>{ S.adminQ=e.target.value.trim(); S.adminVer=A_PAGINA; paint(); });
   $('#acat').value=S.adminCat; $('#astock').value=S.adminStock;
-  $('#acat').addEventListener('change',e=>{ S.adminCat=e.target.value; paint(); });
-  $('#astock').addEventListener('change',e=>{ S.adminStock=e.target.value; paint(); });
+  $('#acat').addEventListener('change',e=>{ S.adminCat=e.target.value; S.adminVer=A_PAGINA; paint(); });
+  $('#astock').addEventListener('change',e=>{ S.adminStock=e.target.value; S.adminVer=A_PAGINA; paint(); });
   $('#aSelAll').addEventListener('click',()=>{ const ids=adminFilterList().map(p=>p.id); const allSel=ids.length&&ids.every(id=>S.adminSel.has(id)); ids.forEach(id=>allSel?S.adminSel.delete(id):S.adminSel.add(id)); paint(); });
   $$('#bulkBar [data-bulk]').forEach(b=>b.addEventListener('click',()=>bulkAction(b.dataset.bulk,paint,updateBulk)));
   paint();
