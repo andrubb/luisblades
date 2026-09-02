@@ -1855,7 +1855,17 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    modo que aquí no se añade ninguno, y multiply hace desaparecer el
    blanco sobre el degradado hueso — matemáticamente lo mismo que
    transparencia, sin los halos de recortar por color. */
-.prod-norm{padding:0;mix-blend-mode:multiply}
+/* SIN mix-blend-mode a proposito. Lo llevaba para que el blanco de la
+   foto se fundiera con el degradado de la tarjeta, pero eso hacia falta
+   ANTES del normalizado, cuando la foto no cubria toda la caja. Ahora es
+   640x800 —la proporcion exacta de .card-media— asi que la cubre entera y
+   no hay degradado que se vea por detras: el multiply solo multiplicaba
+   la foto contra un fondo tapado. Medido comparando capturas con y sin:
+   0,74 de diferencia media de luminancia sobre 255, 6 de maximo.
+   Y costaba caro: una capa que el compositor tiene que mezclar POR
+   TARJETA, y las tarjetas se acumulan sin limite al pulsar "cargar mas"
+   — 108 mezclas tras nueve pulsaciones. */
+.prod-norm{padding:0}
 @media(hover:hover){ .card:hover .card-media .prod-img{transform:scale(1.04)} }
 /* Tonal shifts alone were invisible at 4/5 on a tall source — two adjacent
    cards still read as the same picture. The variation is now STRUCTURAL:
@@ -2721,8 +2731,22 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
    rotateX + translateZ dan paralaje verdadero entre marco y contenido.
    =================================================================== */
 #grid{perspective:1400px;perspective-origin:50% 40%}
-#grid .card{transform-style:preserve-3d;will-change:transform}
-#grid .card .card-media{transform:translateZ(0);transition:transform .7s var(--e-expo)}
+/* TODO ESTO EXISTE PARA EL HOVER, y el hover ya estaba declarado solo
+   bajo (hover:hover). Fuera de ahi se pagaban, por cada tarjeta y para
+   siempre, un contexto 3D y una capa promovida que nadie iba a usar. En
+   un telefono con 108 tarjetas cargadas eso son 108 capas de mas dentro
+   de un perspective, y el compositor las recorre en cada fotograma.
+   Medido: el hilo principal esta 95% ocioso mientras el scroll se pega,
+   o sea que el coste no es JS — es composicion.
+   Se va tambien will-change:transform. Dejarlo permanente obliga al
+   navegador a mantener la capa viva siempre; el resto de este archivo lo
+   pone al empezar la animacion y lo quita al acabar (_appendCards y los
+   reveals), que es como se usa. Aqui el propio transform de la
+   transicion promueve mientras dura, que es cuando hace falta. */
+@media(hover:hover) and (pointer:fine){
+  #grid .card{transform-style:preserve-3d}
+  #grid .card .card-media{transform:translateZ(0);transition:transform .7s var(--e-expo)}
+}
 @media(hover:hover){
   #grid .card:hover{transform:translateZ(26px) rotateX(3deg)}
   #grid .card:hover .card-media{transform:translateZ(30px)}
