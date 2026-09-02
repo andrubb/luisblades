@@ -3732,6 +3732,21 @@ html[lang="en"] .thr-mark::before{content:"02 — THE SELECTION"}
 .firma-linea{height:clamp(18px,3vw,26px)}
 .firma-eyebrow{font-size:9px;letter-spacing:.24em}
 .firma-txt{gap:7px}
+/* ===================================================================
+   FASE 6 · el aviso de que los cambios no salen del dispositivo.
+   Va en ambar y no en rojo: no es un error, es un estado que conviene
+   saber. Rojo para algo que todavia no ha fallado seria mentir en el
+   otro sentido. */
+.a-note-ojo{border-left-color:var(--blue);background:rgba(179,118,44,.06);color:var(--text)}
+.a-note-ojo b{color:var(--blue);font-weight:500}
+
+/* El cuadrito de seleccion mide 22px: la mitad del objetivo tactil
+   minimo, y hay uno por fila. Medido en el panel a 390px, eran 40
+   objetivos por debajo de 44px, justo los que Luis toca para elegir
+   productos. Se agranda el AREA sin agrandar el dibujo: un
+   pseudo-elemento invisible que sobresale 11px por lado da 44x44
+   reales y el cuadrito se sigue viendo igual de fino. */
+.a-check::before{content:"";position:absolute;inset:-11px;border-radius:8px}
 </style>
 </head>
 
@@ -7264,7 +7279,9 @@ function adminDash(m){
     <div class="a-stats" style="margin-top:12px;grid-template-columns:1fr">
       ${stat(fmt(P.reduce((s,p)=>s+p.price_crc,0)).replace('₡','₡ '),'Valor del catálogo')}
     </div>
-    <div class="a-note" style="margin-top:18px">Las ediciones se guardan localmente y, con la anon key de Supabase configurada, se sincronizan a la nube.</div>`;
+    <div class="a-note ${nube()?'':'a-note-ojo'}" style="margin-top:18px">${nube()
+      ? 'Tus cambios se guardan en este dispositivo y se publican para todos los que entren al sitio.'
+      : '<b>Ojo:</b> por ahora los cambios que hagas se guardan <b>solo en este dispositivo</b>. Nadie más los ve todavía, y se pierden si borrás los datos del navegador. Para publicarlos hay que conectar la base de datos.'}</div>`;
 }
 const CHK='<svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5"/></svg>';
 function adminFilterList(){
@@ -7339,9 +7356,29 @@ function bulkAction(kind,paint,updateBulk){
   if(kind==='clear'){ S.adminSel.clear(); paint(); return; }
   if(!ids.length) return;
   if(kind==='del'){ if(!confirm(`¿Eliminar ${ids.length} fragancia(s)? Esta acción no se puede deshacer.`))return; ids.forEach(id=>{ S.products=S.products.filter(p=>p.id!==id); syncDel(id); }); S.adminSel.clear(); persistProducts(); refresh(false); paint(); toast(ids.length+' eliminadas'); return; }
-  if(kind==='stock'){ const allIn=ids.every(id=>get(id).in_stock); ids.forEach(id=>{ const p=get(id); p.in_stock=!allIn; syncUp(p); }); }
-  if(kind==='best'){ const allB=ids.every(id=>get(id).is_bestseller); ids.forEach(id=>{ const p=get(id); p.is_bestseller=!allB; syncUp(p); }); }
-  persistProducts(); refresh(false); paint(); toast('Actualizadas');
+  /* Con la lista paginada se ven 40 filas pero "seleccionar todo" marca
+     las 710: sin preguntar, un toque cambiaria 710 productos que Luis no
+     tiene delante. Se pregunta en cuanto el lote pasa de una pagina, y
+     la pregunta dice el numero y lo que va a pasar. */
+  const MUCHOS=40;
+  let aviso='';
+  if(kind==='stock'){
+    const allIn=ids.every(id=>get(id).in_stock);
+    const accion=allIn?'marcar como AGOTADAS':'poner EN STOCK';
+    if(ids.length>MUCHOS && !confirm('Vas a '+accion+' '+ids.length+' fragancias.\n\n¿Seguimos?')) return;
+    ids.forEach(id=>{ const p=get(id); p.in_stock=!allIn; syncUp(p); });
+    aviso=ids.length+(allIn?' marcadas como agotadas':' puestas en stock');
+  }
+  if(kind==='best'){
+    const allB=ids.every(id=>get(id).is_bestseller);
+    const accion=allB?'QUITAR de favoritos':'marcar como FAVORITAS';
+    if(ids.length>MUCHOS && !confirm('Vas a '+accion+' '+ids.length+' fragancias.\n\n¿Seguimos?')) return;
+    ids.forEach(id=>{ const p=get(id); p.is_bestseller=!allB; syncUp(p); });
+    aviso=ids.length+(allB?' quitadas de favoritos':' marcadas como favoritas');
+  }
+  /* "Actualizadas" no dice nada. Si alguien acaba de tocar 710 productos
+     tiene derecho a leer exactamente que hizo. */
+  persistProducts(); refresh(false); paint(); toast(aviso||'Actualizadas');
 }
 function adminForm(m){
   const isNew=S.editingId==='new';
@@ -7745,8 +7782,31 @@ async function adminSettings(m){
     if(e.key==='Enter'||e.key===' '){ e.preventDefault(); subir && subir.click(); }
   });
 }
-async function syncUp(p){ try{ await cargarSupabase(); if(sb) await sb.from('perfumes').upsert(p); }catch(e){ console.warn('upsert skipped',e); } }
-async function syncDel(id){ try{ await cargarSupabase(); if(sb) await sb.from('perfumes').delete().eq('id',id); }catch(e){ console.warn('delete skipped',e); } }
+/* ¿Lo que edita Luis sale de su telefono? Es la pregunta que decide el
+   aviso del panel, y la respuesta no puede ser una suposicion: la clave
+   sigue siendo un marcador de posicion hasta que alguien la ponga. */
+function nube(){
+  return typeof SUPABASE_ANON_KEY === 'string'
+    && SUPABASE_ANON_KEY.length > 20
+    && !SUPABASE_ANON_KEY.startsWith('REPLACE_');
+}
+async function syncUp(p){
+  try{ await cargarSupabase(); if(sb) await sb.from('perfumes').upsert(p); }
+  catch(e){
+    console.warn('upsert skipped',e);
+    /* Un console.warn no existe para quien usa esto desde el telefono:
+       creeria que se publico. El cambio SI quedo guardado en el
+       dispositivo, asi que el mensaje lo dice y no alarma de mas. */
+    if(nube()) toast('Se guardó en este dispositivo, pero no se pudo publicar. Revisá la conexión.');
+  }
+}
+async function syncDel(id){
+  try{ await cargarSupabase(); if(sb) await sb.from('perfumes').delete().eq('id',id); }
+  catch(e){
+    console.warn('delete skipped',e);
+    if(nube()) toast('Se borró en este dispositivo, pero no se pudo publicar. Revisá la conexión.');
+  }
+}
 
 /* ===================================================================
    EVENTS & INIT
