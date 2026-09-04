@@ -28,3 +28,6 @@ lh-*.json
 
 # capturas de auditoria locales — nunca se despliegan
 _audit_*/
+
+# hoja de triaje de fotos: herramienta local, no va al sitio publico
+triaje-fotos.html

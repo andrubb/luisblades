@@ -1,0 +1,5 @@
+# Blades Privé
+User-agent: *
+Allow: /
+
+Sitemap: https://bladesprive.vercel.app/sitemap.xml

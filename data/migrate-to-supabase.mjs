@@ -13,7 +13,9 @@
    It is idempotent (upsert on id) and safe to re-run once a key exists.
 
    SCHEMA COLUMNS REQUIRED (add before first run if missing):
-     concentration text, size_ml numeric, size_g numeric, gender text
+     concentration text, size_ml numeric, size_g numeric, gender text,
+     featured_note_es text, featured_note_en text
+   -> el SQL listo esta en data/01-columnas.sql
    Existing columns used: id, brand, name, category, price_crc, family,
      intensity, longevity, sillage, is_bestseller, in_stock, is_featured,
      occasions, seasons, top_notes, heart_notes, base_notes,
@@ -33,8 +35,23 @@ if(!SB_URL || !KEY){
   process.exit(1);
 }
 
-const rows = JSON.parse(readFileSync(new globalThis.URL('./catalog-parsed.json', import.meta.url), 'utf8'))
+/* catalog-parsed.json son 680: solo el inventario importado. El sitio
+   muestra 710, porque suma las 30 escritas a mano —las estrella, las que
+   llevan nota del curador—. Migrar el archivo de 680 habria dejado
+   Supabase sin esas 30, y en cuanto el sitio leyera de ahi habrian
+   desaparecido del catalogo. catalog-710.json es PERFUMES + IMPORTED tal
+   y como los ve la pagina. */
+const rows = JSON.parse(readFileSync(new globalThis.URL('./catalog-710.json', import.meta.url), 'utf8'))
   .map(({source_line, ...r}) => r);          // source_line is audit-only, not a column
+
+/* Y si algun dia vuelve a descuadrar, que se pare aqui y no a mitad de
+   la escritura. */
+const ESPERADAS = 710;
+if (rows.length !== ESPERADAS) {
+  console.error(`ABORT: catalog-710.json tiene ${rows.length} filas y se esperaban ${ESPERADAS}.`);
+  console.error('       Regenera el archivo antes de migrar. No se escribio nada.');
+  process.exit(1);
+}
 
 console.log(`rows to upsert: ${rows.length}  (dry-run: ${DRY})`);
 if(DRY){ console.log(JSON.stringify(rows.slice(0,3),null,1)); process.exit(0); }
