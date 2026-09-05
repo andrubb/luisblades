@@ -689,6 +689,9 @@ body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opa
 .a-filters input{flex:1 1 180px;min-height:46px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:11px 14px;color:var(--text);font-size:.9rem}
 .a-filters input:focus,.a-filters select:focus{outline:none;border-color:var(--blue)}
 .a-filters select{min-height:46px;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:0 12px;color:var(--text);font-size:.8rem;letter-spacing:.04em}
+/* la linea que distingue un frasco de 100 de uno de 200: discreta,
+   debajo del nombre, y no ocupa sitio cuando no hay dato */
+.card-tam{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--silver);margin-top:3px}
 .a-selall{display:flex;align-items:center;gap:11px;margin-bottom:10px;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;min-height:30px}
 /* position:relative NO ES DECORATIVO: sin el, el ::before que agranda
    la zona de toque (mas abajo) se cuelga de .admin —fixed, inset:0— y
@@ -4712,7 +4715,7 @@ const S = {
   adminTab: 'dash',
   adminSel: new Set(), adminQ:'', adminCat:'all', adminStock:'all',
   editingId: null,
-  modalP: null, modalVol: 100, modalQty: 1
+  modalP: null, modalVol: 100, modalUni: 'ml', modalQty: 1
 };
 
 /* ------------------------- TRANSLATIONS --------------------------- */
@@ -5621,7 +5624,16 @@ const IMPORTED = IMP_ROWS.map((t,i)=>({
   is_bestseller:false, in_stock:true, is_featured:false,
   occasions:[], seasons:[], top_notes:[], heart_notes:[], base_notes:[],
   description_es:'', description_en:'', image_url:''
-}));
+}))
+/* Filas que no aportan nada: una copia exacta (#1040 de #1039) y
+   cuatro perfumes que ya estan entre las 30 curadas, con precio y
+   descripcion. La importada solo traia un tamano que no se puede atar
+   a ese precio.
+
+   Se filtra POR ID y no borrando de IMP_ROWS: los ids son posicionales
+   (1001+i), asi que quitar una fila de la tabla correria el id de
+   todas las siguientes y cada foto acabaria en otro perfume. */
+.filter(p=>![1040,1010,1055,1629,1572].includes(p.id));
 
 /* ===================================================================
    HELPERS
@@ -5632,7 +5644,36 @@ const T=()=>STR[S.lang];
 const tr=k=>T()[k]!==undefined?T()[k]:k;
 const trNote=n=>S.lang==='es'?(NOTE_ES[n]||n):n;
 const fmt=n=>(n===null||n===undefined||n==='')?tr('consult'):'₡'+Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-const priceFor=(p,v)=>v===50?Math.round(p.price_crc*0.62/500)*500:p.price_crc;
+/* Un precio nulo NO es cero. Sin esta guarda, priceFor(p,50) hacia
+   null*0.62 -> 0, y fmt(0) no cae en la rama de "Consultar": 680
+   productos ensenaban "50 ml · ₡0". */
+const priceFor=(p,v)=> (p.price_crc===null||p.price_crc===undefined||p.price_crc==='')
+  ? null
+  : (v===50 ? Math.round(p.price_crc*0.62/500)*500 : p.price_crc);
+
+/* ---- EL TAMANO DE VERDAD DEL FRASCO --------------------------------
+   Dos de los 710 se venden por gramos, asi que la unidad viaja junto
+   al numero en vez de darse por supuesta. Las 30 escritas a mano no
+   declaran tamano: para esas devuelve null y se usa la oferta de
+   50/100 de siempre. */
+function tamanoDe(p){
+  if(!p) return null;
+  if(p.size_ml) return {n:p.size_ml, u:'ml'};
+  if(p.size_g)  return {n:p.size_g,  u:'g'};
+  return null;
+}
+const tamTexto = t => t ? t.n+' '+t.u : '';
+/* clave del carrito: dos presentaciones del mismo perfume son dos
+   lineas distintas, y con gramos de por medio el numero solo no basta */
+const tamClave = t => t ? t.n+t.u : '100ml';
+
+/* Lo que de verdad se puede pedir. Un frasco de 200 ml no ofrece 50. */
+function presentaciones(p){
+  const t=tamanoDe(p);
+  if(t) return [{tam:t, precio:p.price_crc}];
+  return [{tam:{n:50,u:'ml'},  precio:priceFor(p,50)},
+          {tam:{n:100,u:'ml'}, precio:priceFor(p,100)}];
+}
 const mqMobile=window.matchMedia('(max-width:899px)');
 const isMob=()=>mqMobile.matches;
 const reduceMotion=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -6997,6 +7038,11 @@ function cardHTML(p){
     <div class="card-body">
       <div class="card-brand">${p.brand}</div>
       <h3 class="card-name">${p.name}</h3>
+      ${(()=>{ /* sin esto, "Acqua Di Gio" de 100 y de 200 se veian
+          identicos en la rejilla y no habia forma de elegir */
+        const t=tamanoDe(p), c=p.concentration;
+        const partes=[t?tamTexto(t):'', c||''].filter(Boolean);
+        return partes.length?`<div class="card-tam">${partes.join(' · ')}</div>`:''; })()}
       ${p.is_bestseller?`<span class="tag-best">${tr('bestseller')}</span>`:''}
       <div class="card-foot">
         <span class="card-cat">${tr(p.category)}</span>
@@ -7086,7 +7132,11 @@ function openModal(id){
   document.body.classList.add('sheet-open');   // el fondo se encoge tras la hoja
   if(window.__fluxSheet) window.__fluxSheet();  // el shader de la ficha nace al abrirla
   const p=S.products.find(x=>x.id===id); if(!p)return;
-  S.modalP=p; S.modalVol=100; S.modalQty=1; renderModal();
+  /* la presentacion de partida sale del producto, no de un 100 fijo.
+     Cuando hay dos (las 30 escritas a mano) se sigue abriendo en la de
+     100, que es como estaba. */
+  const PRES0=presentaciones(p), ini=PRES0.length>1?PRES0[1]:PRES0[0];
+  S.modalP=p; S.modalVol=ini.tam.n; S.modalUni=ini.tam.u; S.modalQty=1; renderModal();
   $('#modal').classList.add('show'); $('#overlay').classList.add('show'); document.body.style.overflow='hidden';
 }
 function closeModal(){
@@ -7146,6 +7196,10 @@ function setupSheetGesture(){
 function meterRow(label,val){ return `<div class="meter-row"><span class="ml">${label}</span><div class="meter-track"><span class="fill" data-w="${val/5*100}"></span></div></div>`; }
 function noteTier(label,arr){ return `<div class="pyr-tier"><div class="t">${label}</div><span class="pyr-bar" aria-hidden="true"></span><div class="note-tags">${arr.map(n=>`<span>${trNote(n)}</span>`).join('')}</div></div>`; }
 function renderModal(){
+  const PRES=presentaciones(S.modalP);
+  /* la presentacion elegida ahora mismo; si el estado quedo de un
+     producto anterior, se cae a la primera del actual */
+  const ACT=PRES.find(function(x){return x.tam.n===S.modalVol&&x.tam.u===S.modalUni})||PRES[0];
   const p=S.modalP; if(!p)return;
   const faved=S.favs.includes(p.id);
   const occAll=['Day','Night','Office','Formal','Casual','Date'], seaAll=['Spring','Summer','Fall','Winter'];
@@ -7177,13 +7231,16 @@ function renderModal(){
       <div class="chips">${seaAll.map(s=>`<span class="chip${p.seasons.includes(s)?' on':''}">${tr(s)}</span>`).join('')}</div>
 
       <div class="modal-buy">
-        <span class="modal-price" id="modalPrice">${fmt(priceFor(p,S.modalVol))}</span>
+        <span class="modal-price" id="modalPrice">${fmt(ACT.precio)}</span>
         <div class="qty"><button id="qMinus" aria-label="−">−</button><span id="qVal">${S.modalQty}</span><button id="qPlus" aria-label="+">+</button></div>
       </div>
-      <div class="chips" id="volOpts" style="margin-bottom:18px">
-        <span class="chip${S.modalVol===50?' on':''}" data-vol="50">50 ml · ${fmt(priceFor(p,50))}</span>
-        <span class="chip${S.modalVol===100?' on':''}" data-vol="100">100 ml · ${fmt(priceFor(p,100))}</span>
-      </div>
+      ${PRES.length>1
+        ? `<div class="chips" id="volOpts" style="margin-bottom:18px">${PRES.map(x=>
+            `<span class="chip${S.modalVol===x.tam.n&&S.modalUni===x.tam.u?' on':''}" data-vol="${x.tam.n}" data-uni="${x.tam.u}">${tamTexto(x.tam)} · ${fmt(x.precio)}</span>`
+          ).join('')}</div>`
+        /* con una sola presentacion no hay nada que elegir: se informa,
+           no se finge una eleccion */
+        : `<div class="block-label" style="margin:0 0 18px">${tr('m_vol')} · ${tamTexto(PRES[0].tam)}</div>`}
       <div style="margin-bottom:6px">
         <button class="modal-fav${faved?' on':''}" id="modalFav" data-id="${p.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.49 4.04 3 5.5l7 7Z"/></svg>
@@ -7201,10 +7258,15 @@ function renderModal(){
   // animate meters
   requestAnimationFrame(()=>$$('#modalCard .fill').forEach(f=>f.style.width=f.dataset.w+'%'));
   $('#modalClose').addEventListener('click',closeModal);
-  $$('#volOpts .chip').forEach(c=>c.addEventListener('click',()=>{ S.modalVol=+c.dataset.vol; $$('#volOpts .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); $('#modalPrice').textContent=fmt(priceFor(p,S.modalVol)); }));
+  $$('#volOpts .chip').forEach(c=>c.addEventListener('click',()=>{
+    S.modalVol=+c.dataset.vol; S.modalUni=c.dataset.uni||'ml';
+    $$('#volOpts .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on');
+    const el=PRES.find(x=>x.tam.n===S.modalVol&&x.tam.u===S.modalUni);
+    $('#modalPrice').textContent=fmt(el?el.precio:null);
+  }));
   $('#qMinus').addEventListener('click',()=>{ S.modalQty=Math.max(1,S.modalQty-1); $('#qVal').textContent=S.modalQty; });
   $('#qPlus').addEventListener('click',()=>{ S.modalQty=Math.min(20,S.modalQty+1); $('#qVal').textContent=S.modalQty; });
-  $('#modalAdd').addEventListener('click',()=>{ if(p.in_stock){ addToCart(p.id,S.modalVol,S.modalQty); closeModal(); } });
+  $('#modalAdd').addEventListener('click',()=>{ if(p.in_stock){ addToCart(p.id,{n:S.modalVol,u:S.modalUni},S.modalQty); closeModal(); } });
   $('#modalInq').addEventListener('click',()=>inquireWA(p));
   $('#modalFav').addEventListener('click',()=>toggleFav(p.id));
   if(window.gsap) gsap.from('#modalCard .modal-body > *',{y:14,opacity:0,duration:.5,stagger:FX.item*.5,ease:FX.ease,clearProps:'all'});
@@ -7215,11 +7277,25 @@ function renderModal(){
    =================================================================== */
 function saveCart(){ localStorage.setItem('bp_cart',JSON.stringify(S.cart)); }
 function cartCount(){ return S.cart.reduce((s,i)=>s+i.qty,0); }
-function cartTotal(){ return S.cart.reduce((s,i)=>s+i.price*i.qty,0); }
-function addToCart(id,vol,qty){
+/* null*qty daba 0 y el total salia por debajo de lo pedido */
+function cartTotal(){ return S.cart.reduce((s,i)=>s+((i.price==null?0:i.price)*i.qty),0); }
+/* Dice lo que sabe y admite lo que no, en vez de fingir una cifra:
+   "₡85.000 + Consultar" cuando el carrito mezcla las dos cosas. */
+function totalTexto(){
+  if(!S.cart.length) return fmt(0);
+  const suma=cartTotal();
+  if(!hayAlgoSinPrecio()) return fmt(suma);
+  return suma>0 ? fmt(suma)+' + '+tr('consult') : tr('consult');
+}
+/* tam puede llegar como {n,u} o como un numero suelto (carritos viejos
+   guardados antes de este cambio) */
+function addToCart(id,tam,qty){
   const p=S.products.find(x=>x.id===id); if(!p||!p.in_stock)return;
-  const key=id+'|'+vol, f=S.cart.find(i=>i.key===key);
-  if(f) f.qty+=qty; else S.cart.push({key,id,brand:p.brand,name:p.name,vol,price:priceFor(p,vol),image_url:p.image_url,qty});
+  const t = (tam && typeof tam==='object') ? tam : {n:+tam||100, u:'ml'};
+  const pres=presentaciones(p).find(x=>x.tam.n===t.n&&x.tam.u===t.u);
+  const precio = pres ? pres.precio : priceFor(p,t.n);
+  const key=id+'|'+tamClave(t), f=S.cart.find(i=>i.key===key);
+  if(f) f.qty+=qty; else S.cart.push({key,id,brand:p.brand,name:p.name,vol:t.n,uni:t.u,price:precio,image_url:p.image_url,qty});
   saveCart(); updateCart(); toast(tr('added'));
   const b=$('#cartCount'); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
 }
@@ -7235,11 +7311,11 @@ function updateCart(){
   foot.style.display='block';
   body.innerHTML=S.cart.map(it=>`<div class="cart-item">
     <div class="ci-img">${fotoDe(it)?`<img class="${fotoMini(it).startsWith('product-images/')?'prod-norm':''}" src="${fotoMini(it)}" width="160" height="200" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;padding:6px" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover">`}</div>
-    <div><div class="ci-brand">${it.brand}</div><div class="ci-name">${it.name}</div><div class="ci-vol">${it.vol} ml</div><div class="ci-price">${fmt(it.price)}</div>
+    <div><div class="ci-brand">${it.brand}</div><div class="ci-name">${it.name}</div><div class="ci-vol">${it.vol} ${it.uni||'ml'}</div><div class="ci-price">${fmt(it.price)}</div>
       <div class="qty"><button onclick="changeQty('${it.key}',-1)">−</button><span>${it.qty}</span><button onclick="changeQty('${it.key}',1)">+</button></div></div>
     <button class="ci-remove" onclick="removeItem('${it.key}')">${tr('cart_remove')}</button>
   </div>`).join('');
-  $('#cartTotal').textContent=fmt(cartTotal());
+  $('#cartTotal').textContent=totalTexto();
 }
 function openCart(){ $('#cart').classList.add('show'); $('#overlay').classList.add('show'); document.body.style.overflow='hidden'; }
 
@@ -7247,8 +7323,17 @@ function openCart(){ $('#cart').classList.add('show'); $('#overlay').classList.a
    WHATSAPP
    =================================================================== */
 const waLink=t=>`https://wa.me/${S.whatsapp}?text=${encodeURIComponent(t)}`;
-function checkout(){ if(!S.cart.length)return; let m=tr('wa_greet')+'\n\n'; S.cart.forEach(it=>{ m+=`• ${it.brand} ${it.name} (${it.vol}ml) ×${it.qty} — ${fmt(it.price*it.qty)}\n`; }); m+=`\n${tr('wa_total')} ${fmt(cartTotal())}\n\n${tr('wa_delivery')}`; window.open(waLink(m),'_blank'); }
-function inquireWA(p){ window.open(waLink(`${tr('wa_inq')}\n\n${p.brand} ${p.name} — ${S.modalVol}ml · ${fmt(priceFor(p,S.modalVol))}`),'_blank'); }
+/* si en el carrito hay algo sin precio, el total no puede fingir una
+   cifra: se muestra "Consultar" y Luis cotiza al confirmar */
+const hayAlgoSinPrecio = () => S.cart.some(i=>i.price===null||i.price===undefined||i.price==='');
+function checkout(){ if(!S.cart.length)return; let m=tr('wa_greet')+'\n\n'; /* it.uni: sin el, un frasco de 200 se pedia como (100ml) y a Luis le
+   llegaba el tamano equivocado. El ||'ml' cubre carritos guardados
+   antes de este cambio. */
+  S.cart.forEach(it=>{ m+=`• ${it.brand} ${it.name} (${it.vol} ${it.uni||'ml'}) ×${it.qty} — ${fmt(it.price==null?null:it.price*it.qty)}\n`; }); m+=`\n${tr('wa_total')} ${totalTexto()}\n\n${tr('wa_delivery')}`; window.open(waLink(m),'_blank'); }
+function inquireWA(p){
+  const pres=presentaciones(p).find(x=>x.tam.n===S.modalVol&&x.tam.u===S.modalUni)||presentaciones(p)[0];
+  window.open(waLink(`${tr('wa_inq')}\n\n${p.brand} ${p.name} — ${tamTexto(pres.tam)} · ${fmt(pres.precio)}`),'_blank');
+}
 function refreshWA(){ const base=waLink(S.lang==='es'?'¡Hola Luis! Quiero información sobre Blades Privé 🙌':'Hi Luis! I’d like info about Blades Privé 🙌'); $('#floatWa').href=base; const fw=$('#footWaLink'); if(fw){ fw.href=base; fw.textContent='+'+S.whatsapp.replace(/^(\d{3})(\d{4})(\d{4})$/,'$1 $2 $3'); } }
 function refreshHours(){ const el=$('#fgHours'); if(el&&S.hours) el.textContent=S.hours; }
 
@@ -7410,7 +7495,7 @@ function aItemHTML(p){
   return `<div class="a-item${sel?' sel':''}" data-row="${p.id}">
     <button class="a-check${sel?' on':''}" data-sel="${p.id}" aria-label="Seleccionar">${CHK}</button>
     <div class="a-thumb">${fotoDe(p)?`<img class="prod-img${fotoMini(p).startsWith('product-images/')?' prod-norm':''}" src="${fotoMini(p)}" width="160" height="200" loading="lazy" decoding="async" onerror="this.replaceWith(document.createRange().createContextualFragment(window.__BOTTLE))">`:`<img class="ph-img" src="${PH_SRC}" alt="" loading="lazy">`}</div>
-    <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
+    <div class="info"><div class="b">${p.brand}</div><div class="n">${p.name}</div><div class="p">${tr(p.category)}${tamanoDe(p)?' · '+tamTexto(tamanoDe(p)):''}${p.concentration?' · '+p.concentration:''} · ${fmt(p.price_crc)}${p.is_bestseller?' · ★':''}${p.is_featured?' · Curador':''}${p.in_stock?'':' · '+tr('soldout')}</div></div>
     <div class="a-acts">
       <button class="a-ico" data-edit="${p.id}" aria-label="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
       <button class="a-ico danger" data-del="${p.id}" aria-label="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>

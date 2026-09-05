@@ -39,16 +39,16 @@ if(!SB_URL || !KEY){
    muestra 710, porque suma las 30 escritas a mano —las estrella, las que
    llevan nota del curador—. Migrar el archivo de 680 habria dejado
    Supabase sin esas 30, y en cuanto el sitio leyera de ahi habrian
-   desaparecido del catalogo. catalog-710.json es PERFUMES + IMPORTED tal
+   desaparecido del catalogo. catalog-completo.json es PERFUMES + IMPORTED tal
    y como los ve la pagina. */
-const rows = JSON.parse(readFileSync(new globalThis.URL('./catalog-710.json', import.meta.url), 'utf8'))
+const rows = JSON.parse(readFileSync(new globalThis.URL('./catalog-completo.json', import.meta.url), 'utf8'))
   .map(({source_line, ...r}) => r);          // source_line is audit-only, not a column
 
 /* Y si algun dia vuelve a descuadrar, que se pare aqui y no a mitad de
    la escritura. */
-const ESPERADAS = 710;
+const ESPERADAS = 705;   // 30 curadas + 675 importadas, sin las 5 filas repetidas
 if (rows.length !== ESPERADAS) {
-  console.error(`ABORT: catalog-710.json tiene ${rows.length} filas y se esperaban ${ESPERADAS}.`);
+  console.error(`ABORT: catalog-completo.json tiene ${rows.length} filas y se esperaban ${ESPERADAS}.`);
   console.error('       Regenera el archivo antes de migrar. No se escribio nada.');
   process.exit(1);
 }
